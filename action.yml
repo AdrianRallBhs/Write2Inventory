@@ -2,7 +2,6 @@ name: 'Write2Inventory'
 description: 'Write all NuGet, NPM and Submodule information into a Repository'
 author: 'ARall'
 inputs:
-inputs:
   github-token:
     description: 'GitHub token'
     required: true
