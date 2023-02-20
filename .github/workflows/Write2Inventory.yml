@@ -12,14 +12,37 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: Install Dependencies
-        run: npm install
+       - name: Use Node.js 16.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Cache dependencies etc
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-js-${{ hashFiles('package-lock.json') }}
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+      
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal
+
+
+      - name: Install dependencies
+      # npm ci == npm install but gives feedback if not up-to-date
+        run: npm ci
+
+      - name: Build
+        run: npm run build --if-present
 
       - name: Generate Report
-        uses: AdrianRallBhs/Write2Inventory/action.yml
-        with:
-          path: ../../action.yml # Replace with the path to the directory containing the action
-
+        uses: ./
+        id: report
+        # Replace with the path to the directory containing the action
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           branch-name: ${{ github.ref }}
