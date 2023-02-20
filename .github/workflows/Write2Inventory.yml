@@ -25,12 +25,6 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-js-${{ hashFiles('package-lock.json') }}
 
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
-      
-      - name: Test
-        run: dotnet test --no-restore --verbosity normal
-
 
       - name: Install dependencies
       # npm ci == npm install but gives feedback if not up-to-date
