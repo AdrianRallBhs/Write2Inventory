@@ -1,0 +1,20 @@
+name: 'Write2Inventory'
+description: 'Write all NuGet, NPM and Submodule information into a Repository'
+author: 'ARall'
+inputs:
+inputs:
+  github-token:
+    description: 'GitHub token'
+    required: true
+  branch-name:
+    description: 'Name of the branch to get information for'
+    required: true
+  output-path:
+    description: 'Path to output JSON file'
+    required: true
+  runs:
+    using: 'node12'
+    main: 'dist/main.js'
+  branding:
+    icon: 'check'
+    color: 'green'

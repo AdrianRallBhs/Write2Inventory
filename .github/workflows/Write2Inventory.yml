@@ -1,0 +1,24 @@
+name: Generate Report
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  generate_report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Generate Report
+        uses: ./ # Replace with the path to the directory containing the action
+
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          branch-name: ${{ github.ref }}
+          output-path: report.json

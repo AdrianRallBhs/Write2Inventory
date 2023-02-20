@@ -1,0 +1,30 @@
+{
+  "name": "write2inventory",
+  "version": "0.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AdrianRallBhs/Write2Inventory.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AdrianRallBhs/Write2Inventory/issues"
+  },
+  "homepage": "https://github.com/AdrianRallBhs/Write2Inventory#readme",
+  "devDependencies": {
+    "@types/node": "^18.14.0",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@actions/github": "^5.1.1",
+    "@octokit/rest": "^19.0.7",
+    "fs": "0.0.1-security"
+  }
+}
