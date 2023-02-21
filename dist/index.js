@@ -164,7 +164,7 @@ function run() {
             }
         }
         catch (e) {
-            core.setFailed("alles falsch");
+            core.setFailed(e);
         }
     });
 }
