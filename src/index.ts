@@ -3,8 +3,8 @@ import * as github from '@actions/github';
 import * as fs from 'fs';
 
 interface Packages {
-  name: string;
-  version: string;
+//   name: string;
+//   version: string;
   license: string;
   sha: string;
 }
@@ -27,8 +27,8 @@ interface NpmPackage {
 
 interface NugetPackage {
   repoName: string;
-  packageName: string;
-  version: string;
+//   packageName: string;
+//   version: string;
   license: string;
   sha: string;
 }
@@ -140,34 +140,39 @@ async function run() {
     
     //output.repository.packages.push(nugetFiles.toString()) || [];
        
-
-        for (const file of nugetFiles as any[]) {
-            const { data: nugetInfo } = await octokit.rest.repos.getContent({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: branch,
-              path: file.path,
-            });
-        
-        
-            const nugetContent = Buffer.from(nugetInfo, 'base64').toString();
-            core.info(nugetContent)
-            const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
-            let match;
-          
-            while ((match = packageNameRegex.exec(nugetContent))) {
-              const [, packageName, version] = match;
-            //original: output.nugetPackages.push({
-              output.nugetPackages.push({
-                repoName: repo,
-                packageName,
-                version,
-                license: '',
-                sha: commit.sha,
-              }) 
-            }
-          }
+try {
+    for (const file of nugetFiles as any[]) {
+        const { data: nugetInfo } = await octokit.rest.repos.getContent({
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          ref: branch,
+          path: file.path,
+        });
     
+    
+        // const nugetContent = Buffer.from(nugetInfo, 'base64').toString();
+        const nugetConent = nugetInfo.toString();
+        core.info(nugetContent)
+        // const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
+        // let match;
+      
+        // // while ((match = packageNameRegex.exec(nugetContent))) {
+        // //   const [, packageName, version] = match;
+        // //original: output.nugetPackages.push({
+        //   output.nugetPackages.push({
+        //     repoName: repo,
+        //     // packageName,
+        //     // version,
+        //     license: '',
+        //     sha: commit.sha,
+        //   }) 
+        // }
+      }
+
+} catch (error) {
+    core.setFailed("Error in nuget")
+}
+        
       
   
     //   // Get submodules
