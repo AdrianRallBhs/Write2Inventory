@@ -137,33 +137,33 @@ async function run() {
       path: '*.csproj',
     });
 
-    try {
-        for (const file of nugetFiles as any[]) {
-            const { data: nugetInfo } = await octokit.rest.repos.getContent({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: branch,
-              path: file.path,
-            });
+    nugetFiles.forEach(element => {
+        output.repository.packages.push(nugetFiles)
+    });
+
+        // for (const file of nugetFiles as any[]) {
+        //     const { data: nugetInfo } = await octokit.rest.repos.getContent({
+        //       owner: context.repo.owner,
+        //       repo: context.repo.repo,
+        //       ref: branch,
+        //       path: file.path,
+        //     });
           
-            const nugetContent = Buffer.from(nugetInfo.toString(), 'base64').toString();
-            const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
-            let match;
+        //     const nugetContent = Buffer.from(nugetInfo.toString(), 'base64').toString();
+        //     const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
+        //     let match;
           
-            while ((match = packageNameRegex.exec(nugetContent))) {
-              const [, packageName, version] = match;
-              output.nugetPackages.push({
-                repoName: repo,
-                packageName,
-                version,
-                license: '',
-                sha: commit.sha,
-              });
-            }
-          }
-    } catch (error) {
-        core.setFailed("for schleife hat fehler")
-    }
+        //     while ((match = packageNameRegex.exec(nugetContent))) {
+        //       const [, packageName, version] = match;
+        //       output.nugetPackages.push({
+        //         repoName: repo,
+        //         packageName,
+        //         version,
+        //         license: '',
+        //         sha: commit.sha,
+        //       });
+        //     }
+        //   }
     
       
   
