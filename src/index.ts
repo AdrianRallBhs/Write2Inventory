@@ -139,7 +139,7 @@ async function run() {
 
     
         
-        output.repository.packages.push(nugetFiles) || [];
+        output.repository.packages.push(nugetFiles.toString()) || [];
 
         // for (const file of nugetFiles as any[]) {
         //     const { data: nugetInfo } = await octokit.rest.repos.getContent({
