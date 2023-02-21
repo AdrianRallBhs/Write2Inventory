@@ -96,12 +96,12 @@ async function run() {
         owner: context.repo.owner.toString(),
         repo: context.repo.repo.toString(),
         ref: branch.toString(),
-        path: '*package.json',
+        path: 'package.json',
       });
     
     
 // try {
-    core.info(packageFiles.toString())    
+    core.info(packageFiles.toString());   
     output.npmPackages = packageFiles.toLocaleString();  
 
     // for (const file of packageFiles as any[]) {
@@ -151,7 +151,7 @@ async function run() {
         path: '*.csproj',
       });
 
-      core.info(nugetFiles.toLocaleString())
+      core.info(nugetFiles.toString());
       output.nugetPackages = nugetFiles.toLocaleString();
       
     // for (const file of nugetFiles as any[]) {
