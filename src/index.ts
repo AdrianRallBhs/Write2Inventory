@@ -11,38 +11,38 @@ interface Packages {
 
 interface Repository {
   name: string;
-  packages: Packages[];
+  //packages: Packages[];
   currentReleaseTag: string;
   license: string;
   sha: string;
 }
 
-interface NpmPackage {
-  repoName: string;
-  packageName: string;
-  version: string;
-  license: string;
-  sha: string;
-}
+// interface NpmPackage {
+//   repoName: string;
+//   packageName: string;
+//   version: string;
+//   license: string;
+//   sha: string;
+// }
 
-interface NugetPackage {
-  repoName: string;
-  packageName: string;
-  version: string;
-  license: string;
-  sha: string;
-}
+// interface NugetPackage {
+//   repoName: string;
+//   packageName: string;
+//   version: string;
+//   license: string;
+//   sha: string;
+// }
 
-interface Submodule {
-  repoName: string;
-  packageName: string;
-  tag: string;
-}
+// interface Submodule {
+//   repoName: string;
+//   packageName: string;
+//   tag: string;
+// }
 
 interface Output {
   repository: Repository;
-  npmPackages: NpmPackage[];
-  nugetPackages: NugetPackage[];
+//   npmPackages: NpmPackage[];
+//   nugetPackages: NugetPackage[];
   //submodules: Submodule[];
 }
 
@@ -64,13 +64,13 @@ async function run() {
     const output: Output = {
       repository: {
         name: repo,
-        packages: [],
+        //packages: [],
         currentReleaseTag: '',
         license: '',
         sha: commit.sha,
       },
-      npmPackages: [],
-      nugetPackages: [],
+    //   npmPackages: [],
+    //   nugetPackages: [],
       //submodules: [],
     };
     
@@ -88,82 +88,82 @@ async function run() {
 
   
         // Get npm packages
-    const { data: packageFiles } = await octokit.rest.repos.getContent({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        ref: branch,
-        path: 'package-lock.json',
-      });
+    // const { data: packageFiles } = await octokit.rest.repos.getContent({
+    //     owner: context.repo.owner,
+    //     repo: context.repo.repo,
+    //     ref: branch,
+    //     path: 'package-lock.json',
+    //   });
     
     
-try {
-    for (const file of packageFiles as any[]) {
-        const { data: packageInfo } = await octokit.rest.repos.getContent({
-          owner: context.repo.owner.toString(),
-          repo: context.repo.repo.toString(),
-          ref: branch.toString(),
-          path: file.path.ToString(),
-        });
+// try {
+    // for (const file of packageFiles as any[]) {
+    //     const { data: packageInfo } = await octokit.rest.repos.getContent({
+    //       owner: context.repo.owner.toString(),
+    //       repo: context.repo.repo.toString(),
+    //       ref: branch.toString(),
+    //       path: file.path.ToString(),
+    //     });
   
-        const packageData = JSON.parse(Buffer.from(packageInfo.toString(), 'base64').toString());
+    //     const packageData = JSON.parse(Buffer.from(packageInfo.toString(), 'base64').toString());
         
   
-        const somePackage: Packages = {
-          name: packageData.name,
-          version: packageData.version,
-          license: packageData.license || '',
-          sha: commit.sha,
-        };
+        // const somePackage: Packages = {
+        //   name: packageData.name,
+        //   version: packageData.version,
+        //   license: packageData.license || '',
+        //   sha: commit.sha,
+        // };
   
-        output.repository.packages.push(somePackage);
-        output.npmPackages.push({
-          repoName: repo,
-          packageName: packageData.name,
-          version: packageData.version,
-          license: packageData.license || '',
-          sha: commit.sha,
-        });
-      }
-} catch (error) {
-    core.setFailed("Erste For-schleife hat einen Fehler")
-}
+        // output.repository.packages.push(somePackage);
+        // output.npmPackages.push({
+        //   repoName: repo,
+        //   packageName: packageData.name,
+        //   version: packageData.version,
+        //   license: packageData.license || '',
+        //   sha: commit.sha,
+        // });
+    //   }
+// } catch (error) {
+//     core.setFailed("Erste For-schleife hat einen Fehler")
+// }
     
 
     // Get NuGet packages
-    const { data: nugetFiles } = await octokit.rest.repos.getContent({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      ref: branch,
-      path: '*.csproj',
-    });
+    // const { data: nugetFiles } = await octokit.rest.repos.getContent({
+    //   owner: context.repo.owner,
+    //   repo: context.repo.repo,
+    //   ref: branch,
+    //   path: '*.csproj',
+    // });
 
-    try {
-        for (const file of nugetFiles as any[]) {
-            const { data: nugetInfo } = await octokit.rest.repos.getContent({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: branch,
-              path: file.path,
-            });
+    // try {
+    //     for (const file of nugetFiles as any[]) {
+    //         const { data: nugetInfo } = await octokit.rest.repos.getContent({
+    //           owner: context.repo.owner,
+    //           repo: context.repo.repo,
+    //           ref: branch,
+    //           path: file.path,
+    //         });
           
-            const nugetContent = Buffer.from(nugetInfo.toString(), 'base64').toString();
-            const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
-            let match;
+    //         const nugetContent = Buffer.from(nugetInfo.toString(), 'base64').toString();
+    //         const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
+    //         let match;
           
-            while ((match = packageNameRegex.exec(nugetContent))) {
-              const [, packageName, version] = match;
-              output.nugetPackages.push({
-                repoName: repo,
-                packageName,
-                version,
-                license: '',
-                sha: commit.sha,
-              });
-            }
-          }
-    } catch (error) {
-        core.setFailed("for schleife hat fehler")
-    }
+    //         while ((match = packageNameRegex.exec(nugetContent))) {
+    //           const [, packageName, version] = match;
+    //           output.nugetPackages.push({
+    //             repoName: repo,
+    //             packageName,
+    //             version,
+    //             license: '',
+    //             sha: commit.sha,
+    //           });
+    //         }
+    //       }
+    // } catch (error) {
+    //     core.setFailed("for schleife hat fehler")
+    // }
     
       
   
