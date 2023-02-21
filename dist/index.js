@@ -101,15 +101,15 @@ function run() {
         // } catch (error) {
         //     core.setFailed("Erste For-schleife hat einen Fehler")
         // }
-        // Get NuGet packages
-        const { data: nugetFiles } = yield octokit.rest.repos.getContent({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            ref: branch,
-            path: '*.csproj',
-        });
         //output.repository.packages.push(nugetFiles.toString()) || [];
         try {
+            // Get NuGet packages
+            const { data: nugetFiles } = yield octokit.rest.repos.getContent({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: branch,
+                path: '*.csproj',
+            });
             for (const file of nugetFiles) {
                 const { data: nugetInfo } = yield octokit.rest.repos.getContent({
                     owner: context.repo.owner,
@@ -118,7 +118,7 @@ function run() {
                     path: file.path,
                 });
                 // const nugetContent = Buffer.from(nugetInfo, 'base64').toString();
-                const nugetContent = nugetInfo.toString();
+                let nugetContent = file.toString();
                 core.info(nugetContent);
                 // const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
                 // let match;
@@ -135,7 +135,7 @@ function run() {
                 // }
             }
         }
-        catch (error) {
+        catch (e) {
             core.setFailed("Error in nuget");
         }
         //   // Get submodules
