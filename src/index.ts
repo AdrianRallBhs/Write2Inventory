@@ -234,6 +234,7 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import * as fs from 'fs';
+const packageJson = require('../package.json');
 
 interface Packages {
     name: string;
@@ -422,9 +423,7 @@ async function runNPM() {
         path: 'package.json',
       });
   
-      const packages = JSON.parse(
-        Buffer.from(contents.toString()).toString()
-      ).dependencies;
+      const packages = packageJson.dependencies;
   
       const packageList = Object.keys(packages).map((name) => ({
         name,
