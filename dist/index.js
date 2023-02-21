@@ -72,7 +72,7 @@ function run() {
             owner: context.repo.owner,
             repo: context.repo.repo,
             ref: branch,
-            path: './package-lock.json',
+            path: 'package-lock.json',
         });
         // try {
         for (const file of packageFiles) {
@@ -83,6 +83,8 @@ function run() {
                 path: file.path,
             });
             const packageData = JSON.parse(Buffer.from(packageInfo.toString(), 'base64').toString());
+            core.info(packageInfo.toString());
+            core.info(packageData);
             const somePackage = {
                 name: packageData.name,
                 version: packageData.version,
