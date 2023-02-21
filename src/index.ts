@@ -4,7 +4,7 @@ import * as fs from 'fs';
 
 interface Packages {
   name: string;
-  version: string;
+//   version: string;
   license: string;
   sha: string;
 }
@@ -150,12 +150,12 @@ async function run() {
             });
         
         
-            const nugetContent = Buffer.from(nugetInfo.toString(), 'base64').toString();
-            const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
-            let match;
+            // const nugetContent = Buffer.from(nugetInfo.toString(), 'base64').toString();
+            // const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
+            // let match;
           
-            while ((match = packageNameRegex.exec(nugetContent))) {
-              const [, packageName, version] = match;
+            // while ((match = packageNameRegex.exec(nugetContent))) {
+            //   const [, packageName, version] = match;
               output.nugetPackages.push({
                 repoName: repo,
                 // packageName,
@@ -164,7 +164,7 @@ async function run() {
                 sha: commit.sha,
               });
             }
-          }
+        //   }
     
       
   
