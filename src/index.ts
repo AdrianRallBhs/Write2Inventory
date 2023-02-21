@@ -163,7 +163,7 @@ async function run() {
         });
 
 
-        const nugetContent = Buffer.from(nugetInfo.ToString(), 'base64').toString();
+        const nugetContent = Buffer.from(nugetInfo.path, 'base64').toString();
 
         // const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
         // let match;
