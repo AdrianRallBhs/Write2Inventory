@@ -11,7 +11,7 @@ interface Packages {
 
 interface Repository {
   name: string;
-  //packages: Packages[];
+  packages: Packages[];
   currentReleaseTag: string;
   license: string;
   sha: string;
@@ -64,7 +64,7 @@ async function run() {
     const output: Output = {
       repository: {
         name: repo,
-        //packages: [],
+        packages: [],
         currentReleaseTag: '',
         license: '',
         sha: commit.sha,
