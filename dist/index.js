@@ -59,7 +59,7 @@ function run() {
                 },
                 npmPackages: [],
                 nugetPackages: [],
-                submodules: [],
+                //submodules: [],
             };
             // Get repository info
             const { data: repository } = yield octokit.rest.repos.get({
@@ -136,24 +136,24 @@ function run() {
             catch (error) {
                 core.setFailed("for schleife hat fehler");
             }
-            // Get submodules
-            const { data: submodules } = yield octokit.rest.repos.listSubmodules({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: branch,
-            });
-            for (const submodule of submodules) {
-                const { data: submoduleCommit } = yield octokit.rest.repos.getCommit({
-                    owner: context.repo.owner,
-                    repo: submodule.name,
-                    ref: submodule.sha,
-                });
-                output.submodules.push({
-                    repoName: submodule.name,
-                    packageName: submodule.path,
-                    tag: submoduleCommit.sha,
-                });
-            }
+            //   // Get submodules
+            //   const { data: submodules } = await octokit.rest.repos.listSubmodules({
+            //     owner: context.repo.owner,
+            //     repo: context.repo.repo,
+            //     ref: branch,
+            //   });
+            //   for (const submodule of submodules) {
+            //     const { data: submoduleCommit } = await octokit.rest.repos.getCommit({
+            //       owner: context.repo.owner,
+            //       repo: submodule.name,
+            //       ref: submodule.sha,
+            //     });
+            //     output.submodules.push({
+            //       repoName: submodule.name,
+            //       packageName: submodule.path,
+            //       tag: submoduleCommit.sha,
+            //     });
+            //   }
             // Write output to file
             const outputPath = core.getInput('output-path');
             try {
