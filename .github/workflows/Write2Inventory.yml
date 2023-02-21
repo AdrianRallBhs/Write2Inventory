@@ -43,4 +43,4 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           branch-name: ${{ github.ref }}
-          output-path: report.json
+          output-path: ./report.json

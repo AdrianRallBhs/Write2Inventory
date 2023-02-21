@@ -192,6 +192,7 @@ async function run() {
       const outputPath = core.getInput('output-path');
       try {
         fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
+        core.info(JSON.stringify(output, null, 2))
       } catch (error) {
         core.setFailed("WriteFileSync ist falsch")
       }
