@@ -41,7 +41,8 @@ interface NugetPackage {
 
 interface Output {
   repository: Repository;
-  npmPackages: NpmPackage[];
+  //npmPackages: NpmPackage[];
+  npmPackages: string;
 //   nugetPackages: NugetPackage[];
   //submodules: Submodule[];
 }
@@ -69,7 +70,8 @@ async function run() {
         license: '',
         sha: commit.sha,
       },
-      npmPackages: [],
+    //   npmPackages: [],
+    npmPackages: ''
     //  nugetPackages: [],
       //submodules: [],
     };
@@ -97,7 +99,8 @@ async function run() {
     
     
 // try {
-    core.info(packageFiles.toString())      
+    core.info(packageFiles.toString())    
+    output.npmPackages = packageFiles.toString();  
 
     // for (const file of packageFiles as any[]) {
     //     const { data: packageInfo } = await octokit.rest.repos.getContent({

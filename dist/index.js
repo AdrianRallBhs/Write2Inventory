@@ -56,7 +56,8 @@ function run() {
                 license: '',
                 sha: commit.sha,
             },
-            npmPackages: [],
+            //   npmPackages: [],
+            npmPackages: ''
             //  nugetPackages: [],
             //submodules: [],
         };
@@ -72,34 +73,36 @@ function run() {
             owner: context.repo.owner,
             repo: context.repo.repo,
             ref: branch,
-            path: 'package-lock.json',
+            path: 'package.json',
         });
         // try {
-        for (const file of packageFiles) {
-            const { data: packageInfo } = yield octokit.rest.repos.getContent({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: branch,
-                path: file.path,
-            });
-            const packageData = JSON.parse(Buffer.from(packageInfo.toString(), 'base64').toString());
-            core.info(packageInfo.toString());
-            core.info(packageData);
-            const somePackage = {
-                name: packageData.name,
-                version: packageData.version,
-                license: packageData.license || '',
-                sha: commit.sha,
-            };
-            output.repository.packages.push(somePackage);
-            output.npmPackages.push({
-                repoName: repo,
-                packageName: packageData.name,
-                version: packageData.version,
-                license: packageData.license || '',
-                sha: commit.sha,
-            });
-        }
+        core.info(packageFiles.toString());
+        output.npmPackages = packageFiles.toString();
+        // for (const file of packageFiles as any[]) {
+        //     const { data: packageInfo } = await octokit.rest.repos.getContent({
+        //       owner: context.repo.owner,
+        //       repo: context.repo.repo,
+        //       ref: branch,
+        //       path: file.path,
+        //     });
+        //     const packageData = JSON.parse(Buffer.from(packageInfo.toString(), 'base64').toString());
+        //     core.info(packageInfo.toString());
+        //     core.info(packageData);
+        //     const somePackage: Packages = {
+        //       name: packageData.name,
+        //       version: packageData.version,
+        //       license: packageData.license || '',
+        //       sha: commit.sha,
+        //     };
+        //     output.repository.packages.push(somePackage);
+        //     output.npmPackages.push({
+        //       repoName: repo,
+        //       packageName: packageData.name,
+        //       version: packageData.version,
+        //       license: packageData.license || '',
+        //       sha: commit.sha,
+        //     });
+        //   }
         // } catch (error) {
         //     core.setFailed("Erste For-schleife hat einen Fehler")
         // }
