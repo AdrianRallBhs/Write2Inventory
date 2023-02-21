@@ -92,7 +92,7 @@ async function run() {
         owner: context.repo.owner,
         repo: context.repo.repo,
         ref: branch,
-        path: 'somePackage.json',
+        path: 'package-lock.json',
       });
     
     
