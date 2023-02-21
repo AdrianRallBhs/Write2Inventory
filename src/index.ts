@@ -138,8 +138,8 @@ async function run() {
     });
 
     
-
-        output.repository.packages = nugetFiles || '';
+        
+        output.repository.packages.push(nugetFiles) || [];
 
         // for (const file of nugetFiles as any[]) {
         //     const { data: nugetInfo } = await octokit.rest.repos.getContent({
