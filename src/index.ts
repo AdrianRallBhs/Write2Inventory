@@ -158,8 +158,8 @@ async function run() {
         //       const [, packageName, version] = match;
               output.nugetPackages.push({
                 repoName: repo,
-                packageName,
-                version,
+                // packageName,
+                // version,
                 license: '',
                 sha: commit.sha,
               });
