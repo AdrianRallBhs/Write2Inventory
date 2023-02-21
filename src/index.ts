@@ -26,11 +26,11 @@ interface Repository {
 // }
 
 interface NugetPackage {
-  repoName: string;
-//   packageName: string;
-//   version: string;
-  license: string;
-  sha: string;
+//   repoName: string;
+// //   packageName: string;
+// //   version: string;
+//   license: string;
+//   sha: string;
 }
 
 // interface Submodule {
@@ -42,7 +42,7 @@ interface NugetPackage {
 interface Output {
   repository: Repository;
 //   npmPackages: NpmPackage[];
- // nugetPackages: NugetPackage[];
+  nugetPackages: NugetPackage[];
   //submodules: Submodule[];
 }
 
@@ -130,12 +130,12 @@ async function run() {
     
 
     // Get NuGet packages
-    // const { data: nugetFiles } = await octokit.rest.repos.getContent({
-    //   owner: context.repo.owner,
-    //   repo: context.repo.repo,
-    //   ref: branch,
-    //   path: '*.csproj',
-    // });
+    const { data: nugetFiles } = await octokit.rest.repos.getContent({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      ref: branch,
+      path: '*.csproj',
+    });
 
     
     //output.repository.packages.push(nugetFiles.toString()) || [];
@@ -165,7 +165,7 @@ async function run() {
         //     //     license: '',
         //     //     sha: commit.sha,
         //     //   }) || 
-        //     // output.nugetPackages.push([]);
+            output.nugetPackages.push();
         //     }
         //   }
     
