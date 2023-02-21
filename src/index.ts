@@ -234,6 +234,7 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import * as fs from 'fs';
+import { promises as fsprom } from 'fs';
 const packageJson = require('../package.json');
 import { OctokitResponse } from '@octokit/types';
 import glob from 'glob';
@@ -266,6 +267,18 @@ interface Repository {
     license: string;
     sha: string;
 }
+
+interface CsprojData {
+    projectName: string;
+    projectPath: string;
+    projectGuid: string;
+    nugetPackages: {
+      packageName: string;
+      version: string;
+      source: string;
+    }[];
+    sources: string[];
+  }
 
 interface NpmPackage {
     repoName: string;
@@ -465,69 +478,134 @@ async function runNPM() {
   
   runNPM();
 
+  async function getCsprojData(dirPath: string): Promise<CsprojData[]> {
+    const csprojPaths = await new Promise<string[]>((resolve, reject) =>
+      glob(`${dirPath}/**/*.csproj`, (err, files) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(files);
+        }
+      })
+    );
+  
+    const csprojData: CsprojData[] = [];
+  
+    for (const path of csprojPaths) {
+      const contents = await fsprom.readFile(path);
+      const data = await xml2js.parseStringPromise(contents).catch((err) => {
+        console.error(`Failed to parse ${path}:`, err);
+        return undefined;
+      });
+  
+      if (!data) {
+        continue;
+      }
+  
+      const projectName = data.Project.PropertyGroup[0].AssemblyName[0];
+      const projectGuid = data.Project.PropertyGroup[0].ProjectGuid[0];
+      const projectPath = path.split('/').slice(0, -1).join('/');
+  
+      const packages = data.Project.ItemGroup.filter(
+        (group: any) => group?.PackageReference
+      )[0]?.PackageReference;
+      const nugetPackages = packages
+        ? packages.map((pkg: any) => ({
+            packageName: pkg.$.Include,
+            version: pkg.$.Version,
+            source: pkg.$.Source,
+          }))
+        : [];
+  
+      const sources = data.Project.ItemGroup.filter(
+        (group: any) => group?.Compile
+      )[0]?.Compile.map((file: any) => `${projectPath}/${file.$.Include}`) ?? [];
+  
+      csprojData.push({
+        projectName,
+        projectGuid,
+        projectPath,
+        nugetPackages,
+        sources,
+      });
+    }
+  
+    return csprojData;
+  }
 
-
-  function findNetProjectDirectories(rootPath: string): string[] {
+    function findNetProjectDirectories(rootPath: string): string[] {
     const csprojFiles = glob.sync('**/*.csproj', { cwd: rootPath, absolute: true });
     const projectDirs = csprojFiles.map((csprojFile: string) => path.dirname(csprojFile));
     return projectDirs;
   }
- 
-  function getCsprojFiles(dirPath: string): string[] {
-    const files = fs.readdirSync(dirPath);
-    const csprojFiles = files.filter(file => path.extname(file) === '.csproj');
-    return csprojFiles.map(file => path.join(dirPath, file));
-  }
-  
-  function getSources(csprojPath: string): string[] {
-    const data = fs.readFileSync(csprojPath, 'utf-8');
-    const parser = new xml2js.Parser();
-    let sources: string[] = [];
-    parser.parseString(data, (err: any, result: any) => {
-      if (err) {
-        throw new Error(`Error parsing XML: ${err}`);
-      }
-      const project = result.Project;
-      sources = project.ItemGroup[0].Compile.map((file: any) => file.$.Include);
-    });
-    return sources;
-  }
-  
-  function getNugetPackages(csprojPath: string): NugetPackage[] {
-    const data = fs.readFileSync(csprojPath, 'utf-8');
-    const parser = new xml2js.Parser();
-    let packages: NugetPackage[] = [];
-    parser.parseString(data, (err: any, result: any) => {
-      if (err) {
-        throw new Error(`Error parsing XML: ${err}`);
-      }
-      const project = result.Project;
-      if (project.ItemGroup && project.ItemGroup[0].PackageReference) {
-        packages = project.ItemGroup[0].PackageReference.map((pkg: any) => ({
-          name: pkg.$.Include,
-          version: pkg.$.Version,
-          source: pkg.$.Source,
-        }));
-      }
-    });
-    return packages;
-  }
-  
-  function getProjectsInfo(dirPath: string): NugetProject[] {
-    const csprojFiles = getCsprojFiles(dirPath);
-    const projects = csprojFiles.map(csprojPath => {
-      const projectName = path.basename(csprojPath, '.csproj');
-      const sources = getSources(csprojPath);
-      const packages = getNugetPackages(csprojPath);
-      return { name: projectName, sources, packages };
-    });
-    return projects;
-  }
 
   let paths = findNetProjectDirectories('../')
-  paths.forEach(element => {
-    getProjectsInfo(element)
-  });
+    paths.forEach(element => {
+        getCsprojData(element)
+    });
+ 
+
+//   function findNetProjectDirectories(rootPath: string): string[] {
+//     const csprojFiles = glob.sync('**/*.csproj', { cwd: rootPath, absolute: true });
+//     const projectDirs = csprojFiles.map((csprojFile: string) => path.dirname(csprojFile));
+//     return projectDirs;
+//   }
+ 
+//   function getCsprojFiles(dirPath: string): string[] {
+//     const files = fs.readdirSync(dirPath);
+//     const csprojFiles = files.filter(file => path.extname(file) === '.csproj');
+//     return csprojFiles.map(file => path.join(dirPath, file));
+//   }
+  
+//   function getSources(csprojPath: string): string[] {
+//     const data = fs.readFileSync(csprojPath, 'utf-8');
+//     const parser = new xml2js.Parser();
+//     let sources: string[] = [];
+//     parser.parseString(data, (err: any, result: any) => {
+//       if (err) {
+//         throw new Error(`Error parsing XML: ${err}`);
+//       }
+//       const project = result.Project;
+//       sources = project.ItemGroup[0].Compile.map((file: any) => file.$.Include);
+//     });
+//     return sources;
+//   }
+  
+//   function getNugetPackages(csprojPath: string): NugetPackage[] {
+//     const data = fs.readFileSync(csprojPath, 'utf-8');
+//     const parser = new xml2js.Parser();
+//     let packages: NugetPackage[] = [];
+//     parser.parseString(data, (err: any, result: any) => {
+//       if (err) {
+//         throw new Error(`Error parsing XML: ${err}`);
+//       }
+//       const project = result.Project;
+//       if (project.ItemGroup && project.ItemGroup[0].PackageReference) {
+//         packages = project.ItemGroup[0].PackageReference.map((pkg: any) => ({
+//           name: pkg.$.Include,
+//           version: pkg.$.Version,
+//           source: pkg.$.Source,
+//         }));
+//       }
+//     });
+//     return packages;
+//   }
+  
+//   function getProjectsInfo(dirPath: string): NugetProject[] {
+//     const csprojFiles = getCsprojFiles(dirPath);
+//     const projects = csprojFiles.map(csprojPath => {
+//       const projectName = path.basename(csprojPath, '.csproj');
+//       const sources = getSources(csprojPath);
+//       const packages = getNugetPackages(csprojPath);
+//       return { name: projectName, sources, packages };
+//     });
+//     return projects;
+//   }
+
+//   let paths = findNetProjectDirectories('../')
+//   paths.forEach(element => {
+//     getProjectsInfo(element)
+//   });
   
 
 // =====================================================================
