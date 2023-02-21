@@ -150,9 +150,9 @@ async function run() {
         ref: branch,
         path: '*.csproj',
       });
-
-      core.info(nugetFiles.toString());
-      output.nugetPackages = nugetFiles.toLocaleString();
+      output.nugetPackages = " ";
+    //   core.info(nugetFiles.toString());
+    //   output.nugetPackages = nugetFiles.toLocaleString();
       
     // for (const file of nugetFiles as any[]) {
     //     const { data: nugetInfo } = await octokit.rest.repos.getContent({
