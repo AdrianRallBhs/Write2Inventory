@@ -27,8 +27,8 @@ interface NpmPackage {
 
 interface NugetPackage {
   repoName: string;
-//   packageName: string;
-//   version: string;
+  packageName: string;
+  version: string;
   license: string;
   sha: string;
 }
@@ -44,6 +44,7 @@ interface Output {
   //npmPackages: NpmPackage[];
   npmPackages: string;
 //   nugetPackages: NugetPackage[];
+  nugetPackages: string;
   //submodules: Submodule[];
 }
 
@@ -71,8 +72,9 @@ async function run() {
         sha: commit.sha,
       },
     //   npmPackages: [],
-    npmPackages: ''
+    npmPackages: '',
     //  nugetPackages: [],
+    nugetPackages: '',
       //submodules: [],
     };
     
@@ -94,7 +96,7 @@ async function run() {
         owner: context.repo.owner.toString(),
         repo: context.repo.repo.toString(),
         ref: branch.toString(),
-        path: 'package.json',
+        path: '*package.json',
       });
     
     
@@ -142,13 +144,15 @@ async function run() {
 
 
     // Get NuGet packages
-    // const { data: nugetFiles } = await octokit.rest.repos.getContent({
-    //     owner: context.repo.owner,
-    //     repo: context.repo.repo,
-    //     ref: branch,
-    //     path: '*.csproj',
-    //   });
+    const { data: nugetFiles } = await octokit.rest.repos.getContent({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        ref: branch,
+        path: '*.csproj',
+      });
 
+      core.info(nugetFiles.toLocaleString())
+      output.nugetPackages = nugetFiles.toLocaleString();
       
     // for (const file of nugetFiles as any[]) {
     //     const { data: nugetInfo } = await octokit.rest.repos.getContent({
