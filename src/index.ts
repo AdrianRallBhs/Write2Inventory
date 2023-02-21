@@ -175,13 +175,13 @@ async function run() {
         // while ((match = packageNameRegex.exec(nugetContent))) {
         //   const [, packageName, version] = match;
         //original: output.nugetPackages.push({
-        // output.nugetPackages.push({
-        //     repoName: repo,
-        //     packageName,
-        //     version,
-        //     license: '',
-        //     sha: commit.sha,
-        // })
+        output.nugetPackages.push({
+            repoName: repo,
+            packageName,
+            version,
+            license: '',
+            sha: commit.sha,
+        }).toString()
     // }
     //   }
 
