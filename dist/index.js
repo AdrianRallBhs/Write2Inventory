@@ -203,6 +203,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //     }
 // }
 // run();
+// ===========================================================
 const core = __importStar(require("@actions/core"));
 const github = __importStar(require("@actions/github"));
 const fs = __importStar(require("fs"));
@@ -229,7 +230,7 @@ function run() {
             },
             npmPackages: [],
             // npmPackages: '',
-            //nugetPackages: [],
+            nugetPackages: [],
             //nugetPackages: '',
             //submodules: [],
             //   submodules: '',
@@ -248,29 +249,29 @@ function run() {
             ref: branch,
             path: 'package.json',
         });
-        for (const packageFile of packageFiles) {
-            const { data: packageInfo } = yield octokit.rest.repos.getContent({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: branch,
-                path: packageFile.path,
-            });
-            const packageData = JSON.parse(Buffer.from(packageFile.content, 'base64').toString());
-            const somePackage = {
-                name: packageData.name,
-                version: packageData.version,
-                license: packageData.license || '',
-                sha: commit.sha,
-            };
-            output.repository.packages.push(somePackage);
-            output.npmPackages.push({
-                repoName: repo,
-                packageName: packageData.name,
-                version: packageData.version,
-                license: packageData.license || '',
-                sha: commit.sha,
-            });
-        }
+        //   const packageFiles: { path: string }[] = await getPackageFiles();
+        if (packageFiles != undefined)
+            for (const packageFile of packageFiles) {
+                const { data: packageInfo } = yield octokit.rest.repos.getContent({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    ref: branch,
+                    path: packageFile.path,
+                });
+                const packageData = JSON.parse(Buffer.from(packageFile.content, 'base64').toString());
+                const somePackage = {
+                    name: packageData.name,
+                    version: packageData.version,
+                    license: packageData.license || '',
+                    sha: commit.sha,
+                };
+                output.repository.packages.push(somePackage);
+                output.npmPackages.push({
+                    repoName: repo,
+                    packageName: packageData.name,
+                    version: packageData.version,
+                });
+            }
         //output.repository.packages.push(nugetFiles.toString()) || [];
         // Get NuGet packages
         // const { data: nugetFiles } = await octokit.rest.repos.getContent({
@@ -299,8 +300,6 @@ function run() {
         //     repoName: repo,
         //     // packageName,
         //     // version,
-        //     license: '',
-        //     sha: commit.sha,
         //   }) 
         // }
         //   }
@@ -334,3 +333,7 @@ function run() {
     });
 }
 run();
+function fetch(apiUrl) {
+    throw new Error('Function not implemented.');
+}
+// =====================================================================
