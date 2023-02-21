@@ -154,7 +154,7 @@ async function run() {
     //   core.info(nugetFiles.toString());
     //   output.nugetPackages = nugetFiles.toLocaleString();
 
-    for (const file of nugetFiles as any[]) {
+    // for (const file of nugetFiles as any[]) {
         const { data: nugetInfo } = await octokit.rest.repos.getContent({
             owner: context.repo.owner,
             repo: context.repo.repo,
@@ -181,7 +181,7 @@ async function run() {
         //     license: '',
         //     sha: commit.sha,
         // })
-    }
+    // }
     //   }
 
 
