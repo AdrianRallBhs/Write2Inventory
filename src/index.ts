@@ -336,31 +336,32 @@ core.info((Array.of (packageFiles)).toString());
 core.info(typeof(packageFiles))
 
 // if(packageFiles != undefined)
-//    for (const packageFile of packageFiles as any[]) {
-//     const { data: packageInfo } = await octokit.rest.repos.getContent({
-//       owner: context.repo.owner,
-//       repo: context.repo.repo,
-//       ref: branch,
-//       path: packageFile.path,
-//     });
+const packageFilesArray = Object.values(packageFiles);
+for (const packageFile of packageFilesArray) {
+    const { data: packageInfo } = await octokit.rest.repos.getContent({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      ref: branch,
+      path: packageFile.path,
+    });
   
-//     const packageData = JSON.parse(Buffer.from(packageFile.content, 'base64').toString());
+    const packageData = JSON.parse(Buffer.from(packageFile.content, 'base64').toString());
   
-//     const somePackage: Packages = {
-//       name: packageData.name,
-//       version: packageData.version,
-//       license: packageData.license || '',
-//       sha: commit.sha,
-//     };
+    const somePackage: Packages = {
+      name: packageData.name,
+      version: packageData.version,
+      license: packageData.license || '',
+      sha: commit.sha,
+    };
   
-//     output.repository.packages.push(somePackage);
-//     output.npmPackages.push({
-//       repoName: repo,
-//       packageName: packageData.name,
-//       version: packageData.version,
+    output.repository.packages.push(somePackage);
+    output.npmPackages.push({
+      repoName: repo,
+      packageName: packageData.name,
+      version: packageData.version,
 
-//     });
-//   }
+    });
+  }
 
 
 
