@@ -30,6 +30,9 @@ jobs:
       # npm ci == npm install but gives feedback if not up-to-date
         run: npm ci
 
+      - name: Build
+        run: npm run build
+
 
       - name: Generate Report
         uses: ./
