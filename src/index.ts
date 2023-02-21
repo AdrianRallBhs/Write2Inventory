@@ -26,7 +26,7 @@ interface Repository {
 // }
 
 interface NugetPackage {
-//   repoName: string;
+  repoName: string;
 // //   packageName: string;
 // //   version: string;
 //   license: string;
@@ -158,14 +158,14 @@ async function run() {
         //     // while ((match = packageNameRegex.exec(nugetContent))) {
         //     //   const [, packageName, version] = match;
         //     // original: output.nugetPackages.push({
-        //     //   output.nugetPackages.push({
-        //     //     repoName: repo,
-        //     //     // packageName,
-        //     //     // version,
-        //     //     license: '',
-        //     //     sha: commit.sha,
-        //     //   }) || 
-            output.nugetPackages.push();
+              output.nugetPackages.push({
+                repoName: repo,
+                // packageName,
+                // version,
+                // license: '',
+                // sha: commit.sha,
+              }) || 
+
         //     }
         //   }
     
