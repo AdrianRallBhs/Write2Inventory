@@ -150,7 +150,8 @@ async function run() {
             });
         
         
-            // const nugetContent = Buffer.from(nugetInfo.toString(), 'base64').toString();
+            const nugetContent = Buffer.from(nugetInfo.toString(), 'base64').toString();
+            core.info(nugetContent)
             // const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
             // let match;
           
@@ -164,7 +165,7 @@ async function run() {
             //     license: '',
             //     sha: commit.sha,
             //   }) || 
-            output.nugetPackages.push([]);
+            // output.nugetPackages.push([]);
             }
         //   }
     
