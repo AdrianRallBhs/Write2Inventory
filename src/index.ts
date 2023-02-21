@@ -47,7 +47,7 @@ interface Output {
 }
 
 
-core.info("Hello World")
+console.log("Hello World")
 
 // async function run() {
 //   try {

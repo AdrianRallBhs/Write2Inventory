@@ -4,7 +4,7 @@ author: 'ARall'
 branding:
   icon: 'check'
   color: 'green'
-inputs:
+# inputs:
   # github-token:
   #   description: 'GitHub token'
   #   required: false
