@@ -350,21 +350,21 @@ async function run() {
             });
 
             const packageData = JSON.parse(Buffer.from([packageInfo].keys.toString(), 'base64').toString());
+            core.info(packageData)
+            // const somePackage: Packages = {
+            //     name: packageData.name,
+            //     version: packageData.version,
+            //     license: packageData.license || '',
+            //     sha: commit.sha,
+            // };
 
-            const somePackage: Packages = {
-                name: packageData.name,
-                version: packageData.version,
-                license: packageData.license || '',
-                sha: commit.sha,
-            };
+            // output.repository.packages.push(somePackage);
+            // output.npmPackages.push({
+            //     repoName: repo,
+            //     packageName: packageData.name,
+            //     version: packageData.version,
 
-            output.repository.packages.push(somePackage);
-            output.npmPackages.push({
-                repoName: repo,
-                packageName: packageData.name,
-                version: packageData.version,
-
-            });
+            // });
         }
     }
     else {
