@@ -140,7 +140,7 @@ async function run() {
         owner: context.repo.owner,
         repo: context.repo.repo,
         ref: branch,
-        path: '*/*.csproj',
+        path: '*.csproj',
       });
 
       
