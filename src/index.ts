@@ -99,10 +99,10 @@ async function run() {
 // try {
     // for (const file of packageFiles as any[]) {
     //     const { data: packageInfo } = await octokit.rest.repos.getContent({
-    //       owner: context.repo.owner.toString(),
-    //       repo: context.repo.repo.toString(),
-    //       ref: branch.toString(),
-    //       path: file.path.ToString(),
+    //       owner: context.repo.owner,
+    //       repo: context.repo.repo,
+    //       ref: branch,
+    //       path: file.path,
     //     });
   
     //     const packageData = JSON.parse(Buffer.from(packageInfo.toString(), 'base64').toString());
@@ -133,7 +133,7 @@ async function run() {
     
     //output.repository.packages.push(nugetFiles.toString()) || [];
        
-try {
+
 
     // Get NuGet packages
     const { data: nugetFiles } = await octokit.rest.repos.getContent({
@@ -172,9 +172,7 @@ try {
         // }
       }
 
-} catch (e) {
-    core.setFailed("Error in nuget")
-}
+
         
       
   
