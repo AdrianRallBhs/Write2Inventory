@@ -57,8 +57,9 @@ function run() {
                 sha: commit.sha,
             },
             //   npmPackages: [],
-            npmPackages: ''
+            npmPackages: '',
             //  nugetPackages: [],
+            nugetPackages: '',
             //submodules: [],
         };
         // Get repository info
@@ -77,7 +78,7 @@ function run() {
         });
         // try {
         core.info(packageFiles.toString());
-        output.npmPackages = packageFiles.toString();
+        output.npmPackages = packageFiles.toLocaleString();
         // for (const file of packageFiles as any[]) {
         //     const { data: packageInfo } = await octokit.rest.repos.getContent({
         //       owner: context.repo.owner,
@@ -108,33 +109,36 @@ function run() {
         // }
         //output.repository.packages.push(nugetFiles.toString()) || [];
         // Get NuGet packages
-        // const { data: nugetFiles } = await octokit.rest.repos.getContent({
-        //     owner: context.repo.owner,
-        //     repo: context.repo.repo,
-        //     ref: branch,
-        //     path: '*.csproj',
-        //   });
-        // for (const file of nugetFiles as any[]) {
-        //     const { data: nugetInfo } = await octokit.rest.repos.getContent({
-        //       owner: context.repo.owner,
-        //       repo: context.repo.repo,
-        //       ref: branch,
-        //       path: file.path,
-        //     });
-        // const nugetContent = Buffer.from(nugetInfo.ToString(), 'base64').toString();
-        // const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
-        // let match;
-        // // while ((match = packageNameRegex.exec(nugetContent))) {
-        // //   const [, packageName, version] = match;
-        // //original: output.nugetPackages.push({
-        //   output.nugetPackages.push({
-        //     repoName: repo,
-        //     // packageName,
-        //     // version,
-        //     license: '',
-        //     sha: commit.sha,
-        //   }) 
-        // }
+        const { data: nugetFiles } = yield octokit.rest.repos.getContent({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: branch,
+            path: 'README.md',
+        });
+        //   core.info(nugetFiles.toString());
+        //   output.nugetPackages = nugetFiles.toLocaleString();
+        for (const file of nugetFiles) {
+            const { data: nugetInfo } = yield octokit.rest.repos.getContent({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: branch,
+                path: file.path,
+            });
+            // const nugetContent = Buffer.from(nugetInfo, 'base64').toString();
+            core.info(nugetInfo.toString());
+            // const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
+            // let match;
+            // while ((match = packageNameRegex.exec(nugetContent))) {
+            //   const [, packageName, version] = match;
+            //original: output.nugetPackages.push({
+            // output.nugetPackages.push({
+            //     repoName: repo,
+            //     packageName,
+            //     version,
+            //     license: '',
+            //     sha: commit.sha,
+            // })
+        }
         //   }
         //   // Get submodules
         //   const { data: submodules } = await octokit.rest.repos.listSubmodules({

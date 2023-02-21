@@ -150,7 +150,7 @@ async function run() {
         ref: branch,
         path: 'README.md',
     });
-    output.nugetPackages = nugetFiles.toString();
+    
     //   core.info(nugetFiles.toString());
     //   output.nugetPackages = nugetFiles.toLocaleString();
 
@@ -163,7 +163,10 @@ async function run() {
         });
 
 
-        const nugetContent = Buffer.from(nugetInfo.path, 'base64').toString();
+        // const nugetContent = Buffer.from(nugetInfo, 'base64').toString();
+        core.info(nugetInfo.toString())
+        
+
 
         // const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
         // let match;
@@ -171,13 +174,13 @@ async function run() {
         // while ((match = packageNameRegex.exec(nugetContent))) {
         //   const [, packageName, version] = match;
         //original: output.nugetPackages.push({
-        output.nugetPackages.push({
-            repoName: repo,
-            // packageName,
-            // version,
-            license: '',
-            sha: commit.sha,
-        })
+        // output.nugetPackages.push({
+        //     repoName: repo,
+        //     packageName,
+        //     version,
+        //     license: '',
+        //     sha: commit.sha,
+        // })
     }
     //   }
 
