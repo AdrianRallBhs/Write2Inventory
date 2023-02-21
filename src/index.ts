@@ -332,7 +332,7 @@ const { data: packageFiles } = await octokit.rest.repos.getContent({
 
 //   const packageFiles: { path: string }[] = await getPackageFiles();
 const packageFileString = packageFiles.toString();
-core.info(packageFileString)
+core.info((Array.of (packageFiles)).toString());
 core.info(typeof(packageFiles))
 
 // if(packageFiles != undefined)
