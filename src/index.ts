@@ -175,8 +175,8 @@ async function run() {
       // Write output to file
       const outputPath = core.getInput('output-path');
       fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
-    } catch (error) {
-      core.setFailed(error.message);
+    } catch (e) {
+      core.setFailed("Fehler im output path");
     }
   }
   
