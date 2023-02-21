@@ -250,10 +250,10 @@ interface NugetPackage {
 
 interface Output {
     repository: Repository;
-    //npmPackages: NpmPackage[];
-    npmPackages: string;
-    //   nugetPackages: NugetPackage[];
-    nugetPackages: string;
+    npmPackages: NpmPackage[];
+    //npmPackages: string;
+    //    nugetPackages: NugetPackage[];
+    //nugetPackages: string;
     //submodules: Submodule[];
     //   submodules: string;
 }
@@ -281,10 +281,10 @@ async function run() {
             license: '',
             sha: commit.sha,
         },
-        //   npmPackages: [],
-        npmPackages: '',
-        //  nugetPackages: [],
-        nugetPackages: '',
+           npmPackages: [],
+        // npmPackages: '',
+         //nugetPackages: [],
+        //nugetPackages: '',
         //submodules: [],
         //   submodules: '',
     };
@@ -303,50 +303,39 @@ async function run() {
 
 
     // Get npm packages
-    const { data: packageFiles } = await octokit.rest.repos.getContent({
-        owner: context.repo.owner.toString(),
-        repo: context.repo.repo.toString(),
-        ref: branch.toString(),
-        path: 'package.json',
+const { data: packageFiles } = await octokit.rest.repos.getContent({
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    ref: branch,
+    path: 'package.json',
+  });
+  
+  for (const packageFile of packageFiles as any[]) {
+    const { data: packageInfo } = await octokit.rest.repos.getContent({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      ref: branch,
+      path: packageFile.path,
     });
-
-
-    // try {
-    core.info(packageFiles.toString());
-    output.npmPackages = packageFiles.toLocaleString();
-
-    // for (const file of packageFiles as any[]) {
-    //     const { data: packageInfo } = await octokit.rest.repos.getContent({
-    //       owner: context.repo.owner,
-    //       repo: context.repo.repo,
-    //       ref: branch,
-    //       path: file.path,
-    //     });
-
-    //     const packageData = JSON.parse(Buffer.from(packageInfo.toString(), 'base64').toString());
-    //     core.info(packageInfo.toString());
-    //     core.info(packageData);
-
-    //     const somePackage: Packages = {
-    //       name: packageData.name,
-    //       version: packageData.version,
-    //       license: packageData.license || '',
-    //       sha: commit.sha,
-    //     };
-
-    //     output.repository.packages.push(somePackage);
-    //     output.npmPackages.push({
-    //       repoName: repo,
-    //       packageName: packageData.name,
-    //       version: packageData.version,
-    //       license: packageData.license || '',
-    //       sha: commit.sha,
-    //     });
-    //   }
-    // } catch (error) {
-    //     core.setFailed("Erste For-schleife hat einen Fehler")
-    // }
-
+  
+    const packageData = JSON.parse(Buffer.from(packageFile.content, 'base64').toString());
+  
+    const somePackage: Packages = {
+      name: packageData.name,
+      version: packageData.version,
+      license: packageData.license || '',
+      sha: commit.sha,
+    };
+  
+    output.repository.packages.push(somePackage);
+    output.npmPackages.push({
+      repoName: repo,
+      packageName: packageData.name,
+      version: packageData.version,
+      license: packageData.license || '',
+      sha: commit.sha,
+    });
+  }
 
 
 
@@ -361,7 +350,7 @@ async function run() {
     //     ref: branch,
     //     path: '*.csproj',
     //   });
-    output.nugetPackages = " ";
+    //output.nugetPackages = " ";
     //   core.info(nugetFiles.toString());
     //   output.nugetPackages = nugetFiles.toLocaleString();
 
