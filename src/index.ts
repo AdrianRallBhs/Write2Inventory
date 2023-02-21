@@ -207,6 +207,30 @@
 
 // run();
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ===========================================================
+
+
+
+
+
+
+
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import * as fs from 'fs';
@@ -230,16 +254,12 @@ interface NpmPackage {
     repoName: string;
     packageName: string;
     version: string;
-    license: string;
-    sha: string;
 }
 
 interface NugetPackage {
     repoName: string;
     packageName: string;
     version: string;
-    license: string;
-    sha: string;
 }
 
 // interface Submodule {
@@ -252,7 +272,7 @@ interface Output {
     repository: Repository;
     npmPackages: NpmPackage[];
     //npmPackages: string;
-    //    nugetPackages: NugetPackage[];
+        nugetPackages: NugetPackage[];
     //nugetPackages: string;
     //submodules: Submodule[];
     //   submodules: string;
@@ -283,7 +303,7 @@ async function run() {
         },
            npmPackages: [],
         // npmPackages: '',
-         //nugetPackages: [],
+         nugetPackages: [],
         //nugetPackages: '',
         //submodules: [],
         //   submodules: '',
@@ -300,8 +320,8 @@ async function run() {
 
     output.repository.currentReleaseTag = repository.default_branch;
     output.repository.license = repository.license?.name || '';
-
-
+      
+      
     // Get npm packages
 const { data: packageFiles } = await octokit.rest.repos.getContent({
     owner: context.repo.owner,
@@ -309,8 +329,10 @@ const { data: packageFiles } = await octokit.rest.repos.getContent({
     ref: branch,
     path: 'package.json',
   });
-  
-  for (const packageFile of packageFiles as any[]) {
+
+//   const packageFiles: { path: string }[] = await getPackageFiles();
+if(packageFiles != undefined)
+   for (const packageFile of packageFiles as any[]) {
     const { data: packageInfo } = await octokit.rest.repos.getContent({
       owner: context.repo.owner,
       repo: context.repo.repo,
@@ -332,8 +354,7 @@ const { data: packageFiles } = await octokit.rest.repos.getContent({
       repoName: repo,
       packageName: packageData.name,
       version: packageData.version,
-      license: packageData.license || '',
-      sha: commit.sha,
+
     });
   }
 
@@ -375,8 +396,6 @@ const { data: packageFiles } = await octokit.rest.repos.getContent({
     //     repoName: repo,
     //     // packageName,
     //     // version,
-    //     license: '',
-    //     sha: commit.sha,
     //   }) 
     // }
     //   }
@@ -418,3 +437,11 @@ const { data: packageFiles } = await octokit.rest.repos.getContent({
 
 run();
 
+function fetch(apiUrl: string) {
+    throw new Error('Function not implemented.');
+}
+
+
+
+
+// =====================================================================
