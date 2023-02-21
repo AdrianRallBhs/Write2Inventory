@@ -342,12 +342,12 @@ async function run() {
         const packageFilesArray = Object.values(packageFiles);
         if(packageFilesArray.length != 0) {
         for (const packageFile of packageFilesArray) {
-            const { data: packageInfo } = await octokit.rest.repos.getContent({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: branch,
-                path: packageFile.path,
-            });
+            // const { data: packageInfo } = await octokit.rest.repos.getContent({
+            //     owner: context.repo.owner,
+            //     repo: context.repo.repo,
+            //     ref: branch,
+            //     path: packageFile.path,
+            // });
 
             const packageData = JSON.parse(Buffer.from(packageFile.content, 'base64').toString());
             core.info(packageData)
