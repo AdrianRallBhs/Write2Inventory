@@ -478,60 +478,31 @@ async function runNPM() {
   
   runNPM();
 
-  async function getCsprojData(dirPath: string): Promise<CsprojData[]> {
-    const csprojPaths = await new Promise<string[]>((resolve, reject) =>
-      glob(`${dirPath}/**/*.csproj`, (err, files) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(files);
-        }
-      })
-    );
+  async function getCsprojData(csprojPath: string) {
+    const data = await xml2js.parseStringPromise(fs.readFileSync(csprojPath));
   
-    const csprojData: CsprojData[] = [];
+    const projectName = data.Project.PropertyGroup?.[0]?.AssemblyName?.[0];
+    const sources = data.Project.ItemGroup?.[0]?.Compile?.map((item: any) => item.$.Include) ?? [];
+    const packages = data.Project.ItemGroup?.[0]?.PackageReference?.map((item: any) => ({
+      name: item.$.Include,
+      version: item.$.Version,
+      source: item.$.Source
+    })) ?? [];
   
-    for (const path of csprojPaths) {
-      const contents = await fsprom.readFile(path);
-      const data = await xml2js.parseStringPromise(contents).catch((err) => {
-        console.error(`Failed to parse ${path}:`, err);
-        return undefined;
-      });
+    const owner = github.context.repo.owner;
+    const repoName = github.context.repo.repo;
   
-      if (!data) {
-        continue;
-      }
+    const output = {
+      projectName,
+      sources,
+      packages,
+      repoName,
+      owner
+    };
   
-      const projectName = data.Project.PropertyGroup[0].AssemblyName[0];
-      const projectGuid = data.Project.PropertyGroup[0].ProjectGuid[0];
-      const projectPath = path.split('/').slice(0, -1).join('/');
-  
-      const packages = data.Project.ItemGroup.filter(
-        (group: any) => group?.PackageReference
-      )[0]?.PackageReference;
-      const nugetPackages = packages
-        ? packages.map((pkg: any) => ({
-            packageName: pkg.$.Include,
-            version: pkg.$.Version,
-            source: pkg.$.Source,
-          }))
-        : [];
-  
-      const sources = data.Project.ItemGroup.filter(
-        (group: any) => group?.Compile
-      )[0]?.Compile.map((file: any) => `${projectPath}/${file.$.Include}`) ?? [];
-  
-      csprojData.push({
-        projectName,
-        projectGuid,
-        projectPath,
-        nugetPackages,
-        sources,
-      });
-    }
-  
-    return csprojData;
+    console.log(JSON.stringify(output));
   }
+  
 
     function findNetProjectDirectories(rootPath: string): string[] {
     const csprojFiles = glob.sync('**/*.csproj', { cwd: rootPath, absolute: true });
