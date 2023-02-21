@@ -48,7 +48,6 @@ interface Output {
 
 
 async function run() {
-  try {
     const token = core.getInput('github-token');
     const octokit = github.getOctokit(token);
 
@@ -195,10 +194,6 @@ try {
       } catch (error) {
         core.setFailed("WriteFileSync ist falsch")
       }
-     
-    } catch (e) {
-      core.setFailed(Error);
-    }
   }
   
   run();
