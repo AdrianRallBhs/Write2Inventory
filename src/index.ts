@@ -337,6 +337,9 @@ core.info(typeof(packageFiles))
 
 // if(packageFiles != undefined)
 const packageFilesArray = Object.values(packageFiles);
+if(packageFilesArray != undefined) {
+
+
 for (const packageFile of packageFilesArray) {
     const { data: packageInfo } = await octokit.rest.repos.getContent({
       owner: context.repo.owner,
@@ -362,7 +365,9 @@ for (const packageFile of packageFilesArray) {
 
     });
   }
-
+} else {
+    core.info("array is undefined");
+}
 
 
     //output.repository.packages.push(nugetFiles.toString()) || [];
