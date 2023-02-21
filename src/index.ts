@@ -258,6 +258,15 @@ interface NpmPackage {
     version: string;
 }
 
+interface NugetPackage {
+    name: string;
+    version: string;
+    source: string;
+    repoName: string;
+    owner: string;
+  }
+  
+
 // interface NugetPackage {
 //     repoName: string;
 //     packageName: string;
@@ -442,18 +451,8 @@ async function runNPM() {
   runNPM();
 
 
-
-
-  interface NugetPackage {
-    name: string;
-    version: string;
-    source: string;
-    repoName: string;
-    owner: string;
-  }
-  
   async function runNuget() {
-    try {
+    
       // Get inputs
       const token = core.getInput('token', { required: true });
       const owner = github.context.repo.owner;
@@ -502,10 +501,8 @@ async function runNPM() {
   
       // Print the Nuget packages in JSON format
       core.setOutput('nuget-packages', JSON.stringify(nugetPackages));
-    } catch (e) {
-      core.setFailed("Error in nuget-part");
-    }
-  }
+    } 
+  
   
   runNuget();
 
