@@ -26,7 +26,7 @@ interface NpmPackage {
     sha: string;
 }
 
-interface NpmPackage extends Array<NpmPackage>{}
+// interface NpmPackage extends Array<NpmPackage>{}
 
 interface NugetPackage {
     repoName: string;
@@ -59,6 +59,7 @@ async function run() {
 
     const context = github.context;
     const repo = context.payload.repository?.full_name || '';
+    const pathOfPackageLock: string = './package-lock.json';
 
     const branch = core.getInput('branch-name');
     const { data: commit } = await octokit.rest.repos.getCommit({
@@ -100,16 +101,16 @@ async function run() {
         owner: context.repo.owner,
         repo: context.repo.repo,
         ref: branch,
-        path: 'package-lock.json',
+        path: pathOfPackageLock,
     });
+
+    
 
 
     // try {
-    //core.info(packageFiles.toString());
-    
+    //core.info(packageFiles.toString()) 
   
-    //for (const file of packageFiles as any[]) {
-        
+    for (const file of packageFiles as any[]) {
             const { data: packageInfo } = await octokit.rest.repos.getContent({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -118,30 +119,27 @@ async function run() {
               path: 'package-lock.json',
               }); 
 
-    
-        //const packageData = JSON.parse(Buffer.from(packageInfo.toString(), 'base64').toString());
-        core.info(packageInfo.toString());
-        let object = JSON.parse(packageInfo.toString()).toString()
-        core.info(object)
-    //     core.info(packageData);
+   
+        const packageData = JSON.parse(Buffer.from(packageInfo.toString(), 'base64').toString());
+        core.info(packageData);
 
-    //     const somePackage: Packages = {
-    //       name: packageData.name,
-    //       version: packageData.version,
-    //       license: packageData.license || '',
-    //       sha: commit.sha,
-    //     };
+        const somePackage: Packages = {
+          name: packageData.name,
+          version: packageData.version,
+          license: packageData.license || '',
+          sha: commit.sha,
+        };
         
-    //     output.repository.packages.push(somePackage);
-    //     output.npmPackages.push({
-    //       repoName: repo,
-    //       packageName: packageData.name,
-    //       version: packageData.version,
-    //       license: packageData.license,
-    //       sha: commit.sha,
-    //     });
+        output.repository.packages.push(somePackage);
+        output.npmPackages.push({
+          repoName: repo,
+          packageName: packageData.name,
+          version: packageData.version,
+          license: packageData.license,
+          sha: commit.sha,
+        });
     // });
-    //   }
+      }
     // } catch (error) {
     //     core.setFailed("Erste For-schleife hat einen Fehler")
     // }

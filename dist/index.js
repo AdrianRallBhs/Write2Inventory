@@ -42,6 +42,7 @@ function run() {
         const octokit = github.getOctokit(token);
         const context = github.context;
         const repo = ((_a = context.payload.repository) === null || _a === void 0 ? void 0 : _a.full_name) || '';
+        const pathOfPackageLock = './package-lock.json';
         const branch = core.getInput('branch-name');
         const { data: commit } = yield octokit.rest.repos.getCommit({
             owner: context.repo.owner,
@@ -74,39 +75,36 @@ function run() {
             owner: context.repo.owner,
             repo: context.repo.repo,
             ref: branch,
-            path: 'package-lock.json',
+            path: pathOfPackageLock,
         });
         // try {
-        //core.info(packageFiles.toString());
-        //for (const file of packageFiles as any[]) {
-        const { data: packageInfo } = yield octokit.rest.repos.getContent({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            ref: branch,
-            //   path: file.path,
-            path: 'package-lock.json',
-        });
-        //const packageData = JSON.parse(Buffer.from(packageInfo.toString(), 'base64').toString());
-        core.info(packageInfo.toString());
-        let object = JSON.parse(packageInfo.toString()).toString();
-        core.info(object);
-        //     core.info(packageData);
-        //     const somePackage: Packages = {
-        //       name: packageData.name,
-        //       version: packageData.version,
-        //       license: packageData.license || '',
-        //       sha: commit.sha,
-        //     };
-        //     output.repository.packages.push(somePackage);
-        //     output.npmPackages.push({
-        //       repoName: repo,
-        //       packageName: packageData.name,
-        //       version: packageData.version,
-        //       license: packageData.license,
-        //       sha: commit.sha,
-        //     });
-        // });
-        //   }
+        //core.info(packageFiles.toString()) 
+        for (const file of packageFiles) {
+            const { data: packageInfo } = yield octokit.rest.repos.getContent({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: branch,
+                //   path: file.path,
+                path: 'package-lock.json',
+            });
+            const packageData = JSON.parse(Buffer.from(packageInfo.toString(), 'base64').toString());
+            core.info(packageData);
+            const somePackage = {
+                name: packageData.name,
+                version: packageData.version,
+                license: packageData.license || '',
+                sha: commit.sha,
+            };
+            output.repository.packages.push(somePackage);
+            output.npmPackages.push({
+                repoName: repo,
+                packageName: packageData.name,
+                version: packageData.version,
+                license: packageData.license,
+                sha: commit.sha,
+            });
+            // });
+        }
         // } catch (error) {
         //     core.setFailed("Erste For-schleife hat einen Fehler")
         // }
