@@ -508,6 +508,35 @@ async function runNPM() {
   }
 
   findALLCSPROJmodules();
+
+  const csproj = findALLCSPROJmodules();
+
+xml2js.parseString(csproj, (err, result) => {
+  if (err) {
+    throw err;
+  }
+  
+  const packages = result.Project.ItemGroup
+    .filter((item: { PackageReference: any; }) => item.PackageReference)
+    .map((item: { PackageReference: any; }) => item.PackageReference)
+    .flat();
+  
+  const packageInfo = packages.map((Nugetpackage: { $: { Include: any; Version: any; TargetFramework: any; Id: any; }; Description: any[]; Authors: any[]; ProjectUrl: any[]; LicenseUrl: any[]; IconUrl: any[]; Dependency: any; }) => ({
+    name: Nugetpackage.$.Include,
+    version: Nugetpackage.$.Version,
+    targetFramework: Nugetpackage.$.TargetFramework,
+    id: Nugetpackage.$.Id,
+    description: Nugetpackage.Description[0],
+    authors: Nugetpackage.Authors[0],
+    projectUrl: Nugetpackage.ProjectUrl[0],
+    licenseUrl: Nugetpackage.LicenseUrl[0],
+    iconUrl: Nugetpackage.IconUrl[0],
+    dependencies: Nugetpackage.Dependency,
+  }));
+  
+  console.log(packageInfo);
+  core.info(packageInfo)
+});
  
 
 //   function findNetProjectDirectories(rootPath: string): string[] {
