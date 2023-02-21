@@ -332,11 +332,12 @@ async function run() {
 
     //   const packageFiles: { path: string }[] = await getPackageFiles();
     const packageFileString = packageFiles.toString();
-    core.info((Array.of(packageFiles)).toString());
+    core.info(`Array of packageFiles ${(Array.of(packageFiles)).toString()}`);
     core.info(typeof (packageFiles))
 
     if (packageFiles != undefined) {
         const packageFilesArray = Object.values(packageFiles);
+        if(packageFilesArray.length != 0) {
         for (const packageFile of packageFilesArray) {
             const { data: packageInfo } = await octokit.rest.repos.getContent({
                 owner: context.repo.owner,
@@ -362,6 +363,10 @@ async function run() {
 
             });
         }
+    }
+    else {
+        core.info("Array is empty");
+    }
     } else {
         core.info("packageFiles is undefined");
     }
@@ -388,8 +393,8 @@ async function run() {
     core.info(typeof (nugetFiles))
 
     if (nugetFiles != undefined) {
-
         const packageFilesArray = Object.values(nugetFiles);
+        if(packageFilesArray.length != 0) {
         for (const file of packageFilesArray) {
             const { data: nugetInfo } = await octokit.rest.repos.getContent({
                 owner: context.repo.owner,
@@ -413,6 +418,10 @@ async function run() {
                 })
             }
         }
+                    
+    } else {
+        core.info("Array2 leer");
+    }
     } else {
         core.info("NugetFile is undefined")
     }
