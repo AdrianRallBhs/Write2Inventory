@@ -38,9 +38,9 @@ jobs:
 
       - name: Generate Report
         uses: ./
-        # id: report
+        id: report
         # Replace with the path to the directory containing the action
-        # with:
-          # github-token: ${{ secrets.GITHUB_TOKEN }}
-          # branch-name: ${{ github.ref }}
-          # output-path: report.json
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          branch-name: ${{ github.ref }}
+          output-path: report.json

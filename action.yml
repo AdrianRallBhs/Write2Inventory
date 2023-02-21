@@ -16,7 +16,7 @@ inputs:
   output-path:
     description: 'Path to output JSON file'
     required: false
-    default: ./output
+    default: report.json
 
 runs:
   using: 'node16'
