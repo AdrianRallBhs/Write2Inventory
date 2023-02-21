@@ -121,7 +121,7 @@ async function run() {
     
         //const packageData = JSON.parse(Buffer.from(packageInfo.toString(), 'base64').toString());
         core.info(packageInfo.toString());
-        let object = JSON.parse(packageInfo.toString())
+        let object = JSON.parse(packageInfo.toString()).toString()
         core.info(object)
     //     core.info(packageData);
 
