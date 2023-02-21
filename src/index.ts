@@ -104,16 +104,22 @@ async function run() {
     // try {
     //core.info(packageFiles.toString());
     
+  
+    //for (const file of packageFiles as any[]) {
+        
 
-    for (const file of packageFiles as any[]) {
-        const { data: packageInfo } = await octokit.rest.repos.getContent({
-          owner: context.repo.owner,
-          repo: context.repo.repo,
-          ref: branch,
-        //   path: file.path,
-        path: file.path,
-        });
+        let file = packageFiles;
+        file = file as any[]; 
+        file.forEach(async element => {
+            const { data: packageInfo } = await octokit.rest.repos.getContent({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: branch,
+              //   path: file.path,
+              path: element.path,
+              }); 
 
+    
         const packageData = JSON.parse(Buffer.from(packageInfo.toString(), 'base64').toString());
         core.info(packageInfo.toString());
         core.info(packageData);
@@ -124,16 +130,17 @@ async function run() {
           license: packageData.license || '',
           sha: commit.sha,
         };
-
+        
         output.repository.packages.push(somePackage);
         output.npmPackages.push({
           repoName: repo,
           packageName: packageData.name,
           version: packageData.version,
-          license: "packageData.license",
+          license: packageData.license,
           sha: commit.sha,
         });
-      }
+    });
+    //   }
     // } catch (error) {
     //     core.setFailed("Erste For-schleife hat einen Fehler")
     // }
