@@ -190,7 +190,12 @@ try {
   
       // Write output to file
       const outputPath = core.getInput('output-path');
-      fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
+      try {
+        fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
+      } catch (error) {
+        core.setFailed("WriteFileSync ist falsch")
+      }
+     
     } catch (e) {
       core.setFailed("alles falsch");
     }
