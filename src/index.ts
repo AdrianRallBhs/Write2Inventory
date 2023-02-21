@@ -240,6 +240,7 @@ import { OctokitResponse } from '@octokit/types';
 import glob from 'glob';
 import path from 'path';
 import * as xml2js from 'xml2js';
+import * as exec from '@actions/exec'
 
 interface Packages {
     name: string;
@@ -478,42 +479,35 @@ async function runNPM() {
   
   runNPM();
 
-  async function getCsprojData(csprojPath: string) {
-    const data = await xml2js.parseStringPromise(fs.readFileSync(csprojPath));
+  export async function findALLCSPROJmodules(): Promise<string[]> {
+    try {
+      // Checkout the repository including submodules
+      await exec.exec('git', ['submodule', 'update', '--init', '--recursive']);
   
-    const projectName = data.Project.PropertyGroup?.[0]?.AssemblyName?.[0];
-    const sources = data.Project.ItemGroup?.[0]?.Compile?.map((item: any) => item.$.Include) ?? [];
-    const packages = data.Project.ItemGroup?.[0]?.PackageReference?.map((item: any) => ({
-      name: item.$.Include,
-      version: item.$.Version,
-      source: item.$.Source
-    })) ?? [];
+      // Use the `find` command to locate all `csproj` files
+      let csprojFiles = '';
+      const options = {
+        listeners: {
+          stdout: (data: Buffer) => {
+            csprojFiles += data.toString();
+          }
+        }
+      };
+      await exec.exec('find', ['.', '-name', '*.csproj'], options);
   
-    const owner = github.context.repo.owner;
-    const repoName = github.context.repo.repo;
+      // Split the list of `csproj` files into an array of strings
+      const csprojFileList = csprojFiles.trim().split('\n');
   
-    const output = {
-      projectName,
-      sources,
-      packages,
-      repoName,
-      owner
-    };
+      // Output the list of `csproj` files found
+      //core.info(`List of csproj files found: ${csprojFileList}`);
   
-    console.log(JSON.stringify(output));
-  }
-  
-
-    function findNetProjectDirectories(rootPath: string): string[] {
-    const csprojFiles = glob.sync('**/*.csproj', { cwd: rootPath, absolute: true });
-    const projectDirs = csprojFiles.map((csprojFile: string) => path.dirname(csprojFile));
-    return projectDirs;
+      return csprojFileList;
+    } catch {
+      return [];
+    }
   }
 
-  let paths = findNetProjectDirectories('../')
-    paths.forEach(element => {
-        getCsprojData(element)
-    });
+  findALLCSPROJmodules();
  
 
 //   function findNetProjectDirectories(rootPath: string): string[] {
