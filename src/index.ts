@@ -3,34 +3,34 @@ import * as github from '@actions/github';
 import * as fs from 'fs';
 
 interface Packages {
-  name: string;
-  version: string;
-  license: string;
-  sha: string;
+    name: string;
+    version: string;
+    license: string;
+    sha: string;
 }
 
 interface Repository {
-  name: string;
-  packages: Packages[];
-  currentReleaseTag: string;
-  license: string;
-  sha: string;
+    name: string;
+    packages: Packages[];
+    currentReleaseTag: string;
+    license: string;
+    sha: string;
 }
 
 interface NpmPackage {
-  repoName: string;
-  packageName: string;
-  version: string;
-  license: string;
-  sha: string;
+    repoName: string;
+    packageName: string;
+    version: string;
+    license: string;
+    sha: string;
 }
 
 interface NugetPackage {
-  repoName: string;
-  packageName: string;
-  version: string;
-  license: string;
-  sha: string;
+    repoName: string;
+    packageName: string;
+    version: string;
+    license: string;
+    sha: string;
 }
 
 // interface Submodule {
@@ -40,12 +40,12 @@ interface NugetPackage {
 // }
 
 interface Output {
-  repository: Repository;
-  //npmPackages: NpmPackage[];
-  npmPackages: string;
-//   nugetPackages: NugetPackage[];
-  nugetPackages: string;
-  //submodules: Submodule[];
+    repository: Repository;
+    //npmPackages: NpmPackage[];
+    npmPackages: string;
+    //   nugetPackages: NugetPackage[];
+    nugetPackages: string;
+    //submodules: Submodule[];
 }
 
 
@@ -58,51 +58,51 @@ async function run() {
 
     const branch = core.getInput('branch-name');
     const { data: commit } = await octokit.rest.repos.getCommit({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      ref: branch,
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        ref: branch,
     });
 
     const output: Output = {
-      repository: {
-        name: repo,
-        packages: [],
-        currentReleaseTag: '',
-        license: '',
-        sha: commit.sha,
-      },
-    //   npmPackages: [],
-    npmPackages: '',
-    //  nugetPackages: [],
-    nugetPackages: '',
-      //submodules: [],
+        repository: {
+            name: repo,
+            packages: [],
+            currentReleaseTag: '',
+            license: '',
+            sha: commit.sha,
+        },
+        //   npmPackages: [],
+        npmPackages: '',
+        //  nugetPackages: [],
+        nugetPackages: '',
+        //submodules: [],
     };
-    
-    
-        // Get repository info
+
+
+    // Get repository info
     const { data: repository } = await octokit.rest.repos.get({
         owner: context.repo.owner,
         repo: context.repo.repo,
-      });
-    
-    
+    });
+
+
 
     output.repository.currentReleaseTag = repository.default_branch;
     output.repository.license = repository.license?.name || '';
 
-  
-        // Get npm packages
+
+    // Get npm packages
     const { data: packageFiles } = await octokit.rest.repos.getContent({
         owner: context.repo.owner.toString(),
         repo: context.repo.repo.toString(),
         ref: branch.toString(),
         path: 'package.json',
-      });
-    
-    
-// try {
-    core.info(packageFiles.toString());   
-    output.npmPackages = packageFiles.toLocaleString();  
+    });
+
+
+    // try {
+    core.info(packageFiles.toString());
+    output.npmPackages = packageFiles.toLocaleString();
 
     // for (const file of packageFiles as any[]) {
     //     const { data: packageInfo } = await octokit.rest.repos.getContent({
@@ -111,18 +111,18 @@ async function run() {
     //       ref: branch,
     //       path: file.path,
     //     });
-  
+
     //     const packageData = JSON.parse(Buffer.from(packageInfo.toString(), 'base64').toString());
     //     core.info(packageInfo.toString());
     //     core.info(packageData);
-  
+
     //     const somePackage: Packages = {
     //       name: packageData.name,
     //       version: packageData.version,
     //       license: packageData.license || '',
     //       sha: commit.sha,
     //     };
-  
+
     //     output.repository.packages.push(somePackage);
     //     output.npmPackages.push({
     //       repoName: repo,
@@ -132,89 +132,88 @@ async function run() {
     //       sha: commit.sha,
     //     });
     //   }
-// } catch (error) {
-//     core.setFailed("Erste For-schleife hat einen Fehler")
-// }
-    
+    // } catch (error) {
+    //     core.setFailed("Erste For-schleife hat einen Fehler")
+    // }
 
-    
-    
+
+
+
     //output.repository.packages.push(nugetFiles.toString()) || [];
-       
+
 
 
     // Get NuGet packages
-    // const { data: nugetFiles } = await octokit.rest.repos.getContent({
-    //     owner: context.repo.owner,
-    //     repo: context.repo.repo,
-    //     ref: branch,
-    //     path: '*.csproj',
-    //   });
-      output.nugetPackages = " ";
+    const { data: nugetFiles } = await octokit.rest.repos.getContent({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        ref: branch,
+        path: 'README.md',
+    });
+    output.nugetPackages = nugetFiles.toString();
     //   core.info(nugetFiles.toString());
     //   output.nugetPackages = nugetFiles.toLocaleString();
-      
-    // for (const file of nugetFiles as any[]) {
-    //     const { data: nugetInfo } = await octokit.rest.repos.getContent({
-    //       owner: context.repo.owner,
-    //       repo: context.repo.repo,
-    //       ref: branch,
-    //       path: file.path,
-    //     });
-    
-    
-        // const nugetContent = Buffer.from(nugetInfo.ToString(), 'base64').toString();
-       
+
+    for (const file of nugetFiles as any[]) {
+        const { data: nugetInfo } = await octokit.rest.repos.getContent({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: branch,
+            path: file.path,
+        });
+
+
+        const nugetContent = Buffer.from(nugetInfo.ToString(), 'base64').toString();
+
         // const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
         // let match;
-      
-        // // while ((match = packageNameRegex.exec(nugetContent))) {
-        // //   const [, packageName, version] = match;
-        // //original: output.nugetPackages.push({
-        //   output.nugetPackages.push({
-        //     repoName: repo,
-        //     // packageName,
-        //     // version,
-        //     license: '',
-        //     sha: commit.sha,
-        //   }) 
-        // }
+
+        // while ((match = packageNameRegex.exec(nugetContent))) {
+        //   const [, packageName, version] = match;
+        //original: output.nugetPackages.push({
+        output.nugetPackages.push({
+            repoName: repo,
+            // packageName,
+            // version,
+            license: '',
+            sha: commit.sha,
+        })
+    }
     //   }
 
 
-        
-      
-  
+
+
+
     //   // Get submodules
     //   const { data: submodules } = await octokit.rest.repos.listSubmodules({
     //     owner: context.repo.owner,
     //     repo: context.repo.repo,
     //     ref: branch,
     //   });
-  
+
     //   for (const submodule of submodules) {
     //     const { data: submoduleCommit } = await octokit.rest.repos.getCommit({
     //       owner: context.repo.owner,
     //       repo: submodule.name,
     //       ref: submodule.sha,
     //     });
-  
+
     //     output.submodules.push({
     //       repoName: submodule.name,
     //       packageName: submodule.path,
     //       tag: submoduleCommit.sha,
     //     });
     //   }
-  
-      // Write output to file
-      const outputPath = core.getInput('output-path');
-      try {
+
+    // Write output to file
+    const outputPath = core.getInput('output-path');
+    try {
         fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
         core.info(JSON.stringify(output, null, 2))
-      } catch (error) {
+    } catch (error) {
         core.setFailed("WriteFileSync ist falsch")
-      }
-  }
-  
-  run();
-  
+    }
+}
+
+run();
