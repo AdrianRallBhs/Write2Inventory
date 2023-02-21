@@ -379,52 +379,52 @@ async function run() {
 
 
     //Get NuGet packages
-    const { data: nugetFiles } = await octokit.rest.repos.getContent({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        ref: branch,
-        path: '*.csproj',
-    });
+    // const { data: nugetFiles } = await octokit.rest.repos.getContent({
+    //     owner: context.repo.owner,
+    //     repo: context.repo.repo,
+    //     ref: branch,
+    //     path: '*.csproj',
+    // });
 
-    // output.nugetPackages = nugetFiles.toLocaleString();
+    // // output.nugetPackages = nugetFiles.toLocaleString();
 
-    const nugetFileString = nugetFiles.toString();
-    core.info((Array.of(nugetFiles)).toString());
-    core.info(typeof (nugetFiles))
+    // const nugetFileString = nugetFiles.toString();
+    // core.info((Array.of(nugetFiles)).toString());
+    // core.info(typeof (nugetFiles))
 
-    if (nugetFiles != undefined) {
-        const packageFilesArray = Object.values(nugetFiles);
-        if(packageFilesArray.length != 0) {
-        for (const file of packageFilesArray) {
-            const { data: nugetInfo } = await octokit.rest.repos.getContent({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: branch,
-                path: file.path,
-            });
+    // if (nugetFiles != undefined) {
+    //     const packageFilesArray = Object.values(nugetFiles);
+    //     if(packageFilesArray.length != 0) {
+    //     for (const file of packageFilesArray) {
+    //         const { data: nugetInfo } = await octokit.rest.repos.getContent({
+    //             owner: context.repo.owner,
+    //             repo: context.repo.repo,
+    //             ref: branch,
+    //             path: file.path,
+    //         });
 
-            const nugetContent = JSON.parse(Buffer.from(file.content, 'base64').toString());
+    //         const nugetContent = JSON.parse(Buffer.from(file.content, 'base64').toString());
 
-            const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
-            let match;
+    //         const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
+    //         let match;
 
-            while ((match = packageNameRegex.exec(nugetContent))) {
-                const [, packageName, version] = match;
-                //original: output.nugetPackages.push({
-                output.nugetPackages.push({
-                    repoName: repo,
-                    packageName,
-                    version
-                })
-            }
-        }
+    //         while ((match = packageNameRegex.exec(nugetContent))) {
+    //             const [, packageName, version] = match;
+    //             //original: output.nugetPackages.push({
+    //             output.nugetPackages.push({
+    //                 repoName: repo,
+    //                 packageName,
+    //                 version
+    //             })
+    //         }
+    //     }
                     
-    } else {
-        core.info("Array2 leer");
-    }
-    } else {
-        core.info("NugetFile is undefined")
-    }
+    // } else {
+    //     core.info("Array2 leer");
+    // }
+    // } else {
+    //     core.info("NugetFile is undefined")
+    // }
 
 
 
