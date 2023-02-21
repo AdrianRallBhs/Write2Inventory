@@ -156,7 +156,8 @@ async function run() {
           
             // while ((match = packageNameRegex.exec(nugetContent))) {
             //   const [, packageName, version] = match;
-              output.nugetPackages.push({
+            // original: output.nugetPackages.push({
+              output.repository.packages.push({
                 repoName: repo,
                 // packageName,
                 // version,
