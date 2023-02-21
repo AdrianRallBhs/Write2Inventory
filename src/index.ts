@@ -91,9 +91,9 @@ async function run() {
   
         // Get npm packages
     const { data: packageFiles } = await octokit.rest.repos.getContent({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        ref: branch,
+        owner: context.repo.owner.toString(),
+        repo: context.repo.repo.toString(),
+        ref: branch.toString(),
         path: 'package.json',
       });
     

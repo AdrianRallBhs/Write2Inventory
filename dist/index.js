@@ -70,9 +70,9 @@ function run() {
         output.repository.license = ((_b = repository.license) === null || _b === void 0 ? void 0 : _b.name) || '';
         // Get npm packages
         const { data: packageFiles } = yield octokit.rest.repos.getContent({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            ref: branch,
+            owner: context.repo.owner.toString(),
+            repo: context.repo.repo.toString(),
+            ref: branch.toString(),
             path: 'package.json',
         });
         // try {
