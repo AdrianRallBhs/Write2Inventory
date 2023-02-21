@@ -75,21 +75,19 @@ async function run() {
       submodules: [],
     };
     
-    try {
+    
         // Get repository info
     const { data: repository } = await octokit.rest.repos.get({
         owner: context.repo.owner,
         repo: context.repo.repo,
       });
-    } catch (e) {
-        core.setFailed("get repository info falsch")
-    }
+    
     
 
     output.repository.currentReleaseTag = repository.default_branch;
     output.repository.license = repository.license?.name || '';
 
-    try {
+  
         // Get npm packages
     const { data: packageFiles } = await octokit.rest.repos.getContent({
         owner: context.repo.owner,
@@ -97,9 +95,7 @@ async function run() {
         ref: branch,
         path: 'somePackage.json',
       });
-    } catch (e) {
-        core.setFailed("Get npm packages falsch")
-    }
+    
     
 
     for (const file of packageFiles as any[]) {
