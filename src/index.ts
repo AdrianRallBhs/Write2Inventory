@@ -339,9 +339,8 @@ async function run() {
     core.info(typeof (packageFiles))
 
     if (packageFiles != undefined) {
-        const packageFilesArray = Object.values(packageFiles);
-        if(packageFilesArray.length != 0) {
-        for (const packageFile of packageFilesArray) {
+        
+        for (const packageFile of packageFiles as any[]) {
             // const { data: packageInfo } = await octokit.rest.repos.getContent({
             //     owner: context.repo.owner,
             //     repo: context.repo.repo,
@@ -349,7 +348,7 @@ async function run() {
             //     path: packageFile.path,
             // });
 
-            const packageData = JSON.parse(Buffer.from(packageFile.content, 'base64').toString());
+            const packageData = JSON.parse(Buffer.from(packageFile[0], 'base64').toString());
             core.info(packageData)
             // const somePackage: Packages = {
             //     name: packageData.name,
@@ -366,10 +365,7 @@ async function run() {
 
             // });
         }
-    }
-    else {
-        core.info("Array is empty");
-    }
+    
     } else {
         core.info("packageFiles is undefined");
     }
