@@ -454,7 +454,7 @@ async function runNPM() {
   async function runNuget() {
     
       // Get inputs
-      const token = core.getInput('token', { required: true });
+      const token = core.getInput('github-token');
       const owner = github.context.repo.owner;
       const repo = github.context.repo.repo;
   
