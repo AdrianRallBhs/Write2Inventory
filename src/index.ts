@@ -74,23 +74,33 @@ async function run() {
       nugetPackages: [],
       submodules: [],
     };
-
-    // Get repository info
+    
+    try {
+        // Get repository info
     const { data: repository } = await octokit.rest.repos.get({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-    });
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+      });
+    } catch (e) {
+        core.info(e.message)
+    }
+    
 
     output.repository.currentReleaseTag = repository.default_branch;
     output.repository.license = repository.license?.name || '';
 
-    // Get npm packages
+    try {
+        // Get npm packages
     const { data: packageFiles } = await octokit.rest.repos.getContent({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      ref: branch,
-      path: 'somePackage.json',
-    });
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        ref: branch,
+        path: 'somePackage.json',
+      });
+    } catch (e) {
+        core.info(e.message)
+    }
+    
 
     for (const file of packageFiles as any[]) {
       const { data: packageInfo } = await octokit.rest.repos.getContent({
@@ -177,7 +187,7 @@ async function run() {
       const outputPath = core.getInput('output-path');
       fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
     } catch (e) {
-      core.setFailed("Fehler im output path");
+      core.setFailed(e.message);
     }
   }
   
