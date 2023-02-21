@@ -138,31 +138,32 @@ async function run() {
     });
 
     
-        
-        output.repository.packages.push(nugetFiles.toString()) || [];
+    //output.repository.packages.push(nugetFiles.toString()) || [];
+       
 
-        // for (const file of nugetFiles as any[]) {
-        //     const { data: nugetInfo } = await octokit.rest.repos.getContent({
-        //       owner: context.repo.owner,
-        //       repo: context.repo.repo,
-        //       ref: branch,
-        //       path: file.path,
-        //     });
-          
+        for (const file of nugetFiles as any[]) {
+            const { data: nugetInfo } = await octokit.rest.repos.getContent({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: branch,
+              path: file.path,
+            });
+        
+        
         //     const nugetContent = Buffer.from(nugetInfo.toString(), 'base64').toString();
         //     const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
         //     let match;
           
         //     while ((match = packageNameRegex.exec(nugetContent))) {
         //       const [, packageName, version] = match;
-        //       output.nugetPackages.push({
-        //         repoName: repo,
-        //         packageName,
-        //         version,
-        //         license: '',
-        //         sha: commit.sha,
-        //       });
-        //     }
+              output.nugetPackages.push({
+                repoName: repo,
+                packageName,
+                version,
+                license: '',
+                sha: commit.sha,
+              });
+            }
         //   }
     
       
