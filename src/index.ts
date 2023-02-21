@@ -43,7 +43,7 @@ interface Output {
   repository: Repository;
   npmPackages: NpmPackage[];
   nugetPackages: NugetPackage[];
-  submodules: Submodule[];
+  //submodules: Submodule[];
 }
 
 
@@ -72,7 +72,7 @@ async function run() {
       },
       npmPackages: [],
       nugetPackages: [],
-      submodules: [],
+      //submodules: [],
     };
     
     
@@ -167,26 +167,26 @@ try {
     
       
   
-      // Get submodules
-      const { data: submodules } = await octokit.rest.repos.listSubmodules({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        ref: branch,
-      });
+    //   // Get submodules
+    //   const { data: submodules } = await octokit.rest.repos.listSubmodules({
+    //     owner: context.repo.owner,
+    //     repo: context.repo.repo,
+    //     ref: branch,
+    //   });
   
-      for (const submodule of submodules) {
-        const { data: submoduleCommit } = await octokit.rest.repos.getCommit({
-          owner: context.repo.owner,
-          repo: submodule.name,
-          ref: submodule.sha,
-        });
+    //   for (const submodule of submodules) {
+    //     const { data: submoduleCommit } = await octokit.rest.repos.getCommit({
+    //       owner: context.repo.owner,
+    //       repo: submodule.name,
+    //       ref: submodule.sha,
+    //     });
   
-        output.submodules.push({
-          repoName: submodule.name,
-          packageName: submodule.path,
-          tag: submoduleCommit.sha,
-        });
-      }
+    //     output.submodules.push({
+    //       repoName: submodule.name,
+    //       packageName: submodule.path,
+    //       tag: submoduleCommit.sha,
+    //     });
+    //   }
   
       // Write output to file
       const outputPath = core.getInput('output-path');
