@@ -236,6 +236,9 @@ import * as github from '@actions/github';
 import * as fs from 'fs';
 const packageJson = require('../package.json');
 import { OctokitResponse } from '@octokit/types';
+import glob from 'glob';
+import path from 'path';
+import * as xml2js from 'xml2js';
 
 interface Packages {
     name: string;
@@ -243,6 +246,18 @@ interface Packages {
     license: string;
     sha: string;
 }
+
+interface NugetPackage {
+    name: string;
+    version: string;
+    source: string;
+  }
+  
+  interface NugetProject {
+    name: string;
+    sources: string[];
+    packages: NugetPackage[];
+  }
 
 interface Repository {
     name: string;
@@ -451,60 +466,69 @@ async function runNPM() {
   runNPM();
 
 
-  async function runNuget() {
-    
-      // Get inputs
-      const token = core.getInput('github-token');
-      const owner = github.context.repo.owner;
-      const repo = github.context.repo.repo;
-  
-      // Initialize Octokit with authentication token
-      const octokit = github.getOctokit(token);
-  
-      // Get contents of the repository's project file
-      const contents: OctokitResponse<Record<string, any>> = await octokit.rest.repos.getContent({
-        owner,
-        repo,
-        path: 'project-file.csproj'
-      });
-  
-      // Parse the project file contents to find all Nuget packages
-      const projectFileContents = Buffer.from(contents.data.content, 'base64').toString();
-      const packageRegex = /<PackageReference Include="(.*)" Version="(.*)" \/>\n/g;
-      let match: any;
-      const nugetPackages: NugetPackage[] = [];
-      while ((match = packageRegex.exec(projectFileContents)) !== null) {
-        nugetPackages.push({
-          name: match[1],
-          version: match[2],
-          source: '',
-          repoName: repo,
-          owner: owner
-        });
-      }
-  
-      // Get Nuget package sources from nuget.config file
-      const nugetConfig: OctokitResponse<Record<string, any>> = await octokit.rest.repos.getContent({
-        owner,
-        repo,
-        path: 'nuget.config'
-      });
-      const nugetConfigContents = Buffer.from(nugetConfig.data.content, 'base64').toString();
-      const sourceRegex = /<add key="(.*)" value="(.*)" \/>/g;
-      while ((match = sourceRegex.exec(nugetConfigContents)) !== null) {
-        nugetPackages.forEach(pkg => {
-          if (pkg.source === '' && match[1] === 'packageSource' && match[2].indexOf('nuget.org') === -1) {
-            pkg.source = match[2];
-          }
-        });
-      }
-  
-      // Print the Nuget packages in JSON format
-      core.setOutput('nuget-packages', JSON.stringify(nugetPackages));
-    } 
-  
-  
-  runNuget();
 
+  function findNetProjectDirectories(rootPath: string): string[] {
+    const csprojFiles = glob.sync('**/*.csproj', { cwd: rootPath, absolute: true });
+    const projectDirs = csprojFiles.map((csprojFile: string) => path.dirname(csprojFile));
+    return projectDirs;
+  }
+
+  let dirPath = findNetProjectDirectories("../")
+ 
+  function getCsprojFiles(dirPath: string): string[] {
+    const files = fs.readdirSync(dirPath);
+    const csprojFiles = files.filter(file => path.extname(file) === '.csproj');
+    return csprojFiles.map(file => path.join(dirPath, file));
+  }
+  
+  function getSources(csprojPath: string): string[] {
+    const data = fs.readFileSync(csprojPath, 'utf-8');
+    const parser = new xml2js.Parser();
+    let sources: string[] = [];
+    parser.parseString(data, (err: any, result: any) => {
+      if (err) {
+        throw new Error(`Error parsing XML: ${err}`);
+      }
+      const project = result.Project;
+      sources = project.ItemGroup[0].Compile.map((file: any) => file.$.Include);
+    });
+    return sources;
+  }
+  
+  function getNugetPackages(csprojPath: string): NugetPackage[] {
+    const data = fs.readFileSync(csprojPath, 'utf-8');
+    const parser = new xml2js.Parser();
+    let packages: NugetPackage[] = [];
+    parser.parseString(data, (err: any, result: any) => {
+      if (err) {
+        throw new Error(`Error parsing XML: ${err}`);
+      }
+      const project = result.Project;
+      if (project.ItemGroup && project.ItemGroup[0].PackageReference) {
+        packages = project.ItemGroup[0].PackageReference.map((pkg: any) => ({
+          name: pkg.$.Include,
+          version: pkg.$.Version,
+          source: pkg.$.Source,
+        }));
+      }
+    });
+    return packages;
+  }
+  
+  function getProjectsInfo(dirPath: string): NugetProject[] {
+    const csprojFiles = getCsprojFiles(dirPath);
+    const projects = csprojFiles.map(csprojPath => {
+      const projectName = path.basename(csprojPath, '.csproj');
+      const sources = getSources(csprojPath);
+      const packages = getNugetPackages(csprojPath);
+      return { name: projectName, sources, packages };
+    });
+    return projects;
+  }
+
+  dirPath.forEach(element => {
+    getProjectsInfo(element)
+  });
+  
 
 // =====================================================================

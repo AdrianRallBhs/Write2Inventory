@@ -35,6 +35,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 // interface Packages {
 //     name: string;
@@ -208,6 +211,9 @@ const core = __importStar(require("@actions/core"));
 const github = __importStar(require("@actions/github"));
 const fs = __importStar(require("fs"));
 const packageJson = require('../package.json');
+const glob_1 = __importDefault(require("glob"));
+const path_1 = __importDefault(require("path"));
+const xml2js = __importStar(require("xml2js"));
 function run() {
     var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
@@ -339,57 +345,60 @@ function runNPM() {
     });
 }
 runNPM();
-function runNuget() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            // Get inputs
-            const token = core.getInput('token', { required: true });
-            const owner = github.context.repo.owner;
-            const repo = github.context.repo.repo;
-            // Initialize Octokit with authentication token
-            const octokit = github.getOctokit(token);
-            // Get contents of the repository's project file
-            const contents = yield octokit.rest.repos.getContent({
-                owner,
-                repo,
-                path: 'project-file.csproj'
-            });
-            // Parse the project file contents to find all Nuget packages
-            const projectFileContents = Buffer.from(contents.data.content, 'base64').toString();
-            const packageRegex = /<PackageReference Include="(.*)" Version="(.*)" \/>\n/g;
-            let match;
-            const nugetPackages = [];
-            while ((match = packageRegex.exec(projectFileContents)) !== null) {
-                nugetPackages.push({
-                    name: match[1],
-                    version: match[2],
-                    source: '',
-                    repoName: repo,
-                    owner: owner
-                });
-            }
-            // Get Nuget package sources from nuget.config file
-            const nugetConfig = yield octokit.rest.repos.getContent({
-                owner,
-                repo,
-                path: 'nuget.config'
-            });
-            const nugetConfigContents = Buffer.from(nugetConfig.data.content, 'base64').toString();
-            const sourceRegex = /<add key="(.*)" value="(.*)" \/>/g;
-            while ((match = sourceRegex.exec(nugetConfigContents)) !== null) {
-                nugetPackages.forEach(pkg => {
-                    if (pkg.source === '' && match[1] === 'packageSource' && match[2].indexOf('nuget.org') === -1) {
-                        pkg.source = match[2];
-                    }
-                });
-            }
-            // Print the Nuget packages in JSON format
-            core.setOutput('nuget-packages', JSON.stringify(nugetPackages));
+function findNetProjectDirectories(rootPath) {
+    const csprojFiles = glob_1.default.sync('**/*.csproj', { cwd: rootPath, absolute: true });
+    const projectDirs = csprojFiles.map((csprojFile) => path_1.default.dirname(csprojFile));
+    return projectDirs;
+}
+let dirPath = findNetProjectDirectories("../");
+function getCsprojFiles(dirPath) {
+    const files = fs.readdirSync(dirPath);
+    const csprojFiles = files.filter(file => path_1.default.extname(file) === '.csproj');
+    return csprojFiles.map(file => path_1.default.join(dirPath, file));
+}
+function getSources(csprojPath) {
+    const data = fs.readFileSync(csprojPath, 'utf-8');
+    const parser = new xml2js.Parser();
+    let sources = [];
+    parser.parseString(data, (err, result) => {
+        if (err) {
+            throw new Error(`Error parsing XML: ${err}`);
         }
-        catch (e) {
-            core.setFailed("Error in nuget-part");
+        const project = result.Project;
+        sources = project.ItemGroup[0].Compile.map((file) => file.$.Include);
+    });
+    return sources;
+}
+function getNugetPackages(csprojPath) {
+    const data = fs.readFileSync(csprojPath, 'utf-8');
+    const parser = new xml2js.Parser();
+    let packages = [];
+    parser.parseString(data, (err, result) => {
+        if (err) {
+            throw new Error(`Error parsing XML: ${err}`);
+        }
+        const project = result.Project;
+        if (project.ItemGroup && project.ItemGroup[0].PackageReference) {
+            packages = project.ItemGroup[0].PackageReference.map((pkg) => ({
+                name: pkg.$.Include,
+                version: pkg.$.Version,
+                source: pkg.$.Source,
+            }));
         }
     });
+    return packages;
 }
-runNuget();
+function getProjectsInfo(dirPath) {
+    const csprojFiles = getCsprojFiles(dirPath);
+    const projects = csprojFiles.map(csprojPath => {
+        const projectName = path_1.default.basename(csprojPath, '.csproj');
+        const sources = getSources(csprojPath);
+        const packages = getNugetPackages(csprojPath);
+        return { name: projectName, sources, packages };
+    });
+    return projects;
+}
+dirPath.forEach(element => {
+    getProjectsInfo(element);
+});
 // =====================================================================

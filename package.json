@@ -18,7 +18,9 @@
   },
   "homepage": "https://github.com/AdrianRallBhs/Write2Inventory#readme",
   "devDependencies": {
+    "@types/glob": "^8.0.1",
     "@types/node": "^18.14.0",
+    "@types/xml2js": "^0.4.11",
     "typescript": "^4.9.5"
   },
   "dependencies": {
@@ -27,6 +29,8 @@
     "@actions/glob": "^0.4.0",
     "@octokit/rest": "^19.0.7",
     "@octokit/types": "^9.0.0",
-    "fs": "0.0.1-security"
+    "fs": "0.0.1-security",
+    "glob": "^8.1.0",
+    "xml2js": "^0.4.23"
   }
 }
