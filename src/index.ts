@@ -151,15 +151,15 @@ async function run() {
         
         
         //     const nugetContent = Buffer.from(nugetInfo.toString(), 'base64').toString();
-        //     const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
-        //     let match;
+            const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
+            let match;
           
-        //     while ((match = packageNameRegex.exec(nugetContent))) {
-        //       const [, packageName, version] = match;
+            while ((match = packageNameRegex.exec(nugetContent))) {
+              const [, packageName, version] = match;
               output.nugetPackages.push({
                 repoName: repo,
-                // packageName,
-                // version,
+                packageName,
+                version,
                 license: '',
                 sha: commit.sha,
               });
