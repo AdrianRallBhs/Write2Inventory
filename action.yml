@@ -4,13 +4,13 @@ author: 'ARall'
 inputs:
   github-token:
     description: 'GitHub token'
-    required: true
+    required: false
   branch-name:
     description: 'Name of the branch to get information for'
-    required: true
+    required: false
   output-path:
     description: 'Path to output JSON file'
-    required: true
+    required: false
   runs:
   using: 'node16'
   main: 'dist/index.js'
