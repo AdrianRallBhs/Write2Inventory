@@ -137,8 +137,10 @@ async function run() {
       path: '*.csproj',
     });
 
+    
     nugetFiles.forEach(element => {
-        output.repository.packages.push(nugetFiles)
+        let nugetFilesName = element.name
+        output.repository.packages.push(nugetFilesName)
     });
 
         // for (const file of nugetFiles as any[]) {
