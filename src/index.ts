@@ -100,7 +100,7 @@ async function run() {
     
 // try {
     core.info(packageFiles.toString())    
-    output.npmPackages = packageFiles.toString();  
+    output.npmPackages = packageFiles.toLocaleString();  
 
     // for (const file of packageFiles as any[]) {
     //     const { data: packageInfo } = await octokit.rest.repos.getContent({
