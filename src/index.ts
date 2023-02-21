@@ -82,7 +82,7 @@ async function run() {
         repo: context.repo.repo,
       });
     } catch (e) {
-        core.info(e.message)
+        core.setFailed("get repository info falsch")
     }
     
 
@@ -98,7 +98,7 @@ async function run() {
         path: 'somePackage.json',
       });
     } catch (e) {
-        core.info(e.message)
+        core.setFailed("Get npm packages falsch")
     }
     
 
@@ -187,7 +187,7 @@ async function run() {
       const outputPath = core.getInput('output-path');
       fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
     } catch (e) {
-      core.setFailed(e.message);
+      core.setFailed("alles falsch");
     }
   }
   
