@@ -231,9 +231,6 @@
 
 
 
-
-
-
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import * as fs from 'fs';
@@ -275,7 +272,7 @@ interface Output {
     repository: Repository;
     npmPackages: NpmPackage[];
     //npmPackages: string;
-        nugetPackages: NugetPackage[];
+    nugetPackages: NugetPackage[];
     //nugetPackages: string;
     //submodules: Submodule[];
     //   submodules: string;
@@ -304,9 +301,9 @@ async function run() {
             license: '',
             sha: commit.sha,
         },
-           npmPackages: [],
+        npmPackages: [],
         // npmPackages: '',
-         nugetPackages: [],
+        nugetPackages: [],
         //nugetPackages: '',
         //submodules: [],
         //   submodules: '',
@@ -323,97 +320,114 @@ async function run() {
 
     output.repository.currentReleaseTag = repository.default_branch;
     output.repository.license = repository.license?.name || '';
-      
-      
+
+
     // Get npm packages
-const { data: packageFiles } = await octokit.rest.repos.getContent({
-    owner: context.repo.owner,
-    repo: context.repo.repo,
-    ref: branch,
-    path: 'package.json',
-  });
+    const { data: packageFiles } = await octokit.rest.repos.getContent({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        ref: branch,
+        path: 'package.json',
+    });
 
-//   const packageFiles: { path: string }[] = await getPackageFiles();
-const packageFileString = packageFiles.toString();
-core.info((Array.of (packageFiles)).toString());
-core.info(typeof(packageFiles))
+    if(Array.isArray(packageFiles) && packageFiles.length > 0 ) {
+        core.info("Length über 0")
+    }
+    //   const packageFiles: { path: string }[] = await getPackageFiles();
+    const packageFileString = packageFiles.toString();
+    core.info(`Array of packageFiles ${(Array.of(packageFiles)).toString()}`);
+    core.info(typeof (packageFiles))
 
-if(packageFiles != undefined) {
-    const packageFilesArray = Object.values(packageFiles);
-}else {
-    core.info("packageFiles is undefined")
-}
+    if (packageFiles != undefined) {
+        const packageFilesArray = Object.values(packageFiles);
+        if(packageFilesArray.length != 0) {
+        for (const packageFile of packageFilesArray) {
+            const { data: packageInfo } = await octokit.rest.repos.getContent({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: branch,
+                path: packageFile.path,
+            });
+
+            const packageData = JSON.parse(Buffer.from(packageFile.path, 'base64').toString());
+
+            const somePackage: Packages = {
+                name: packageData.name,
+                version: packageData.version,
+                license: packageData.license || '',
+                sha: commit.sha,
+            };
+
+            output.repository.packages.push(somePackage);
+            output.npmPackages.push({
+                repoName: repo,
+                packageName: packageData.name,
+                version: packageData.version,
+
+            });
+        }
+    }
+    else {
+        core.info("Array is empty");
+    }
+    } else {
+        core.info("packageFiles is undefined");
+    }
 
 
-// for (const packageFile of packageFilesArray) {
-//     const { data: packageInfo } = await octokit.rest.repos.getContent({
-//       owner: context.repo.owner,
-//       repo: context.repo.repo,
-//       ref: branch,
-//       path: packageFile.path,
-//     });
-  
-//     const packageData = JSON.parse(Buffer.from(packageFile.content, 'base64').toString());
-  
-//     const somePackage: Packages = {
-//       name: packageData.name,
-//       version: packageData.version,
-//       license: packageData.license || '',
-//       sha: commit.sha,
-//     };
-  
-//     output.repository.packages.push(somePackage);
-//     output.npmPackages.push({
-//       repoName: repo,
-//       packageName: packageData.name,
-//       version: packageData.version,
-
-//     });
-//   }
-// } else {
-//     core.info("array is undefined");
-// }
 
 
     //output.repository.packages.push(nugetFiles.toString()) || [];
 
 
 
-    // Get NuGet packages
+    //Get NuGet packages
     // const { data: nugetFiles } = await octokit.rest.repos.getContent({
     //     owner: context.repo.owner,
     //     repo: context.repo.repo,
     //     ref: branch,
     //     path: '*.csproj',
-    //   });
-    //output.nugetPackages = " ";
-    //   core.info(nugetFiles.toString());
-    //   output.nugetPackages = nugetFiles.toLocaleString();
+    // });
 
-    // for (const file of nugetFiles as any[]) {
-    //     const { data: nugetInfo } = await octokit.rest.repos.getContent({
-    //       owner: context.repo.owner,
-    //       repo: context.repo.repo,
-    //       ref: branch,
-    //       path: file.path,
-    //     });
+    // // output.nugetPackages = nugetFiles.toLocaleString();
 
+    // const nugetFileString = nugetFiles.toString();
+    // core.info((Array.of(nugetFiles)).toString());
+    // core.info(typeof (nugetFiles))
 
-    // const nugetContent = Buffer.from(nugetInfo.ToString(), 'base64').toString();
+    // if (nugetFiles != undefined) {
+    //     const packageFilesArray = Object.values(nugetFiles);
+    //     if(packageFilesArray.length != 0) {
+    //     for (const file of packageFilesArray) {
+    //         const { data: nugetInfo } = await octokit.rest.repos.getContent({
+    //             owner: context.repo.owner,
+    //             repo: context.repo.repo,
+    //             ref: branch,
+    //             path: file.path,
+    //         });
 
-    // const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
-    // let match;
+    //         const nugetContent = JSON.parse(Buffer.from(file.content, 'base64').toString());
 
-    // // while ((match = packageNameRegex.exec(nugetContent))) {
-    // //   const [, packageName, version] = match;
-    // //original: output.nugetPackages.push({
-    //   output.nugetPackages.push({
-    //     repoName: repo,
-    //     // packageName,
-    //     // version,
-    //   }) 
+    //         const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
+    //         let match;
+
+    //         while ((match = packageNameRegex.exec(nugetContent))) {
+    //             const [, packageName, version] = match;
+    //             //original: output.nugetPackages.push({
+    //             output.nugetPackages.push({
+    //                 repoName: repo,
+    //                 packageName,
+    //                 version
+    //             })
+    //         }
+    //     }
+                    
+    // } else {
+    //     core.info("Array2 leer");
     // }
-    //   }
+    // } else {
+    //     core.info("NugetFile is undefined")
+    // }
 
 
 
@@ -455,7 +469,6 @@ run();
 function fetch(apiUrl: string) {
     throw new Error('Function not implemented.');
 }
-
 
 
 
