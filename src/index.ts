@@ -472,8 +472,6 @@ async function runNPM() {
     const projectDirs = csprojFiles.map((csprojFile: string) => path.dirname(csprojFile));
     return projectDirs;
   }
-
-  let dirPath = findNetProjectDirectories("../")
  
   function getCsprojFiles(dirPath: string): string[] {
     const files = fs.readdirSync(dirPath);
@@ -526,7 +524,8 @@ async function runNPM() {
     return projects;
   }
 
-  dirPath.forEach(element => {
+  let paths = findNetProjectDirectories('../')
+  paths.forEach(element => {
     getProjectsInfo(element)
   });
   
