@@ -92,38 +92,41 @@ async function run() {
         owner: context.repo.owner,
         repo: context.repo.repo,
         ref: branch,
-        path: 'package-lock.json',
+        path: '*package-lock.json',
       });
     
     
 // try {
-    for (const file of packageFiles as any[]) {
-        const { data: packageInfo } = await octokit.rest.repos.getContent({
-          owner: context.repo.owner,
-          repo: context.repo.repo,
-          ref: branch,
-          path: file.path,
-        });
+      core.info(packageFiles);
+
+    // for (const file of packageFiles as any[]) {
+    //     const { data: packageInfo } = await octokit.rest.repos.getContent({
+    //       owner: context.repo.owner,
+    //       repo: context.repo.repo,
+    //       ref: branch,
+    //       path: file.path,
+    //     });
   
-        const packageData = JSON.parse(Buffer.from(packageInfo.toString(), 'base64').toString());
-        
+    //     const packageData = JSON.parse(Buffer.from(packageInfo.toString(), 'base64').toString());
+    //     core.info(packageInfo.toString());
+    //     core.info(packageData);
   
-        const somePackage: Packages = {
-          name: packageData.name,
-          version: packageData.version,
-          license: packageData.license || '',
-          sha: commit.sha,
-        };
+    //     const somePackage: Packages = {
+    //       name: packageData.name,
+    //       version: packageData.version,
+    //       license: packageData.license || '',
+    //       sha: commit.sha,
+    //     };
   
-        output.repository.packages.push(somePackage);
-        output.npmPackages.push({
-          repoName: repo,
-          packageName: packageData.name,
-          version: packageData.version,
-          license: packageData.license || '',
-          sha: commit.sha,
-        });
-      }
+    //     output.repository.packages.push(somePackage);
+    //     output.npmPackages.push({
+    //       repoName: repo,
+    //       packageName: packageData.name,
+    //       version: packageData.version,
+    //       license: packageData.license || '',
+    //       sha: commit.sha,
+    //     });
+    //   }
 // } catch (error) {
 //     core.setFailed("Erste For-schleife hat einen Fehler")
 // }
