@@ -197,7 +197,7 @@ try {
       }
      
     } catch (e) {
-      core.setFailed(Error.toString());
+      core.setFailed(Error);
     }
   }
   
