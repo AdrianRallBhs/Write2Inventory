@@ -7,6 +7,7 @@ on:
 
 jobs:
   generate_report:
+    name: Run action
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
