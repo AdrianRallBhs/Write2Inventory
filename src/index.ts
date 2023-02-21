@@ -70,7 +70,7 @@ async function run() {
         sha: commit.sha,
       },
     //   npmPackages: [],
-     // nugetPackages: [],
+     nugetPackages: [],
       //submodules: [],
     };
     
