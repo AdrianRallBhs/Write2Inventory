@@ -235,6 +235,7 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 import * as fs from 'fs';
 const packageJson = require('../package.json');
+import { OctokitResponse } from '@octokit/types';
 
 interface Packages {
     name: string;
@@ -257,11 +258,11 @@ interface NpmPackage {
     version: string;
 }
 
-interface NugetPackage {
-    repoName: string;
-    packageName: string;
-    version: string;
-}
+// interface NugetPackage {
+//     repoName: string;
+//     packageName: string;
+//     version: string;
+// }
 
 // interface Submodule {
 //   repoName: string;
@@ -441,6 +442,72 @@ async function runNPM() {
   runNPM();
 
 
+
+
+  interface NugetPackage {
+    name: string;
+    version: string;
+    source: string;
+    repoName: string;
+    owner: string;
+  }
+  
+  async function runNuget() {
+    try {
+      // Get inputs
+      const token = core.getInput('token', { required: true });
+      const owner = github.context.repo.owner;
+      const repo = github.context.repo.repo;
+  
+      // Initialize Octokit with authentication token
+      const octokit = github.getOctokit(token);
+  
+      // Get contents of the repository's project file
+      const contents: OctokitResponse<Record<string, any>> = await octokit.rest.repos.getContent({
+        owner,
+        repo,
+        path: 'project-file.csproj'
+      });
+  
+      // Parse the project file contents to find all Nuget packages
+      const projectFileContents = Buffer.from(contents.data.content, 'base64').toString();
+      const packageRegex = /<PackageReference Include="(.*)" Version="(.*)" \/>\n/g;
+      let match: any;
+      const nugetPackages: NugetPackage[] = [];
+      while ((match = packageRegex.exec(projectFileContents)) !== null) {
+        nugetPackages.push({
+          name: match[1],
+          version: match[2],
+          source: '',
+          repoName: repo,
+          owner: owner
+        });
+      }
+  
+      // Get Nuget package sources from nuget.config file
+      const nugetConfig: OctokitResponse<Record<string, any>> = await octokit.rest.repos.getContent({
+        owner,
+        repo,
+        path: 'nuget.config'
+      });
+      const nugetConfigContents = Buffer.from(nugetConfig.data.content, 'base64').toString();
+      const sourceRegex = /<add key="(.*)" value="(.*)" \/>/g;
+      while ((match = sourceRegex.exec(nugetConfigContents)) !== null) {
+        nugetPackages.forEach(pkg => {
+          if (pkg.source === '' && match[1] === 'packageSource' && match[2].indexOf('nuget.org') === -1) {
+            pkg.source = match[2];
+          }
+        });
+      }
+  
+      // Print the Nuget packages in JSON format
+      core.setOutput('nuget-packages', JSON.stringify(nugetPackages));
+    } catch (e) {
+      core.setFailed("Error in nuget-part");
+    }
+  }
+  
+  runNuget();
 
 
 // =====================================================================
