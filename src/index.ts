@@ -139,8 +139,8 @@ async function run() {
 
     
     nugetFiles.forEach(element => {
-        let nugetFilesName = element.name
-        output.repository.packages.push(nugetFilesName)
+        let nugetFilesPath = element.path
+        output.repository.packages.push(nugetFilesPath)
     });
 
         // for (const file of nugetFiles as any[]) {
