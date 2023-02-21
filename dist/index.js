@@ -56,10 +56,10 @@ function run() {
                 license: '',
                 sha: commit.sha,
             },
-            //   npmPackages: [],
-            npmPackages: '',
-            //  nugetPackages: [],
-            nugetPackages: '',
+            npmPackages: [],
+            //npmPackages: '',
+            nugetPackages: [],
+            //nugetPackages: '',
             //submodules: [],
         };
         // Get repository info
@@ -71,39 +71,39 @@ function run() {
         output.repository.license = ((_b = repository.license) === null || _b === void 0 ? void 0 : _b.name) || '';
         // Get npm packages
         const { data: packageFiles } = yield octokit.rest.repos.getContent({
-            owner: context.repo.owner.toString(),
-            repo: context.repo.repo.toString(),
-            ref: branch.toString(),
-            path: 'package.json',
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: branch,
+            path: 'package-lock.json',
         });
         // try {
-        core.info(packageFiles.toString());
-        output.npmPackages = packageFiles.toLocaleString();
-        // for (const file of packageFiles as any[]) {
-        //     const { data: packageInfo } = await octokit.rest.repos.getContent({
-        //       owner: context.repo.owner,
-        //       repo: context.repo.repo,
-        //       ref: branch,
-        //       path: file.path,
-        //     });
-        //     const packageData = JSON.parse(Buffer.from(packageInfo.toString(), 'base64').toString());
-        //     core.info(packageInfo.toString());
-        //     core.info(packageData);
-        //     const somePackage: Packages = {
-        //       name: packageData.name,
-        //       version: packageData.version,
-        //       license: packageData.license || '',
-        //       sha: commit.sha,
-        //     };
-        //     output.repository.packages.push(somePackage);
-        //     output.npmPackages.push({
-        //       repoName: repo,
-        //       packageName: packageData.name,
-        //       version: packageData.version,
-        //       license: packageData.license || '',
-        //       sha: commit.sha,
-        //     });
-        //   }
+        //core.info(packageFiles.toString());
+        for (const file of packageFiles) {
+            const { data: packageInfo } = yield octokit.rest.repos.getContent({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: branch,
+                //   path: file.path,
+                path: file.path,
+            });
+            const packageData = JSON.parse(Buffer.from(packageInfo.toString(), 'base64').toString());
+            core.info(packageInfo.toString());
+            core.info(packageData);
+            const somePackage = {
+                name: packageData.name,
+                version: packageData.version,
+                license: packageData.license || '',
+                sha: commit.sha,
+            };
+            output.repository.packages.push(somePackage);
+            output.npmPackages.push({
+                repoName: repo,
+                packageName: packageData.name,
+                version: packageData.version,
+                license: "packageData.license",
+                sha: commit.sha,
+            });
+        }
         // } catch (error) {
         //     core.setFailed("Erste For-schleife hat einen Fehler")
         // }
@@ -118,27 +118,26 @@ function run() {
         //   core.info(nugetFiles.toString());
         //   output.nugetPackages = nugetFiles.toLocaleString();
         // for (const file of nugetFiles as any[]) {
-        const { data: nugetInfo } = yield octokit.rest.repos.getContent({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            ref: branch,
-            path: 'README.md'
-            // path: file.path,
-        });
+        // const { data: nugetInfo } = await octokit.rest.repos.getContent({
+        //     owner: context.repo.owner,
+        //     repo: context.repo.repo,
+        //     ref: branch,
+        //     path: 'README.md'
+        //     // path: file.path,
+        // });
         // const nugetContent = Buffer.from(nugetInfo, 'base64').toString();
-        core.info(nugetInfo.toString());
         // const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
         // let match;
         // while ((match = packageNameRegex.exec(nugetContent))) {
         //   const [, packageName, version] = match;
         //original: output.nugetPackages.push({
-        output.nugetPackages.push({
-            repoName: repo,
-            packageName,
-            version,
-            license: '',
-            sha: commit.sha,
-        }).toString();
+        // output.nugetPackages.push({
+        //     repoName: repo,
+        //     packageName,
+        //     version,
+        //     license: '',
+        //     sha: commit.sha,
+        // })
         // }
         //   }
         //   // Get submodules
