@@ -97,33 +97,37 @@ async function run() {
       });
     
     
-
+try {
     for (const file of packageFiles as any[]) {
-      const { data: packageInfo } = await octokit.rest.repos.getContent({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        ref: branch,
-        path: file.path,
-      });
-
-      const packageData = JSON.parse(Buffer.from(packageInfo.toString(), 'base64').toString());
-
-      const somePackage: Packages = {
-        name: packageData.name,
-        version: packageData.version,
-        license: packageData.license || '',
-        sha: commit.sha,
-      };
-
-      output.repository.packages.push(somePackage);
-      output.npmPackages.push({
-        repoName: repo,
-        packageName: packageData.name,
-        version: packageData.version,
-        license: packageData.license || '',
-        sha: commit.sha,
-      });
-    }
+        const { data: packageInfo } = await octokit.rest.repos.getContent({
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          ref: branch,
+          path: file.path,
+        });
+  
+        const packageData = JSON.parse(Buffer.from(packageInfo.toString(), 'base64').toString());
+  
+        const somePackage: Packages = {
+          name: packageData.name,
+          version: packageData.version,
+          license: packageData.license || '',
+          sha: commit.sha,
+        };
+  
+        output.repository.packages.push(somePackage);
+        output.npmPackages.push({
+          repoName: repo,
+          packageName: packageData.name,
+          version: packageData.version,
+          license: packageData.license || '',
+          sha: commit.sha,
+        });
+      }
+} catch (error) {
+    core.setFailed("Erste For-schleife hat einen Fehler")
+}
+    
 
     // Get NuGet packages
     const { data: nugetFiles } = await octokit.rest.repos.getContent({
@@ -133,29 +137,34 @@ async function run() {
       path: '*.csproj',
     });
 
-    for (const file of nugetFiles as any[]) {
-        const { data: nugetInfo } = await octokit.rest.repos.getContent({
-          owner: context.repo.owner,
-          repo: context.repo.repo,
-          ref: branch,
-          path: file.path,
-        });
-      
-        const nugetContent = Buffer.from(nugetInfo.toString(), 'base64').toString();
-        const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
-        let match;
-      
-        while ((match = packageNameRegex.exec(nugetContent))) {
-          const [, packageName, version] = match;
-          output.nugetPackages.push({
-            repoName: repo,
-            packageName,
-            version,
-            license: '',
-            sha: commit.sha,
-          });
-        }
-      }
+    try {
+        for (const file of nugetFiles as any[]) {
+            const { data: nugetInfo } = await octokit.rest.repos.getContent({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: branch,
+              path: file.path,
+            });
+          
+            const nugetContent = Buffer.from(nugetInfo.toString(), 'base64').toString();
+            const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
+            let match;
+          
+            while ((match = packageNameRegex.exec(nugetContent))) {
+              const [, packageName, version] = match;
+              output.nugetPackages.push({
+                repoName: repo,
+                packageName,
+                version,
+                license: '',
+                sha: commit.sha,
+              });
+            }
+          }
+    } catch (error) {
+        core.setFailed("for schleife hat fehler")
+    }
+    
       
   
     //   // Get submodules
