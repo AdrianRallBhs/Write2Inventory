@@ -162,7 +162,7 @@ async function run() {
                 // version,
                 license: '',
                 sha: commit.sha,
-              });
+              }) || [];
             }
         //   }
     
