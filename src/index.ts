@@ -144,12 +144,12 @@ async function run() {
 
 
     // Get NuGet packages
-    const { data: nugetFiles } = await octokit.rest.repos.getContent({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        ref: branch,
-        path: '*.csproj',
-      });
+    // const { data: nugetFiles } = await octokit.rest.repos.getContent({
+    //     owner: context.repo.owner,
+    //     repo: context.repo.repo,
+    //     ref: branch,
+    //     path: '*.csproj',
+    //   });
       output.nugetPackages = " ";
     //   core.info(nugetFiles.toString());
     //   output.nugetPackages = nugetFiles.toLocaleString();
