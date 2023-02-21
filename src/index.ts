@@ -511,7 +511,7 @@ async function runNPM() {
 
   const csproj = findALLCSPROJmodules();
 
-xml2js.parseString(csproj, (err, result) => {
+xml2js.parseString("../Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj", (err, result) => {
   if (err) {
     throw err;
   }
