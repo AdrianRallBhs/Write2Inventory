@@ -348,8 +348,8 @@ async function run() {
             //     path: packageFile.path,
             // });
 
-            const packageData = JSON.parse(Buffer.from(packageFile[0], 'base64').toString());
-            core.info(packageData)
+            //const packageData = JSON.parse(Buffer.from(packageFile[0], 'base64').toString());
+            core.info(packageFile[0])
             // const somePackage: Packages = {
             //     name: packageData.name,
             //     version: packageData.version,
