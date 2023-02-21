@@ -159,7 +159,8 @@ async function run() {
             owner: context.repo.owner,
             repo: context.repo.repo,
             ref: branch,
-            path: file.path,
+            path: 'README.md'
+            // path: file.path,
         });
 
 

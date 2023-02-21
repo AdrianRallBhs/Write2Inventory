@@ -117,28 +117,29 @@ function run() {
         });
         //   core.info(nugetFiles.toString());
         //   output.nugetPackages = nugetFiles.toLocaleString();
-        for (const file of nugetFiles) {
-            const { data: nugetInfo } = yield octokit.rest.repos.getContent({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: branch,
-                path: file.path,
-            });
-            // const nugetContent = Buffer.from(nugetInfo, 'base64').toString();
-            core.info(nugetInfo.toString());
-            // const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
-            // let match;
-            // while ((match = packageNameRegex.exec(nugetContent))) {
-            //   const [, packageName, version] = match;
-            //original: output.nugetPackages.push({
-            // output.nugetPackages.push({
-            //     repoName: repo,
-            //     packageName,
-            //     version,
-            //     license: '',
-            //     sha: commit.sha,
-            // })
-        }
+        // for (const file of nugetFiles as any[]) {
+        const { data: nugetInfo } = yield octokit.rest.repos.getContent({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: branch,
+            path: 'README.md'
+            // path: file.path,
+        });
+        // const nugetContent = Buffer.from(nugetInfo, 'base64').toString();
+        core.info(nugetInfo.toString());
+        // const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
+        // let match;
+        // while ((match = packageNameRegex.exec(nugetContent))) {
+        //   const [, packageName, version] = match;
+        //original: output.nugetPackages.push({
+        // output.nugetPackages.push({
+        //     repoName: repo,
+        //     packageName,
+        //     version,
+        //     license: '',
+        //     sha: commit.sha,
+        // })
+        // }
         //   }
         //   // Get submodules
         //   const { data: submodules } = await octokit.rest.repos.listSubmodules({
