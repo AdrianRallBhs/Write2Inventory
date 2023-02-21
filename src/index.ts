@@ -4,7 +4,7 @@ import * as fs from 'fs';
 
 interface Packages {
   name: string;
-//   version: string;
+  version: string;
   license: string;
   sha: string;
 }
@@ -17,20 +17,20 @@ interface Repository {
   sha: string;
 }
 
-// interface NpmPackage {
-//   repoName: string;
-//   packageName: string;
-//   version: string;
-//   license: string;
-//   sha: string;
-// }
+interface NpmPackage {
+  repoName: string;
+  packageName: string;
+  version: string;
+  license: string;
+  sha: string;
+}
 
 interface NugetPackage {
   repoName: string;
-// //   packageName: string;
-// //   version: string;
-//   license: string;
-//   sha: string;
+  packageName: string;
+  version: string;
+  license: string;
+  sha: string;
 }
 
 // interface Submodule {
@@ -150,24 +150,23 @@ async function run() {
             });
         
         
-        //     const nugetContent = Buffer.from(nugetInfo.toString(), 'base64').toString();
-        //     core.info(nugetContent)
-        //     // const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
-        //     // let match;
+            const nugetContent = Buffer.from(nugetInfo, 'base64').toString();
+            core.info(nugetContent)
+            const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
+            let match;
           
-        //     // while ((match = packageNameRegex.exec(nugetContent))) {
-        //     //   const [, packageName, version] = match;
-        //     // original: output.nugetPackages.push({
+            while ((match = packageNameRegex.exec(nugetContent))) {
+              const [, packageName, version] = match;
+            //original: output.nugetPackages.push({
               output.nugetPackages.push({
                 repoName: repo,
-                // packageName,
-                // version,
-                // license: '',
-                // sha: commit.sha,
+                packageName,
+                version,
+                license: '',
+                sha: commit.sha,
               }) 
-
             }
-        //   }
+          }
     
       
   
