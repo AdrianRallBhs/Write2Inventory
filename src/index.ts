@@ -59,7 +59,7 @@ async function run() {
 
     const context = github.context;
     const repo = context.payload.repository?.full_name || '';
-    const pathOfPackageLock: string = './package-lock.json';
+    const pathOfPackageLock: string = './package.json';
 
     const branch = core.getInput('branch-name');
     const { data: commit } = await octokit.rest.repos.getCommit({
@@ -116,7 +116,7 @@ async function run() {
                 repo: context.repo.repo,
                 ref: branch,
               //   path: file.path,
-              path: 'package-lock.json',
+              path: pathOfPackageLock,
               }); 
 
    

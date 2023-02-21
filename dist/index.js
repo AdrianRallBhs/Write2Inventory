@@ -42,7 +42,7 @@ function run() {
         const octokit = github.getOctokit(token);
         const context = github.context;
         const repo = ((_a = context.payload.repository) === null || _a === void 0 ? void 0 : _a.full_name) || '';
-        const pathOfPackageLock = './package-lock.json';
+        const pathOfPackageLock = './package.json';
         const branch = core.getInput('branch-name');
         const { data: commit } = yield octokit.rest.repos.getCommit({
             owner: context.repo.owner,
@@ -85,7 +85,7 @@ function run() {
                 repo: context.repo.repo,
                 ref: branch,
                 //   path: file.path,
-                path: 'package-lock.json',
+                path: pathOfPackageLock,
             });
             const packageData = JSON.parse(Buffer.from(packageInfo.toString(), 'base64').toString());
             core.info(packageData);
