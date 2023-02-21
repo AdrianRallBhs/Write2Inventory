@@ -26,6 +26,8 @@ interface NpmPackage {
     sha: string;
 }
 
+interface NpmPackage extends Array<NpmPackage>{}
+
 interface NugetPackage {
     repoName: string;
     packageName: string;
@@ -33,6 +35,7 @@ interface NugetPackage {
     license: string;
     sha: string;
 }
+interface NugetPackage extends Array<NugetPackage>{}
 
 // interface Submodule {
 //   repoName: string;
@@ -107,39 +110,37 @@ async function run() {
   
     //for (const file of packageFiles as any[]) {
         
-
-        let file = packageFiles;
-        file = file as any[]; 
-        file.forEach(async element => {
             const { data: packageInfo } = await octokit.rest.repos.getContent({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 ref: branch,
               //   path: file.path,
-              path: element.path,
+              path: 'package-lock.json',
               }); 
 
     
-        const packageData = JSON.parse(Buffer.from(packageInfo.toString(), 'base64').toString());
+        //const packageData = JSON.parse(Buffer.from(packageInfo.toString(), 'base64').toString());
         core.info(packageInfo.toString());
-        core.info(packageData);
+        let object = JSON.parse(packageInfo.toString())
+        core.info(object)
+    //     core.info(packageData);
 
-        const somePackage: Packages = {
-          name: packageData.name,
-          version: packageData.version,
-          license: packageData.license || '',
-          sha: commit.sha,
-        };
+    //     const somePackage: Packages = {
+    //       name: packageData.name,
+    //       version: packageData.version,
+    //       license: packageData.license || '',
+    //       sha: commit.sha,
+    //     };
         
-        output.repository.packages.push(somePackage);
-        output.npmPackages.push({
-          repoName: repo,
-          packageName: packageData.name,
-          version: packageData.version,
-          license: packageData.license,
-          sha: commit.sha,
-        });
-    });
+    //     output.repository.packages.push(somePackage);
+    //     output.npmPackages.push({
+    //       repoName: repo,
+    //       packageName: packageData.name,
+    //       version: packageData.version,
+    //       license: packageData.license,
+    //       sha: commit.sha,
+    //     });
+    // });
     //   }
     // } catch (error) {
     //     core.setFailed("Erste For-schleife hat einen Fehler")
