@@ -249,10 +249,12 @@ interface Packages {
     sha: string;
 }
 
-interface NugetPackage {
+interface NuGetPackage {
     name: string;
     version: string;
     source: string;
+    repoName: string;
+    owner: string;
   }
   
   interface NugetProject {
@@ -270,16 +272,15 @@ interface Repository {
 }
 
 interface CsprojData {
-    projectName: string;
-    projectPath: string;
     projectGuid: string;
-    nugetPackages: {
-      packageName: string;
-      version: string;
-      source: string;
-    }[];
-    sources: string[];
+    assemblyName: string;
+    rootNamespace: string;
+    targetFramework: string;
+    nugetPackages: NuGetPackage[];
   }
+  
+ 
+  
 
 interface NpmPackage {
     repoName: string;
@@ -509,36 +510,55 @@ async function runNPM() {
 
   findALLCSPROJmodules();
 
-  const csproj = findALLCSPROJmodules();
-
-xml2js.parseString("../Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj", (err, result) => {
-  if (err) {
-    throw err;
+  async function getCsprojData(csprojPath: string): Promise<CsprojData> {
+    const data = await fs.promises.readFile(csprojPath, 'utf-8');
+    const parser = new xml2js.Parser();
+    const parsedData = await parser.parseStringPromise(data);
+  
+    const projectName = parsedData.Project.PropertyGroup[0].AssemblyName[0];
+    const projectGuid = parsedData.Project.PropertyGroup[0].ProjectGuid[0];
+    const rootNamespace = parsedData.Project.PropertyGroup[0].RootNamespace[0];
+    const targetFramework = parsedData.Project.PropertyGroup[0].TargetFramework[0];
+  
+    const packageReferences = parsedData.Project.ItemGroup[0].PackageReference;
+    const nugetPackages: NuGetPackage[] = [];
+  
+    for (const packageReference of packageReferences) {
+      const packageName = packageReference.$.Include;
+      const packageVersion = packageReference.$.Version;
+      const packageSource = packageReference.$.Source;
+      const nugetPackage: NuGetPackage = {
+        name: packageName,
+        version: packageVersion,
+        source: packageSource,
+        repoName: process.env.GITHUB_REPOSITORY!,
+        owner: process.env.GITHUB_ACTOR!
+      };
+      nugetPackages.push(nugetPackage);
+    }
+  
+    const csprojData: CsprojData = {
+      projectGuid,
+      assemblyName: projectName,
+      rootNamespace,
+      targetFramework,
+      nugetPackages
+    };
+    return csprojData;
   }
-  
-  const packages = result.Project.ItemGroup
-    .filter((item: { PackageReference: any; }) => item.PackageReference)
-    .map((item: { PackageReference: any; }) => item.PackageReference)
-    .flat();
-  
-  const packageInfo = packages.map((Nugetpackage: { $: { Include: any; Version: any; TargetFramework: any; Id: any; }; Description: any[]; Authors: any[]; ProjectUrl: any[]; LicenseUrl: any[]; IconUrl: any[]; Dependency: any; }) => ({
-    name: Nugetpackage.$.Include,
-    version: Nugetpackage.$.Version,
-    targetFramework: Nugetpackage.$.TargetFramework,
-    id: Nugetpackage.$.Id,
-    description: Nugetpackage.Description[0],
-    authors: Nugetpackage.Authors[0],
-    projectUrl: Nugetpackage.ProjectUrl[0],
-    licenseUrl: Nugetpackage.LicenseUrl[0],
-    iconUrl: Nugetpackage.IconUrl[0],
-    dependencies: Nugetpackage.Dependency,
-  }));
-  
-  console.log(packageInfo);
-  core.info(packageInfo)
-});
- 
+async function nugetGetter():Promise<void> {
+  const csprojFiles = await findALLCSPROJmodules();
+  const csprojData: CsprojData[] = [];
 
+  for (const csprojFile of csprojFiles) {
+    const data = await getCsprojData(csprojFile);
+    csprojData.push(data);
+  }
+
+  console.log(csprojData);
+}
+
+nugetGetter();
 //   function findNetProjectDirectories(rootPath: string): string[] {
 //     const csprojFiles = glob.sync('**/*.csproj', { cwd: rootPath, absolute: true });
 //     const projectDirs = csprojFiles.map((csprojFile: string) => path.dirname(csprojFile));
