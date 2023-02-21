@@ -42,7 +42,7 @@ interface NugetPackage {
 interface Output {
   repository: Repository;
 //   npmPackages: NpmPackage[];
-  nugetPackages: NugetPackage[];
+ // nugetPackages: NugetPackage[];
   //submodules: Submodule[];
 }
 
@@ -70,7 +70,7 @@ async function run() {
         sha: commit.sha,
       },
     //   npmPackages: [],
-      nugetPackages: [],
+     // nugetPackages: [],
       //submodules: [],
     };
     
@@ -130,43 +130,43 @@ async function run() {
     
 
     // Get NuGet packages
-    const { data: nugetFiles } = await octokit.rest.repos.getContent({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      ref: branch,
-      path: '*.csproj',
-    });
+    // const { data: nugetFiles } = await octokit.rest.repos.getContent({
+    //   owner: context.repo.owner,
+    //   repo: context.repo.repo,
+    //   ref: branch,
+    //   path: '*.csproj',
+    // });
 
     
     //output.repository.packages.push(nugetFiles.toString()) || [];
        
 
-        for (const file of nugetFiles as any[]) {
-            const { data: nugetInfo } = await octokit.rest.repos.getContent({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: branch,
-              path: file.path,
-            });
+        // for (const file of nugetFiles as any[]) {
+        //     const { data: nugetInfo } = await octokit.rest.repos.getContent({
+        //       owner: context.repo.owner,
+        //       repo: context.repo.repo,
+        //       ref: branch,
+        //       path: file.path,
+        //     });
         
         
-            const nugetContent = Buffer.from(nugetInfo.toString(), 'base64').toString();
-            core.info(nugetContent)
-            // const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
-            // let match;
+        //     const nugetContent = Buffer.from(nugetInfo.toString(), 'base64').toString();
+        //     core.info(nugetContent)
+        //     // const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
+        //     // let match;
           
-            // while ((match = packageNameRegex.exec(nugetContent))) {
-            //   const [, packageName, version] = match;
-            // original: output.nugetPackages.push({
-            //   output.nugetPackages.push({
-            //     repoName: repo,
-            //     // packageName,
-            //     // version,
-            //     license: '',
-            //     sha: commit.sha,
-            //   }) || 
-            // output.nugetPackages.push([]);
-            }
+        //     // while ((match = packageNameRegex.exec(nugetContent))) {
+        //     //   const [, packageName, version] = match;
+        //     // original: output.nugetPackages.push({
+        //     //   output.nugetPackages.push({
+        //     //     repoName: repo,
+        //     //     // packageName,
+        //     //     // version,
+        //     //     license: '',
+        //     //     sha: commit.sha,
+        //     //   }) || 
+        //     // output.nugetPackages.push([]);
+        //     }
         //   }
     
       
