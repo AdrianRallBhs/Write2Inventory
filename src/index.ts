@@ -322,57 +322,6 @@ async function run() {
     output.repository.license = repository.license?.name || '';
 
 
-    // Get npm packages
-    const { data: packageFiles } = await octokit.rest.repos.getContent({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        ref: branch,
-        path: 'package.json',
-    });
-
-    if(Array.isArray(packageFiles) && packageFiles.length > 0 ) {
-        core.info("Length über 0")
-    }
-    //   const packageFiles: { path: string }[] = await getPackageFiles();
-    const packageFileString = packageFiles.toString();
-    core.info(`Array of packageFiles ${(Array.of(packageFiles)).toString()}`);
-    core.info(typeof (packageFiles))
-
-    if (packageFiles != undefined) {
-        
-        for (const packageFile of packageFiles as any[]) {
-            // const { data: packageInfo } = await octokit.rest.repos.getContent({
-            //     owner: context.repo.owner,
-            //     repo: context.repo.repo,
-            //     ref: branch,
-            //     path: packageFile.path,
-            // });
-
-            //const packageData = JSON.parse(Buffer.from(packageFile[0], 'base64').toString());
-            core.info(packageFile[0])
-            // const somePackage: Packages = {
-            //     name: packageData.name,
-            //     version: packageData.version,
-            //     license: packageData.license || '',
-            //     sha: commit.sha,
-            // };
-
-            // output.repository.packages.push(somePackage);
-            // output.npmPackages.push({
-            //     repoName: repo,
-            //     packageName: packageData.name,
-            //     version: packageData.version,
-
-            // });
-        }
-    
-    } else {
-        core.info("packageFiles is undefined");
-    }
-
-
-
-
     //output.repository.packages.push(nugetFiles.toString()) || [];
 
 
@@ -462,9 +411,35 @@ async function run() {
 
 run();
 
-function fetch(apiUrl: string) {
-    throw new Error('Function not implemented.');
-}
+async function runNPM() {
+    try {
+      const token = core.getInput('github-token');
+      const octokit = github.getOctokit(token);
+  
+      const { data: contents } = await octokit.rest.repos.getContent({
+        owner: github.context.repo.owner,
+        repo: github.context.repo.repo,
+        path: 'package.json',
+      });
+  
+      const packages = JSON.parse(
+        Buffer.from(contents.toString()).toString()
+      ).dependencies;
+  
+      const packageList = Object.keys(packages).map((name) => ({
+        name,
+        version: packages[name],
+        repoName: github.context.repo.repo,
+        owner: github.context.repo.owner,
+      }));
+  
+      console.log(JSON.stringify(packageList, null, 2));
+    } catch (error) {
+      core.setFailed("Fehler in runNPM");
+    }
+  }
+  
+  runNPM();
 
 
 
