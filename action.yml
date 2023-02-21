@@ -12,8 +12,8 @@ inputs:
     description: 'Path to output JSON file'
     required: true
   runs:
-    using: 'node12'
-    main: 'dist/index.js'
+  using: 'node16'
+  main: 'dist/index.js'
   branding:
     icon: 'check'
     color: 'green'
