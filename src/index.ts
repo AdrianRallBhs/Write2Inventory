@@ -151,7 +151,7 @@ try {
     
     
         // const nugetContent = Buffer.from(nugetInfo, 'base64').toString();
-        const nugetConent = nugetInfo.toString();
+        const nugetContent = nugetInfo.toString();
         core.info(nugetContent)
         // const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
         // let match;

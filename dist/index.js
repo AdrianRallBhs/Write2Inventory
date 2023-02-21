@@ -117,7 +117,8 @@ function run() {
                     ref: branch,
                     path: file.path,
                 });
-                const nugetContent = Buffer.from(nugetInfo, 'base64').toString();
+                // const nugetContent = Buffer.from(nugetInfo, 'base64').toString();
+                const nugetContent = nugetInfo.toString();
                 core.info(nugetContent);
                 // const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
                 // let match;
