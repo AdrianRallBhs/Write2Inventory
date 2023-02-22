@@ -1,3 +1,4 @@
+import { Sources } from './dotnet-command-manager';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as xml2js from 'xml2js';
@@ -84,18 +85,23 @@ export async function getNugetPackageListFromCsprojDoc(csprojPath: string): Prom
     const xmlParser = new xml2js.Parser();
     let packageInfoList: PackageInfo[] = [];
 
+    const sources = await getDotnetSources();
+
     try {
         const csprojDoc = await xmlParser.parseStringPromise(csprojXml);
 
+       sources.forEach(source => {
         for (const packageRef of csprojDoc.Project.ItemGroup[0].PackageReference) {
             const packageName = packageRef.$.Include;
             const packageVersion = packageRef.$.Version;
             packageInfoList.push({
                 nugetName: packageName,
                 nugetVersion: packageVersion,
-                nugetSource: packageRef,
+                nugetSource: source,
             });
         }
+       }) 
+        
     } catch (e) {
         console.log(`Could not parse .csproj file at ${csprojPath}. Error: ${e}`);
     }
