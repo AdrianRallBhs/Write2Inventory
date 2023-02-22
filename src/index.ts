@@ -244,165 +244,38 @@ import * as exec from '@actions/exec'
 import {getNugetPackageInfoFromAssets, getAssetFile} from './get-assets-nuget'
 import { getDotnetSources, getNugetPackageListFromCsprojDoc, getSubmodulesList } from './nuget'
 
-interface Packages {
-    name: string;
-    version: string;
-    license: string;
-    sha: string;
-}
-
-interface NuGetPackage {
-    name: string;
-    version: string;
-    source: string;
-    repoName: string;
-    owner: string;
-  }
-  
-  interface NugetProject {
-    name: string;
-    sources: string[];
-    packages: NugetPackage[];
-  }
-
-interface Repository {
-    name: string;
-    packages: Packages[];
-    currentReleaseTag: string;
-    license: string;
-    sha: string;
-}
-
-
-  
-
-
-interface NpmPackage {
-    repoName: string;
-    packageName: string;
-    version: string;
-}
-
-interface NugetPackage {
-    name: string;
-    version: string;
-    source: string;
-    repoName: string;
-    owner: string;
-  }
-  
-
-// interface NugetPackage {
-//     repoName: string;
-//     packageName: string;
-//     version: string;
-// }
-
-// interface Submodule {
-//   repoName: string;
-//   packageName: string;
-//   tag: string;
-// }
-
-interface Output {
-    repository: Repository;
-    npmPackages: NpmPackage[];
-    //npmPackages: string;
-    nugetPackages: NugetPackage[];
-    //nugetPackages: string;
-    //submodules: Submodule[];
-    //   submodules: string;
-}
-
-
-// async function run() {
-//     const token = core.getInput('github-token');
-//     const octokit = github.getOctokit(token);
-
-//     const context = github.context;
-//     const repo = context.payload.repository?.full_name || '';
-
-//     const branch = core.getInput('branch-name');
-//     const { data: commit } = await octokit.rest.repos.getCommit({
-//         owner: context.repo.owner,
-//         repo: context.repo.repo,
-//         ref: branch,
-//     });
-
-//     const output: Output = {
-//         repository: {
-//             name: repo,
-//             packages: [],
-//             currentReleaseTag: '',
-//             license: '',
-//             sha: commit.sha,
-//         },
-//         npmPackages: [],
-//         // npmPackages: '',
-//         nugetPackages: [],
-//         //nugetPackages: '',
-//         //submodules: [],
-//         //   submodules: '',
-//     };
-
-
-//     // Get repository info
-//     const { data: repository } = await octokit.rest.repos.get({
-//         owner: context.repo.owner,
-//         repo: context.repo.repo,
-//     });
-
-
-
-//     output.repository.currentReleaseTag = repository.default_branch;
-//     output.repository.license = repository.license?.name || '';
-
-
-
-//     // Write output to file
-//     const outputPath = core.getInput('output-path');
-//     try {
-//         fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
-//         core.info(JSON.stringify(output, null, 2))
-//     } catch (error) {
-//         core.setFailed("WriteFileSync ist falsch")
-//     }
-// }
-
-// run();
 
 
 // ========================================================
 
-  export async function findALLCSPROJmodules(): Promise<string[]> {
-    try {
-      // Checkout the repository including submodules
-      await exec.exec('git', ['submodule', 'update', '--init', '--recursive']);
+//   export async function findALLCSPROJmodules(): Promise<string[]> {
+//     try {
+//       // Checkout the repository including submodules
+//       await exec.exec('git', ['submodule', 'update', '--init', '--recursive']);
   
-      // Use the `find` command to locate all `csproj` files
-      let csprojFiles = '';
-      const options = {
-        listeners: {
-          stdout: (data: Buffer) => {
-            csprojFiles += data.toString();
-          }
-        }
-      };
-      await exec.exec('find', ['.', '-name', '*.csproj'], options);
+//       // Use the `find` command to locate all `csproj` files
+//       let csprojFiles = '';
+//       const options = {
+//         listeners: {
+//           stdout: (data: Buffer) => {
+//             csprojFiles += data.toString();
+//           }
+//         }
+//       };
+//       await exec.exec('find', ['.', '-name', '*.csproj'], options);
   
-      // Split the list of `csproj` files into an array of strings
-      const csprojFileList = csprojFiles.trim().split('\n');
-  
-      // Output the list of `csproj` files found
-      //core.info(`List of csproj files found: ${csprojFileList}`);
-  
-      return csprojFileList;
-    } catch {
-      return [];
-    }
-  }
+//       // Split the list of `csproj` files into an array of strings
+//       const csprojFileList = csprojFiles.trim().split('\n');  
+//       return csprojFileList;
+//     } catch {
+//       return [];
+//     }
+//   }
 
-  console.log(findALLCSPROJmodules());
+//   (async () => {
+//   console.log(findALLCSPROJmodules());
+// })();
+
 // ===========================================================
 
 
@@ -436,17 +309,17 @@ let ListOfSources: string[] = [];
 
 
 // ======================================================================
-let ListOfSubmodules: string[] = [];
-(async () => {
-    ListOfSubmodules = await getSubmodulesList();
-    if(ListOfSubmodules.length < 1) {
-        console.log("ListOfSubmodules is empty")
-    }
-    else {
-            console.log(`Submodule: ${ListOfSubmodules}`)
-        }
-    }
-)();
+// let ListOfSubmodules: string[] = [];
+// (async () => {
+//     ListOfSubmodules = await getSubmodulesList();
+//     if(ListOfSubmodules.length < 1) {
+//         console.log("ListOfSubmodules is empty")
+//     }
+//     else {
+//             console.log(`Submodule: ${ListOfSubmodules}`)
+//         }
+//     }
+// )();
 //========================works fine=======================================
 
 
@@ -479,127 +352,3 @@ let ListOfSubmodules: string[] = [];
 //   runNPM();
 
 
-// ========================LIST ALL CSPROJ DATEIEN=========================================
-
-//   export async function findALLCSPROJmodules(): Promise<string[]> {
-//     try {
-//       // Checkout the repository including submodules
-//       await exec.exec('git', ['submodule', 'update', '--init', '--recursive']);
-  
-//       // Use the `find` command to locate all `csproj` files
-//       let csprojFiles = '';
-//       const options = {
-//         listeners: {
-//           stdout: (data: Buffer) => {
-//             csprojFiles += data.toString();
-//           }
-//         }
-//       };
-//       await exec.exec('find', ['.', '-name', '*.csproj'], options);
-  
-//       // Split the list of `csproj` files into an array of strings
-//       const csprojFileList = csprojFiles.trim().split('\n');
-  
-//       // Output the list of `csproj` files found
-//       //core.info(`List of csproj files found: ${csprojFileList}`);
-  
-//       return csprojFileList;
-//     } catch {
-//       return [];
-//     }
-//   }
-
-//   findALLCSPROJmodules();
-
-//   (async () => {
-//     const assertPaths = await getAssetFile();
-//     assertPaths.forEach(element => {
-//       getNugetPackageInfoFromAssets(element);
-//     });
-//   })();
-
-//   (async () => {
-// const sources = await getNuGetSources();
-// sources.forEach(element => {
-//     core.info(`Source: ${element}`);
-// })
-// })();
-
-// // ========================================================
-
-//   (async () => {
-//   const packages =  await getNugetPackagesInfo();
-//   console.log(JSON.stringify(packages, null, 2));
-// packages.forEach(element => {
-//     let packJson = JSON.stringify(element, null, 2)
-//     core.info(`packJSON: ${packJson}`)
-// });
-// })();
-
-// =============================================================
-
-
-//   function findNetProjectDirectories(rootPath: string): string[] {
-//     const csprojFiles = glob.sync('**/*.csproj', { cwd: rootPath, absolute: true });
-//     const projectDirs = csprojFiles.map((csprojFile: string) => path.dirname(csprojFile));
-//     return projectDirs;
-//   }
- 
-//   function getCsprojFiles(dirPath: string): string[] {
-//     const files = fs.readdirSync(dirPath);
-//     const csprojFiles = files.filter(file => path.extname(file) === '.csproj');
-//     return csprojFiles.map(file => path.join(dirPath, file));
-//   }
-  
-//   function getSources(csprojPath: string): string[] {
-//     const data = fs.readFileSync(csprojPath, 'utf-8');
-//     const parser = new xml2js.Parser();
-//     let sources: string[] = [];
-//     parser.parseString(data, (err: any, result: any) => {
-//       if (err) {
-//         throw new Error(`Error parsing XML: ${err}`);
-//       }
-//       const project = result.Project;
-//       sources = project.ItemGroup[0].Compile.map((file: any) => file.$.Include);
-//     });
-//     return sources;
-//   }
-  
-//   function getNugetPackages(csprojPath: string): NugetPackage[] {
-//     const data = fs.readFileSync(csprojPath, 'utf-8');
-//     const parser = new xml2js.Parser();
-//     let packages: NugetPackage[] = [];
-//     parser.parseString(data, (err: any, result: any) => {
-//       if (err) {
-//         throw new Error(`Error parsing XML: ${err}`);
-//       }
-//       const project = result.Project;
-//       if (project.ItemGroup && project.ItemGroup[0].PackageReference) {
-//         packages = project.ItemGroup[0].PackageReference.map((pkg: any) => ({
-//           name: pkg.$.Include,
-//           version: pkg.$.Version,
-//           source: pkg.$.Source,
-//         }));
-//       }
-//     });
-//     return packages;
-//   }
-  
-//   function getProjectsInfo(dirPath: string): NugetProject[] {
-//     const csprojFiles = getCsprojFiles(dirPath);
-//     const projects = csprojFiles.map(csprojPath => {
-//       const projectName = path.basename(csprojPath, '.csproj');
-//       const sources = getSources(csprojPath);
-//       const packages = getNugetPackages(csprojPath);
-//       return { name: projectName, sources, packages };
-//     });
-//     return projects;
-//   }
-
-//   let paths = findNetProjectDirectories('../')
-//   paths.forEach(element => {
-//     getProjectsInfo(element)
-//   });
-  
-
-// =====================================================================
