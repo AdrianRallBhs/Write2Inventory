@@ -528,7 +528,13 @@ async function runNPM() {
   })();
 
   (async () => {
-    getNuGetSources();
+const sources = await getNuGetSources();
+sources.forEach(element => {
+    core.info(element);
+})
+})();
+
+  (async () => {
   const packages =  await getNugetPackagesInfo();
   console.log(JSON.stringify(packages, null, 2));
 packages.forEach(element => {
