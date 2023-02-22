@@ -132,19 +132,20 @@ export async function getNugetPackageInfoFromCsproj(
 //   return result;
 // }
 
+// 
+
 export function getNuGetSources(): Promise<string[]> {
     return new Promise((resolve, reject) => {
       exec('dotnet nuget list source --format short', (err, stdout, stderr) => {
         if (err) {
           reject(err);
         } else {
-            
-          const sources = stdout.split('\n')
+          const sources = stdout
+            .split('\n')
             .map(line => line.trim())
             .filter(line => line.startsWith('    '))
             .map(line => line.substring(4));
           resolve(sources);
-          console.log(resolve(sources))
         }
       });
     });
