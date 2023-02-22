@@ -316,7 +316,10 @@ let ListOfSubmodules: string[] = [];
         console.log("ListOfSubmodules is empty")
     }
     else {
-            console.log(`Submodule: ${ListOfSubmodules}`)
+        ListOfSubmodules.forEach(submodule => {
+            console.log(`Submodule: ${submodule}`)
+        })
+           
         }
     }
 )();
