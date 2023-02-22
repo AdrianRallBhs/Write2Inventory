@@ -65,8 +65,14 @@ export async function findALLCSPROJmodules(): Promise<string[]> {
   
       // Use the `find` command to locate all `csproj` files
       let csprojFiles = '';
-
-      await execute.exec('find', ['.', '-name', '*.csproj']);
+      const options = {
+        listeners: {
+          stdout: (data: Buffer) => {
+            csprojFiles += data.toString();
+          }
+        }
+      };
+      await execute.exec('find', ['.', '-name', '*.csproj'], options);
   
       // Split the list of `csproj` files into an array of strings
       const csprojFileList = csprojFiles.trim().split('\n');

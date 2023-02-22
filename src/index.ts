@@ -296,7 +296,7 @@ import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules
 (async () => {
 const submods: string[] = await findALLCSPROJmodules();
 submods.forEach(element => {
-    core.info(element)
+    console.log(element)
 })
 })();
 // ========================funktioniert===================================
