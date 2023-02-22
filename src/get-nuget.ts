@@ -169,6 +169,7 @@ export async function getNugetPackagesInfo(): Promise<Project[]> {
         for (const packageInfo of nugetPackages) {
             let project = result.find((p) => p.ProjectName === packageInfo.nugetName);
             if (!project) {
+                console.log(nugetSources)
                     project = {
                         ProjectName: packageInfo.nugetName,
                         ProjectPath: '',
@@ -180,7 +181,9 @@ export async function getNugetPackagesInfo(): Promise<Project[]> {
                 
                 
             }
-
+            else {
+                console.log(nugetSources)
+            }
             // add the NuGet package to the Project object
             //const nugetSource = nugetSources.includes(packageInfo.nugetSource) ? packageInfo.nugetSource : '';
             const nugetSource = nugetSources[0]
