@@ -14,7 +14,7 @@ interface Source {
   value: string;
 }
 
-async function getDotnetSources(): Promise<string[]> {
+export async function getDotnetSources(): Promise<string[]> {
     const dotnetConfigPath = path.join('.config', 'dotnet-tools.json');
     if (!fs.existsSync(dotnetConfigPath)) {
       return [];
