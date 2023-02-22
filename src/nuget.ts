@@ -60,31 +60,31 @@ export async function getDotnetSources(): Promise<string[]> {
 
 export async function findALLCSPROJmodules(): Promise<string[]> {
     try {
-        // Checkout the repository including submodules
-        await execute.exec('git', ['submodule', 'update', '--init', '--recursive']);
-
-        // Use the `find` command to locate all `csproj` files
-        let csprojFiles = '';
-        const options = {
-            listeners: {
-                stdout: (data: Buffer) => {
-                    csprojFiles += data.toString();
-                }
-            }
-        };
-        await execute.exec('find', ['.', '-name', '*.csproj'], options);
-
-        // Split the list of `csproj` files into an array of strings
-        const csprojFileList = csprojFiles.trim().split('\n');
-
-        // Output the list of `csproj` files found
-        //core.info(`List of csproj files found: ${csprojFileList}`);
-
-        return csprojFileList;
+      // Checkout the repository including submodules
+      await execute.exec('git', ['submodule', 'update', '--init', '--recursive']);
+  
+      // Use the `find` command to locate all `csproj` files
+      let csprojFiles = '';
+      const options = {
+        listeners: {
+          stdout: (data: Buffer) => {
+            csprojFiles += data.toString();
+          }
+        }
+      };
+      await execute.exec('find', ['.', '-name', '*.csproj'], options);
+  
+      // Split the list of `csproj` files into an array of strings
+      const csprojFileList = csprojFiles.trim().split('\n');
+  
+      // Output the list of `csproj` files found
+      //core.info(`List of csproj files found: ${csprojFileList}`);
+  
+      return csprojFileList;
     } catch {
-        return [];
+      return [];
     }
-}
+  }
 
 // =====================================================
 
@@ -190,3 +190,5 @@ export async function getDotnetSubmodules(): Promise<string[]> {
       });
     });
   }
+
+  //'list', this.projectfile, 'package', versionFlag, '--outdated', '--source', sources[0]

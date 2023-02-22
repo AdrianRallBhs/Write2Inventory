@@ -242,7 +242,7 @@ import path from 'path';
 import * as xml2js from 'xml2js';
 import * as exec from '@actions/exec'
 import {getNugetPackageInfoFromAssets, getAssetFile} from './get-assets-nuget'
-import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules } from './nuget'
+import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules, findALLCSPROJmodules } from './nuget'
 
 
 
@@ -303,12 +303,15 @@ let ListOfSources: string[] = [];
         console.log("ListOfsources is empty")
     }
     else {
-            console.log(`List of Sources: ${ListOfSources}`)
+        ListOfSources.forEach(source => {
+            console.log(`${ListOfSources}`)
+        })
+            
         }
 })();
 
 
-// ========================does not work==============================================
+// ========================does work==============================================
 let ListOfSubmodules: string[] = [];
 (async () => {
     ListOfSubmodules = await getDotnetSubmodules();
@@ -317,12 +320,30 @@ let ListOfSubmodules: string[] = [];
     }
     else {
         ListOfSubmodules.forEach(submodule => {
-            console.log(`Submodule: ${submodule}`)
+            console.log(`${submodule}`)
         })
            
         }
     }
 )();
+
+// =======================================================================
+let ListOfDotnetProjects: string[] = [];
+(async () => {
+    ListOfDotnetProjects = await findALLCSPROJmodules();
+    if(ListOfDotnetProjects.length < 1) {
+        console.log("ListOfSubmodules is empty")
+    }
+    else {
+        ListOfDotnetProjects.forEach(project => {
+            console.log(`${project}`)
+        })
+           
+        }
+    }
+)();
+
+
 //========================works fine=======================================
 
 
