@@ -156,51 +156,43 @@ export function getNuGetSources(): Promise<string[]> {
 
 export async function getNugetPackagesInfo(): Promise<Project[]> {
     const csprojData = await FindCSProjects('.');
-    let nugetSources = await getNuGetSources();
-
-   
+    const nugetSources = await getNuGetSources();
     const result: Project[] = [];
-
+  
     for (const data of csprojData) {
-        const nugetPackages = await getNugetPackageInfoFromCsproj(data);
-
-        // create a new Project object for each NuGet package
-        for (const packageInfo of nugetPackages) {
-            let project = result.find((p) => p.ProjectName === packageInfo.nugetName);
-            if (!project) {
-                console.log(nugetSources)
-                    project = {
-                        ProjectName: packageInfo.nugetName,
-                        ProjectPath: '',
-                        RepoOwner: data.repoOwner,
-                        RepoName: data.repoName,
-                        NugetSources: nugetSources.filter(s => s !== 'bhs'),
-                        NugetPackages: [],
-                    };
-                
-                
-            }
-            else {
-                console.log(nugetSources)
-            }
-            // add the NuGet package to the Project object
-            const nugetSource = nugetSources.includes(packageInfo.nugetSource) ? packageInfo.nugetSource : '';
-           // const nugetSource = nugetSources[0]
-            console.log(nugetSource)
-            project.NugetPackages.push({
-                Name: packageInfo.nugetName,
-                Version: packageInfo.nugetVersion,
-                Source: nugetSource,
-            });
+      const nugetPackages = await getNugetPackageInfoFromCsproj(data);
+  
+      // create a new Project object for each NuGet package
+      for (const packageInfo of nugetPackages) {
+        let project = result.find((p) => p.ProjectName === packageInfo.nugetName);
+        if (!project) {
+          project = {
+            ProjectName: packageInfo.nugetName,
+            ProjectPath: '',
+            RepoOwner: data.repoOwner,
+            RepoName: data.repoName,
+            NugetSources: nugetSources.filter(s => s !== 'nuget.org'),
+            NugetPackages: [],
+          };
+          result.push(project);
         }
+  
+        // add the NuGet package to the Project object
+        const nugetSource = nugetSources.includes(packageInfo.nugetSource) ? packageInfo.nugetSource : '';
+        project.NugetPackages.push({
+          Name: packageInfo.nugetName,
+          Version: packageInfo.nugetVersion,
+          Source: nugetSource,
+        });
+      }
     }
-
+  
     // write the result array to a JSON file
     const outputFilePath = './output.json';
     await fs.promises.writeFile(outputFilePath, JSON.stringify(result, null, 2));
-
+  
     return result;
-}
+  }
 
 
 
