@@ -273,22 +273,7 @@ interface Repository {
     sha: string;
 }
 
-interface CsprojData {
-    projectName: string;
-    sources: string[];
-    packages: {
-      packageName: string;
-      packageVersion: string;
-      targetFramework: string;
-      packageId?: string;
-      packageDescription?: string;
-      packageAuthors?: string;
-      packageProjectUrl?: string;
-      packageLicenseUrl?: string;
-      packageIconUrl?: string;
-      packageDependencies?: string;
-    }[];
-  }
+
   
 
 
@@ -330,137 +315,61 @@ interface Output {
 }
 
 
-async function run() {
-    const token = core.getInput('github-token');
-    const octokit = github.getOctokit(token);
+// async function run() {
+//     const token = core.getInput('github-token');
+//     const octokit = github.getOctokit(token);
 
-    const context = github.context;
-    const repo = context.payload.repository?.full_name || '';
+//     const context = github.context;
+//     const repo = context.payload.repository?.full_name || '';
 
-    const branch = core.getInput('branch-name');
-    const { data: commit } = await octokit.rest.repos.getCommit({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        ref: branch,
-    });
+//     const branch = core.getInput('branch-name');
+//     const { data: commit } = await octokit.rest.repos.getCommit({
+//         owner: context.repo.owner,
+//         repo: context.repo.repo,
+//         ref: branch,
+//     });
 
-    const output: Output = {
-        repository: {
-            name: repo,
-            packages: [],
-            currentReleaseTag: '',
-            license: '',
-            sha: commit.sha,
-        },
-        npmPackages: [],
-        // npmPackages: '',
-        nugetPackages: [],
-        //nugetPackages: '',
-        //submodules: [],
-        //   submodules: '',
-    };
-
-
-    // Get repository info
-    const { data: repository } = await octokit.rest.repos.get({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-    });
+//     const output: Output = {
+//         repository: {
+//             name: repo,
+//             packages: [],
+//             currentReleaseTag: '',
+//             license: '',
+//             sha: commit.sha,
+//         },
+//         npmPackages: [],
+//         // npmPackages: '',
+//         nugetPackages: [],
+//         //nugetPackages: '',
+//         //submodules: [],
+//         //   submodules: '',
+//     };
 
 
-
-    output.repository.currentReleaseTag = repository.default_branch;
-    output.repository.license = repository.license?.name || '';
-
-
-    //output.repository.packages.push(nugetFiles.toString()) || [];
+//     // Get repository info
+//     const { data: repository } = await octokit.rest.repos.get({
+//         owner: context.repo.owner,
+//         repo: context.repo.repo,
+//     });
 
 
 
-    //Get NuGet packages
-    // const { data: nugetFiles } = await octokit.rest.repos.getContent({
-    //     owner: context.repo.owner,
-    //     repo: context.repo.repo,
-    //     ref: branch,
-    //     path: '*.csproj',
-    // });
-
-    // // output.nugetPackages = nugetFiles.toLocaleString();
-
-    // const nugetFileString = nugetFiles.toString();
-    // core.info((Array.of(nugetFiles)).toString());
-    // core.info(typeof (nugetFiles))
-
-    // if (nugetFiles != undefined) {
-    //     const packageFilesArray = Object.values(nugetFiles);
-    //     if(packageFilesArray.length != 0) {
-    //     for (const file of packageFilesArray) {
-    //         const { data: nugetInfo } = await octokit.rest.repos.getContent({
-    //             owner: context.repo.owner,
-    //             repo: context.repo.repo,
-    //             ref: branch,
-    //             path: file.path,
-    //         });
-
-    //         const nugetContent = JSON.parse(Buffer.from(file.content, 'base64').toString());
-
-    //         const packageNameRegex = /<PackageReference\s+Include="(.+)"\s+Version="(.+)"\s+\/>/g;
-    //         let match;
-
-    //         while ((match = packageNameRegex.exec(nugetContent))) {
-    //             const [, packageName, version] = match;
-    //             //original: output.nugetPackages.push({
-    //             output.nugetPackages.push({
-    //                 repoName: repo,
-    //                 packageName,
-    //                 version
-    //             })
-    //         }
-    //     }
-                    
-    // } else {
-    //     core.info("Array2 leer");
-    // }
-    // } else {
-    //     core.info("NugetFile is undefined")
-    // }
+//     output.repository.currentReleaseTag = repository.default_branch;
+//     output.repository.license = repository.license?.name || '';
 
 
 
+//     // Write output to file
+//     const outputPath = core.getInput('output-path');
+//     try {
+//         fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
+//         core.info(JSON.stringify(output, null, 2))
+//     } catch (error) {
+//         core.setFailed("WriteFileSync ist falsch")
+//     }
+// }
 
-
-    //   // Get submodules
-    //   const { data: submodules } = await octokit.rest.repos.listSubmodules({
-    //     owner: context.repo.owner,
-    //     repo: context.repo.repo,
-    //     ref: branch,
-    //   });
-
-    //   for (const submodule of submodules) {
-    //     const { data: submoduleCommit } = await octokit.rest.repos.getCommit({
-    //       owner: context.repo.owner,
-    //       repo: submodule.name,
-    //       ref: submodule.sha,
-    //     });
-
-    //     output.submodules.push({
-    //       repoName: submodule.name,
-    //       packageName: submodule.path,
-    //       tag: submoduleCommit.sha,
-    //     });
-    //   }
-
-    // Write output to file
-    const outputPath = core.getInput('output-path');
-    try {
-        fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
-        core.info(JSON.stringify(output, null, 2))
-    } catch (error) {
-        core.setFailed("WriteFileSync ist falsch")
-    }
-}
-
-run();
+// run();
 
 
 // ========================================================
