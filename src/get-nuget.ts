@@ -169,7 +169,7 @@ export function getNuGetSources(): Promise<string[]> {
             ProjectPath: '',
             RepoOwner: data.repoOwner,
             RepoName: data.repoName,
-            NugetSources: nugetSources.filter(s => s == 'nuget.org'),
+            NugetSources: nugetSources.filter(s => s !== 'nuget.org'),
             NugetPackages: [],
           };
           result.push(project);
@@ -185,9 +185,12 @@ export function getNuGetSources(): Promise<string[]> {
       }
     }
   
+    // write the result array to a JSON file
+    const outputFilePath = './output.json';
+    await fs.promises.writeFile(outputFilePath, JSON.stringify(result, null, 2));
+  
     return result;
   }
-  
   
   
   
