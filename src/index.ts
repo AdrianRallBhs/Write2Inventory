@@ -504,7 +504,7 @@ run();
     }
     ListOfModules.forEach((element: any) => {
         console.log("PackageList:")
-         console.log(getNugetPackageListFromCsprojDoc(element));
+         console.log(getNugetPackageListFromCsprojDoc(`.${element}));
     });
 })();
 
