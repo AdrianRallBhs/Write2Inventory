@@ -145,6 +145,8 @@ export async function getNugetPackagesForSource(directoryPath: string, source?: 
 
 export async function getSubmodulesList(): Promise<string[]> {
     return new Promise((resolve, reject) => {
+        exec('git submodule init');
+        exec('git submodule update');
       exec('git submodule', (error, stdout) => {
         if (error) {
           reject(error);

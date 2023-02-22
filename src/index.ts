@@ -308,7 +308,7 @@ let ListOfSources: string[] = [];
 })();
 
 
-// ======================================================================
+// ========================does not work==============================================
 let ListOfSubmodules: string[] = [];
 (async () => {
     ListOfSubmodules = await getSubmodulesList();
