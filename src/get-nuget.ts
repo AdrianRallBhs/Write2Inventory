@@ -134,7 +134,7 @@ export async function getNugetPackagesInfo(): Promise<NugetPackageData[]> {
 
 export function getNuGetSources(): Promise<string[]> {
     return new Promise((resolve, reject) => {
-      exec('nuget sources list -format short', (err, stdout, stderr) => {
+      exec('dotnet nuget list source --format short', (err, stdout, stderr) => {
         if (err) {
           reject(err);
         } else {
