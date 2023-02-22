@@ -528,12 +528,13 @@ let ListOfSources: string[] = [];
 // ======================================================================
 let ListOfSubmodules: string[] = [];
 (async () => {
+    ListOfSources = await getDotnetSources();
     ListOfSubmodules = await getSubmodulesList();
-    if(ListOfSources.length < 1) {
+    if(ListOfSubmodules.length < 1) {
         console.log("ListOfsources is empty")
     }
-    ListOfSources.forEach((element: any) => {
-        console.log(element)
+    ListOfSubmodules.forEach((element: any) => {
+        console.log(`Submodule: ${element}`)
     });
 })();
 //========================works fine=======================================
