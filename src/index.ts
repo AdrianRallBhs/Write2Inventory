@@ -241,6 +241,7 @@ import glob from 'glob';
 import path from 'path';
 import * as xml2js from 'xml2js';
 import * as exec from '@actions/exec'
+import {getNugetPackageInfoFromAssets, getAssetFile} from './get-assets-nuget'
 
 interface Packages {
     name: string;
@@ -272,15 +273,23 @@ interface Repository {
 }
 
 interface CsprojData {
-    projectGuid: string;
-    assemblyName: string;
-    rootNamespace: string;
-    targetFramework: string;
-    nugetPackages: NuGetPackage[];
+    projectName: string;
+    sources: string[];
+    packages: {
+      packageName: string;
+      packageVersion: string;
+      targetFramework: string;
+      packageId?: string;
+      packageDescription?: string;
+      packageAuthors?: string;
+      packageProjectUrl?: string;
+      packageLicenseUrl?: string;
+      packageIconUrl?: string;
+      packageDependencies?: string;
+    }[];
   }
   
- 
-  
+
 
 interface NpmPackage {
     repoName: string;
@@ -510,55 +519,13 @@ async function runNPM() {
 
   findALLCSPROJmodules();
 
-  async function getCsprojData(csprojPath: string): Promise<CsprojData> {
-    const data = await fs.promises.readFile(csprojPath, 'utf-8');
-    const parser = new xml2js.Parser();
-    const parsedData = await parser.parseStringPromise(data);
-  
-    const projectName = parsedData.Project.PropertyGroup[0].AssemblyName[0];
-    const projectGuid = parsedData.Project.PropertyGroup[0].ProjectGuid[0];
-    const rootNamespace = parsedData.Project.PropertyGroup[0].RootNamespace[0];
-    const targetFramework = parsedData.Project.PropertyGroup[0].TargetFramework[0];
-  
-    const packageReferences = parsedData.Project.ItemGroup[0].PackageReference;
-    const nugetPackages: NuGetPackage[] = [];
-  
-    for (const packageReference of packageReferences) {
-      const packageName = packageReference.$.Include;
-      const packageVersion = packageReference.$.Version;
-      const packageSource = packageReference.$.Source;
-      const nugetPackage: NuGetPackage = {
-        name: packageName,
-        version: packageVersion,
-        source: packageSource,
-        repoName: process.env.GITHUB_REPOSITORY!,
-        owner: process.env.GITHUB_ACTOR!
-      };
-      nugetPackages.push(nugetPackage);
-    }
-  
-    const csprojData: CsprojData = {
-      projectGuid,
-      assemblyName: projectName,
-      rootNamespace,
-      targetFramework,
-      nugetPackages
-    };
-    return csprojData;
-  }
-async function nugetGetter():Promise<void> {
-  const csprojFiles = await findALLCSPROJmodules();
-  const csprojData: CsprojData[] = [];
+  (async () => {
+    const assertPaths = await getAssetFile();
+    assertPaths.forEach(element => {
+      getNugetPackageInfoFromAssets(element);
+    });
+  })();
 
-  for (const csprojFile of csprojFiles) {
-    const data = await getCsprojData(csprojFile);
-    csprojData.push(data);
-  }
-
-  console.log(csprojData);
-}
-
-nugetGetter();
 //   function findNetProjectDirectories(rootPath: string): string[] {
 //     const csprojFiles = glob.sync('**/*.csproj', { cwd: rootPath, absolute: true });
 //     const projectDirs = csprojFiles.map((csprojFile: string) => path.dirname(csprojFile));
