@@ -141,13 +141,14 @@ export function getNuGetSources(): Promise<string[]> {
             if (err) {
                 reject(err);
             } else {
-                console.log(stdout);
+                //console.log(stdout);
                 const sources = stdout
                     .split('\n')
                     .map(line => line.trim())
                     .filter(line => line.startsWith('    '))
                     .map(line => line.substring(4));
-                resolve(sources);
+                // resolve(sources);
+                return sources;
             }
         });
     });
@@ -168,19 +169,21 @@ export async function getNugetPackagesInfo(): Promise<Project[]> {
         for (const packageInfo of nugetPackages) {
             let project = result.find((p) => p.ProjectName === packageInfo.nugetName);
             if (!project) {
-                project = {
-                    ProjectName: packageInfo.nugetName,
-                    ProjectPath: '',
-                    RepoOwner: data.repoOwner,
-                    RepoName: data.repoName,
-                    NugetSources: nugetSources.filter(s => s == 'nuget.org'),  
-                    NugetPackages: [],
-                };
-                result.push(project);
+                    project = {
+                        ProjectName: packageInfo.nugetName,
+                        ProjectPath: '',
+                        RepoOwner: data.repoOwner,
+                        RepoName: data.repoName,
+                        NugetSources: nugetSources,  
+                        NugetPackages: [],
+                    };
+                
+                
             }
 
             // add the NuGet package to the Project object
-            const nugetSource = nugetSources.includes(packageInfo.nugetSource) ? packageInfo.nugetSource : '';
+            //const nugetSource = nugetSources.includes(packageInfo.nugetSource) ? packageInfo.nugetSource : '';
+            const nugetSource = nugetSources[0]
             project.NugetPackages.push({
                 Name: packageInfo.nugetName,
                 Version: packageInfo.nugetVersion,
