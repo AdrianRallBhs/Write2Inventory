@@ -17,6 +17,12 @@ inputs:
     description: 'Path to output JSON file'
     required: false
     default: ./report.json
+  nuget-source:
+    description: 'The nuget source that shall be filtered by'
+    required: true
+    default: |
+      "E https://api.nuget.org"
+
 
 runs:
   using: 'node16'

@@ -4,6 +4,7 @@ import * as path from 'path';
 import * as xml2js from 'xml2js';
 import { exec } from 'child_process';
 import * as execute from '@actions/exec'
+import * as core from '@actions/core';
 
 interface NugetPackage {
     Name: string;
@@ -22,7 +23,14 @@ interface Source {
     value: string;
 }
 
+interface Submodule {
+    sha: string;
+    submoduleName: string;
+    referenceBranch: string;
 
+}
+
+const FilterSources = core.getMultilineInput("nuget-sourcee").filter(s => s.trim() !== "")
 
 export async function getDotnetSources(): Promise<string[]> {
     return new Promise<string[]>((resolve, reject) => {
@@ -90,18 +98,18 @@ export async function getNugetPackageListFromCsprojDoc(csprojPath: string): Prom
     try {
         const csprojDoc = await xmlParser.parseStringPromise(csprojXml);
 
-       sources.forEach(source => {
-        for (const packageRef of csprojDoc.Project.ItemGroup[0].PackageReference) {
-            const packageName = packageRef.$.Include;
-            const packageVersion = packageRef.$.Version;
-            packageInfoList.push({
-                nugetName: packageName,
-                nugetVersion: packageVersion,
-                nugetSource: source,
-            });
-        }
-       }) 
-        
+        FilterSources.forEach(source => {
+            for (const packageRef of csprojDoc.Project.ItemGroup[0].PackageReference) {
+                const packageName = packageRef.$.Include;
+                const packageVersion = packageRef.$.Version;
+                packageInfoList.push({
+                    nugetName: packageName,
+                    nugetVersion: packageVersion,
+                    nugetSource: source,
+                });
+            }
+        })
+
     } catch (e) {
         console.log(`Could not parse .csproj file at ${csprojPath}. Error: ${e}`);
     }
@@ -132,3 +140,32 @@ export async function getNugetPackagesForSource(directoryPath: string, source?: 
     return packages;
 }
 
+
+// =========================================================
+
+export async function getSubmodules(): Promise<string[]> {
+    return new Promise<string[]>((resolve, reject) => {
+        exec("git submodule status --recursive", (error, stdout, stderr) => {
+            if (error) {
+                reject(error);
+                return;
+            } if (stderr) {
+                reject(stderr);
+                return;
+            }
+
+
+            const submoduleList = stdout.trim().split("\n")
+                .map((line) => {
+                    const [sha, name, referenceBranch] = line.trim().split(/\s+/);
+                    return {
+                        sha: sha,
+                        name: name,
+                        referenceBranch: referenceBranch,
+                    };
+                });
+
+            resolve(submoduleList);
+        });
+    });
+}

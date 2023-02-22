@@ -242,7 +242,7 @@ import path from 'path';
 import * as xml2js from 'xml2js';
 import * as exec from '@actions/exec'
 import {getNugetPackageInfoFromAssets, getAssetFile} from './get-assets-nuget'
-import { getDotnetSources, getNugetPackageListFromCsprojDoc } from './nuget'
+import { getDotnetSources, getNugetPackageListFromCsprojDoc, getSubmodules } from './nuget'
 
 interface Packages {
     name: string;
@@ -524,11 +524,18 @@ let ListOfSources: string[] = [];
     });
 })();
 
-ListOfSources.forEach(source => {
-    
-});
 
-
+// ======================================================================
+// let ListOfSubmodules: Submodule[] = [];
+// (async () => {
+//     ListOfSubmodules = await getSubmodules();
+//     if(ListOfSources.length < 1) {
+//         console.log("ListOfsources is empty")
+//     }
+//     ListOfSources.forEach((element: any) => {
+//         console.log(element)
+//     });
+// })();
 //========================works fine=======================================
 
 
