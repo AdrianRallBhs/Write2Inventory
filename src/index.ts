@@ -531,7 +531,7 @@ let ListOfSubmodules: string[] = [];
     ListOfSources = await getDotnetSources();
     ListOfSubmodules = await getSubmodulesList();
     if(ListOfSubmodules.length < 1) {
-        console.log("ListOfsources is empty")
+        console.log("ListOfSubmodules is empty")
     }
     ListOfSubmodules.forEach((element: any) => {
         console.log(`Submodule: ${element}`)
