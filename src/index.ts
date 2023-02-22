@@ -490,33 +490,33 @@ async function runNPM() {
   
   runNPM();
 
-  export async function findALLCSPROJmodules(): Promise<string[]> {
-    try {
-      // Checkout the repository including submodules
-      await exec.exec('git', ['submodule', 'update', '--init', '--recursive']);
+//   export async function findALLCSPROJmodules(): Promise<string[]> {
+//     try {
+//       // Checkout the repository including submodules
+//       await exec.exec('git', ['submodule', 'update', '--init', '--recursive']);
   
-      // Use the `find` command to locate all `csproj` files
-      let csprojFiles = '';
-      const options = {
-        listeners: {
-          stdout: (data: Buffer) => {
-            csprojFiles += data.toString();
-          }
-        }
-      };
-      await exec.exec('find', ['.', '-name', '*.csproj'], options);
+//       // Use the `find` command to locate all `csproj` files
+//       let csprojFiles = '';
+//       const options = {
+//         listeners: {
+//           stdout: (data: Buffer) => {
+//             csprojFiles += data.toString();
+//           }
+//         }
+//       };
+//       await exec.exec('find', ['.', '-name', '*.csproj'], options);
   
-      // Split the list of `csproj` files into an array of strings
-      const csprojFileList = csprojFiles.trim().split('\n');
+//       // Split the list of `csproj` files into an array of strings
+//       const csprojFileList = csprojFiles.trim().split('\n');
   
-      // Output the list of `csproj` files found
-      //core.info(`List of csproj files found: ${csprojFileList}`);
+//       // Output the list of `csproj` files found
+//       //core.info(`List of csproj files found: ${csprojFileList}`);
   
-      return csprojFileList;
-    } catch {
-      return [];
-    }
-  }
+//       return csprojFileList;
+//     } catch {
+//       return [];
+//     }
+//   }
 
 //   findALLCSPROJmodules();
 
@@ -534,14 +534,20 @@ sources.forEach(element => {
 })
 })();
 
-  (async () => {
-  const packages =  await getNugetPackagesInfo();
-  console.log(JSON.stringify(packages, null, 2));
-packages.forEach(element => {
-    let packJson = JSON.stringify(element, null, 2)
-    core.info(packJson)
-});
-})();
+// ========================================================
+
+//   (async () => {
+//   const packages =  await getNugetPackagesInfo();
+//   console.log(JSON.stringify(packages, null, 2));
+// packages.forEach(element => {
+//     let packJson = JSON.stringify(element, null, 2)
+//     core.info(packJson)
+// });
+// })();
+
+// =============================================================
+
+
 //   function findNetProjectDirectories(rootPath: string): string[] {
 //     const csprojFiles = glob.sync('**/*.csproj', { cwd: rootPath, absolute: true });
 //     const projectDirs = csprojFiles.map((csprojFile: string) => path.dirname(csprojFile));
