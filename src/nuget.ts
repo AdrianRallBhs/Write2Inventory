@@ -72,7 +72,7 @@ export async function findALLCSPROJmodules(): Promise<string[]> {
           }
         }
       };
-      //await execute.exec('find', ['.', '-name', '*.csproj'], options);
+      await execute.exec('find', ['.', '-name', '*.csproj'], options);
   
       // Split the list of `csproj` files into an array of strings
       const csprojFileList = csprojFiles.trim().split('\n');
