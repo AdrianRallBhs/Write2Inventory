@@ -498,15 +498,17 @@ run();
 
 
 (async () => {
-    const ListOfModules = await findALLCSPROJmodules()
-    if(ListOfModules.length < 1) {
-        console.log("ListOfModules is empty")
+    const ListOfModules = await findALLCSPROJmodules();
+    if (ListOfModules.length < 1) {
+        console.log("ListOfModules is empty");
     }
-    ListOfModules.forEach((element: any) => {
-        console.log("PackageList:")
-         console.log(getNugetPackageListFromCsprojDoc(element.substring(2)));
-    });
+    for (const element of ListOfModules) {
+        console.log("PackageList:");
+        const packageList = await getNugetPackageListFromCsprojDoc(element.substring(2));
+        console.log(packageList);
+    }
 })();
+
 
 // ===========================================================
 let ListOfSources: string[] = [];
