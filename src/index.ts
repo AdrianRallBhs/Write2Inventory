@@ -502,10 +502,11 @@ run();
     if (ListOfModules.length < 1) {
         console.log("ListOfModules is empty");
     }
-    for (const element of ListOfModules) {
-        console.log("PackageList:");
-        const packageList = await getNugetPackageListFromCsprojDoc(element.substring(2));
-        console.log(packageList);
+    else {
+        for (const element of ListOfModules) {
+            const packageList = await getNugetPackageListFromCsprojDoc(element.substring(2));
+            console.log(`PackageList: ${packageList}`);
+        }
     }
 })();
 
@@ -519,9 +520,11 @@ let ListOfSources: string[] = [];
     if(ListOfSources.length < 1) {
         console.log("ListOfsources is empty")
     }
-    ListOfSources.forEach((element: any) => {
-        console.log(element)
-    });
+    else {
+        ListOfSources.forEach((element: any) => {
+            console.log(`List of Sources: ${element}`)
+        });
+    }
 })();
 
 
@@ -532,9 +535,11 @@ let ListOfSubmodules: string[] = [];
     if(ListOfSubmodules.length < 1) {
         console.log("ListOfSubmodules is empty")
     }
-    ListOfSubmodules.forEach((element: any) => {
-        console.log(`Submodule: ${element}`)
-    });
+    else {
+        ListOfSubmodules.forEach((element: any) => {
+            console.log(`Submodule: ${element}`)
+        });
+    }
 })();
 //========================works fine=======================================
 
