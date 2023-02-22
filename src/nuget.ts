@@ -14,21 +14,20 @@ interface Source {
   value: string;
 }
 
-export function getDotnetSources(): string[] {
-  const dotnetConfigPath = path.join('.config', 'dotnet-tools.json');
-  if (!fs.existsSync(dotnetConfigPath)) {
-    return [];
+async function getDotnetSources(): Promise<string[]> {
+    const dotnetConfigPath = path.join('.config', 'dotnet-tools.json');
+    if (!fs.existsSync(dotnetConfigPath)) {
+      return [];
+    }
+  
+    const dotnetConfigContent = fs.readFileSync(dotnetConfigPath, 'utf-8');
+    const dotnetConfig = JSON.parse(dotnetConfigContent);
+  
+    if (!dotnetConfig || !dotnetConfig['nuget-source']) {
+      return [];
+    }
+  
+    const nugetSources: string[] = dotnetConfig['nuget-source'];
+  
+    return nugetSources;
   }
-
-  const dotnetConfig = JSON.parse(fs.readFileSync(dotnetConfigPath, 'utf-8'));
-
-  const sources: string[] = [];
-  const sourcesConfig = dotnetConfig["v3-sources"];
-  if (sourcesConfig) {
-    Object.keys(sourcesConfig).forEach((key) => {
-      sources.push(sourcesConfig[key].source);
-    });
-  }
-
-  return sources;
-}

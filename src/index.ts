@@ -462,10 +462,17 @@ async function run() {
 
 run();
 
-const ListOfSources = getDotnetSources();
-ListOfSources.forEach(element => {
-    console.log(element)
-});
+
+(async () => {
+    const ListOfSources = await getDotnetSources();
+    if(ListOfSources.length < 1) {
+        console.log("ListOfsources is empty")
+    }
+    ListOfSources.forEach((element: any) => {
+        console.log(element)
+    });
+})();
+
 
 //========================works fine=======================================
 
