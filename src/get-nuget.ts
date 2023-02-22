@@ -1,8 +1,11 @@
 import * as path from 'path';
 import * as fs from 'fs';
-
+import glob from 'glob';
+import * as execute from "@actions/exec";
 import * as xml2js from "xml2js";
-import * as cheerio from 'cheerio';
+import { promisify } from "util";
+import { exec } from 'child_process';
+import { DotnetCommandManager } from './dotnet-command-manager'
 
 
 interface PackageReference {
@@ -51,145 +54,22 @@ interface Project {
 //     }
 // }
 
+
+interface CsprojData {
+    repoOwner: string;
+    repoName: string;
+    csprojFilePath: string;
+    csprojData: any;
+}
+
 interface NugetPackage {
-  Name: string;
-  Version: string;
-  Source: string;
-}
-
-interface NugetPackageInfo {
-  nugetName: string;
-  nugetVersion: string;
-  nugetSource: string;
-}
-
-interface CsprojProject {
-  FilePath: string;
-  NugetPackages: NugetPackage[];
-}
-
-
-function getNugetPackageListFromCsprojDoc(csprojDoc: string): NugetPackageInfo[] {
-    const packageReferences = select(csprojDoc, '//ItemGroup/PackageReference');
-  
-    return packageReferences.map((pkg: any) => ({
-      nugetName: pkg.$.Include,
-      nugetVersion: pkg.$.Version,
-      nugetSource: pkg.$.Source,
-    }));
+    Name: string;
+    Version: string;
+    Source: string;
   }
 
 
-
-
-async function getNugetPackagesForAllSources(directoryPath: string): Promise<NugetPackage[]> {
-  const sources = getNugetSources();
-  const packages: NugetPackage[] = [];
-
-  for (const source of sources) {
-    const sourcePackages = await getNugetPackagesForSource(source, directoryPath);
-    packages.push(...sourcePackages);
-  }
-
-  return packages;
-}
-
-
-
-function findCsprojProjects(directoryPath: string): CsprojProject[] {
-  const csprojPaths: string[] = [];
-  const files = fs.readdirSync(directoryPath);
-  const csprojProjects: CsprojProject[] = [];
-
-  for (const file of files) {
-    const filePath = path.join(directoryPath, file);
-    const stat = fs.statSync(filePath);
-
-    if (stat.isDirectory()) {
-      // Recursively search subdirectories
-      const subdirectoryCsprojProjects = findCsprojProjects(filePath);
-      csprojProjects.push(...subdirectoryCsprojProjects);
-    } else if (stat.isFile() && filePath.endsWith('.csproj')) {
-      const csprojXml = fs.readFileSync(filePath, 'utf-8');
-      const xmlParser = new xml2js.Parser();
-      xmlParser.parseString(csprojXml, (err, csprojDoc) => {
-        if (err) {
-          console.log(err);
-          return;
-        }
-
-        csprojProjects.push({
-          FilePath: filePath,
-          NugetPackages: getNugetPackageListFromCsprojDoc(csprojDoc),
-        });
-      });
-    }
-  }
-
-  return csprojProjects;
-}
-
-async function getNugetPackagesForSource(source: string, directoryPath: string): Promise<NugetPackage[]> {
-    const csprojPaths = findCsprojProjects(directoryPath);
-    const packages: NugetPackage[] = [];
   
-    for (const csprojPath of csprojPaths) {
-        const packageInfoList = await getNugetPackageListFromCsprojDoc(fs.readFileSync(csprojPath, 'utf-8'));
-      
-        for (const packageInfo of packageInfoList) {
-          if (packageInfo.nugetSource === source) {
-            packages.push({
-              Name: packageInfo.nugetName,
-              Version: packageInfo.nugetVersion,
-              Source: packageInfo.nugetSource,
-            });
-          }
-        }
-      }
-    return packages;
-  }
-
-
-function getNugetSources(): string[] {
-    const nugetConfigPath = path.join('.nuget', 'NuGet.config');
-    if (!fs.existsSync(nugetConfigPath)) {
-      return [];
-    }
-  
-    const nugetConfigXml = fs.readFileSync(nugetConfigPath, 'utf-8');
-    const xmlParser = new xml2js.Parser();
-    let packageSources;
-    const nugetSources: string[] = [];
-    try {
-      xmlParser.parseString(nugetConfigXml, function (err, result) {
-        packageSources = result.configuration.packageSources[0].add;
-        // const nugetSources: string[] = [];
-  
-    for (let i = 0; i < packageSources.length; i++) {
-      const packageSource = packageSources[i];
-      if (packageSource.$.value) {
-        nugetSources.push(packageSource.$.value);
-      }
-    }
-    return nugetSources;
-      });
-    } catch (e) {
-    // const nugetSources: string[] = [];
-      console.log(`Could not parse NuGet.config file. Error: ${e}`);
-      return nugetSources;
-    }
-    // const nugetSources: string[] = [];
-  
-    // for (let i = 0; i < packageSources.length; i++) {
-    //   const packageSource = packageSources[i];
-    //   if (packageSource.$.value) {
-    //     nugetSources.push(packageSource.$.value);
-    //   }
-    // }
-    return nugetSources;
-  }
-
-
 
 // export async function FindCSProjects(rootPath: string): Promise<CsprojData[]> {
 //     const result: CsprojData[] = [];
