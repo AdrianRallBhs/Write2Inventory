@@ -169,7 +169,7 @@ export function getNuGetSources(): Promise<string[]> {
             ProjectPath: '',
             RepoOwner: data.repoOwner,
             RepoName: data.repoName,
-            NugetSources: nugetSources.filter(s => s !== 'nuget.org'),
+            NugetSources: nugetSources.filter(s => s == 'nuget.org'),
             NugetPackages: [],
           };
           result.push(project);
