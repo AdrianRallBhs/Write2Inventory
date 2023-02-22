@@ -279,18 +279,18 @@ import { getDotnetSources, getNugetPackageListFromCsprojDoc, getSubmodulesList }
 // ===========================================================
 
 
-(async () => {
-    const ListOfModules = await findALLCSPROJmodules();
-    if (ListOfModules.length < 1) {
-        console.log("ListOfModules is empty");
-    }
-    else {
-        for (const element of ListOfModules) {
-            const packageList = await getNugetPackageListFromCsprojDoc(element.substring(2));
-            console.log(`PackageList: ${packageList}`);
-        }
-    }
-})();
+// (async () => {
+//     const ListOfModules = await findALLCSPROJmodules();
+//     if (ListOfModules.length < 1) {
+//         console.log("ListOfModules is empty");
+//     }
+//     else {
+//         for (const element of ListOfModules) {
+//             const packageList = await getNugetPackageListFromCsprojDoc(element.substring(2));
+//             console.log(`PackageList: ${packageList}`);
+//         }
+//     }
+// })();
 
 
 // ===========================================================
