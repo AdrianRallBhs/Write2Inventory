@@ -520,12 +520,12 @@ async function runNPM() {
 
 //   findALLCSPROJmodules();
 
-//   (async () => {
-//     const assertPaths = await getAssetFile();
-//     assertPaths.forEach(element => {
-//       getNugetPackageInfoFromAssets(element);
-//     });
-//   })();
+  (async () => {
+    const assertPaths = await getAssetFile();
+    assertPaths.forEach(element => {
+      getNugetPackageInfoFromAssets(element);
+    });
+  })();
 
   (async () => {
 const sources = await getNuGetSources();
