@@ -174,7 +174,7 @@ export async function getNugetPackagesInfo(): Promise<Project[]> {
                         ProjectPath: '',
                         RepoOwner: data.repoOwner,
                         RepoName: data.repoName,
-                        NugetSources: nugetSources,  
+                        NugetSources: nugetSources.filter(s => s !== 'bhs'),
                         NugetPackages: [],
                     };
                 
@@ -184,8 +184,8 @@ export async function getNugetPackagesInfo(): Promise<Project[]> {
                 console.log(nugetSources)
             }
             // add the NuGet package to the Project object
-            //const nugetSource = nugetSources.includes(packageInfo.nugetSource) ? packageInfo.nugetSource : '';
-            const nugetSource = nugetSources[0]
+            const nugetSource = nugetSources.includes(packageInfo.nugetSource) ? packageInfo.nugetSource : '';
+           // const nugetSource = nugetSources[0]
             console.log(nugetSource)
             project.NugetPackages.push({
                 Name: packageInfo.nugetName,
