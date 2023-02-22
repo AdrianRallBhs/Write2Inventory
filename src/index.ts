@@ -309,38 +309,38 @@ let ListOfDotnetProjects: string[] = [];
     }
 )();
 // ========================funktioniert===================================
-let ListOfSources: string[] = [];
+// let ListOfSources: string[] = [];
 
 
-(async () => {
-    ListOfSources = await getDotnetSources();
-    if(ListOfSources.length < 1) {
-        console.log("ListOfsources is empty")
-    }
-    else {
-        ListOfSources.forEach(source => {
-            console.log(`${ListOfSources}`)
-        })
+// (async () => {
+//     ListOfSources = await getDotnetSources();
+//     if(ListOfSources.length < 1) {
+//         console.log("ListOfsources is empty")
+//     }
+//     else {
+//         ListOfSources.forEach(source => {
+//             console.log(`${ListOfSources}`)
+//         })
             
-        }
-})();
+//         }
+// })();
 
 
-// ========================does work==============================================
-let ListOfSubmodules: string[] = [];
-(async () => {
-    ListOfSubmodules = await getDotnetSubmodules();
-    if(ListOfSubmodules.length < 1) {
-        console.log("ListOfSubmodules is empty")
-    }
-    else {
-        ListOfSubmodules.forEach(submodule => {
-            console.log(`${submodule}`)
-        })
+// // ========================does work==============================================
+// let ListOfSubmodules: string[] = [];
+// (async () => {
+//     ListOfSubmodules = await getDotnetSubmodules();
+//     if(ListOfSubmodules.length < 1) {
+//         console.log("ListOfSubmodules is empty")
+//     }
+//     else {
+//         ListOfSubmodules.forEach(submodule => {
+//             console.log(`${submodule}`)
+//         })
            
-        }
-    }
-)();
+//         }
+//     }
+// )();
 
 
 
