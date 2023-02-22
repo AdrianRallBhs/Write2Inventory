@@ -518,19 +518,19 @@ async function runNPM() {
     }
   }
 
-  findALLCSPROJmodules();
+//   findALLCSPROJmodules();
 
-  (async () => {
-    const assertPaths = await getAssetFile();
-    assertPaths.forEach(element => {
-      getNugetPackageInfoFromAssets(element);
-    });
-  })();
+//   (async () => {
+//     const assertPaths = await getAssetFile();
+//     assertPaths.forEach(element => {
+//       getNugetPackageInfoFromAssets(element);
+//     });
+//   })();
 
   (async () => {
 const sources = await getNuGetSources();
 sources.forEach(element => {
-    core.info(element);
+    core.info(`Source: ${element}`);
 })
 })();
 
