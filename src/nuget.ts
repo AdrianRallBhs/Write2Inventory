@@ -143,25 +143,48 @@ export async function getNugetPackagesForSource(directoryPath: string, source?: 
 
 // =========================================================
 
-export async function getSubmodulesList(): Promise<string[]> {
-    return new Promise((resolve, reject) => {
-        exec('git submodule init');
-        exec('git submodule update');
-      exec('git submodule', (error, stdout) => {
-        if (error) {
-          reject(error);
-        } else {
-          const submodules: string[] = [];
-          const lines = stdout.split('\n');
-          for (const line of lines) {
-            const match = line.match(/^.*\/(.*) \((.*)\)$/);
-            if (match) {
-              const submodulePath = match[1];
-              submodules.push(submodulePath);
+// export async function getSubmodulesList(): Promise<string[]> {
+//     return new Promise((resolve, reject) => {
+//         exec('git submodule init');
+//         exec('git submodule update');
+//       exec('git submodule', (error, stdout) => {
+//         if (error) {
+//           reject(error);
+//         } else {
+//           const submodules: string[] = [];
+//           const lines = stdout.split('\n');
+//           for (const line of lines) {
+//             const match = line.match(/^.*\/(.*) \((.*)\)$/);
+//             if (match) {
+//               const submodulePath = match[1];
+//               submodules.push(submodulePath);
+//             }
+//           }
+//           resolve(submodules);
+//         }
+//       });
+//     });
+//   }
+
+
+export async function getDotnetSubmodules(): Promise<string[]> {
+    return new Promise<string[]>((resolve, reject) => {
+        exec('git submodule', (error, stdout, stderr) => {
+            if (error) {
+                reject(error);
+                return;
             }
-          }
-          resolve(submodules);
-        }
-      });
+            if (stderr) {
+                reject(stderr);
+                return;
+            }
+
+            // Parse the output and extract the source URLs
+            const submodule = stdout.split('\n')
+                .map(submodule => submodule.trim());
+
+
+            resolve(submodule);
+        });
     });
-  }
+}

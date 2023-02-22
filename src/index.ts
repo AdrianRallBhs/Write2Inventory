@@ -242,7 +242,7 @@ import path from 'path';
 import * as xml2js from 'xml2js';
 import * as exec from '@actions/exec'
 import {getNugetPackageInfoFromAssets, getAssetFile} from './get-assets-nuget'
-import { getDotnetSources, getNugetPackageListFromCsprojDoc, getSubmodulesList } from './nuget'
+import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules } from './nuget'
 
 
 
@@ -311,7 +311,7 @@ let ListOfSources: string[] = [];
 // ========================does not work==============================================
 let ListOfSubmodules: string[] = [];
 (async () => {
-    ListOfSubmodules = await getSubmodulesList();
+    ListOfSubmodules = await getDotnetSubmodules();
     if(ListOfSubmodules.length < 1) {
         console.log("ListOfSubmodules is empty")
     }
