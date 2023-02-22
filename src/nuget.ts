@@ -143,29 +143,23 @@ export async function getNugetPackagesForSource(directoryPath: string, source?: 
 
 // =========================================================
 
-// export async function getSubmodules(): Promise<string[]> {
-//     return new Promise<string[]>((resolve, reject) => {
-//         exec("git submodule status --recursive", (error, stdout, stderr) => {
-//             if (error) {
-//                 reject(error);
-//                 return;
-//             } if (stderr) {
-//                 reject(stderr);
-//                 return;
-//             }
-
-
-//             const submoduleList = stdout.trim().split("\n")
-//                 .map((line) => {
-//                     const [sha, name, referenceBranch] = line.trim().split(/\s+/);
-//                     return {
-//                         sha: sha,
-//                         name: name,
-//                         referenceBranch: referenceBranch,
-//                     };
-//                 });
-
-//             resolve(submoduleList);
-//         });
-//     });
-// }
+export async function getSubmodulesList(): Promise<string[]> {
+    return new Promise((resolve, reject) => {
+      exec('git submodule', (error, stdout) => {
+        if (error) {
+          reject(error);
+        } else {
+          const submodules: string[] = [];
+          const lines = stdout.split('\n');
+          for (const line of lines) {
+            const match = line.match(/^.*\/(.*) \((.*)\)$/);
+            if (match) {
+              const submodulePath = match[1];
+              submodules.push(submodulePath);
+            }
+          }
+          resolve(submodules);
+        }
+      });
+    });
+  }
