@@ -19,7 +19,7 @@ inputs:
     default: ./report.json
   nuget-source:
     description: 'The nuget source that shall be filtered by'
-    required: true
+    required: false
     default: |
       "E https://api.nuget.org"
 

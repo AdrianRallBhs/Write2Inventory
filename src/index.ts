@@ -248,33 +248,33 @@ import { getDotnetSources, getNugetPackageListFromCsprojDoc, getSubmodulesList }
 
 // ========================================================
 
-//   export async function findALLCSPROJmodules(): Promise<string[]> {
-//     try {
-//       // Checkout the repository including submodules
-//       await exec.exec('git', ['submodule', 'update', '--init', '--recursive']);
+  export async function findALLCSPROJmodules(): Promise<string[]> {
+    try {
+      // Checkout the repository including submodules
+      await exec.exec('git', ['submodule', 'update', '--init', '--recursive']);
   
-//       // Use the `find` command to locate all `csproj` files
-//       let csprojFiles = '';
-//       const options = {
-//         listeners: {
-//           stdout: (data: Buffer) => {
-//             csprojFiles += data.toString();
-//           }
-//         }
-//       };
-//       await exec.exec('find', ['.', '-name', '*.csproj'], options);
+      // Use the `find` command to locate all `csproj` files
+      let csprojFiles = '';
+      const options = {
+        listeners: {
+          stdout: (data: Buffer) => {
+            csprojFiles += data.toString();
+          }
+        }
+      };
+      await exec.exec('find', ['.', '-name', '*.csproj'], options);
   
-//       // Split the list of `csproj` files into an array of strings
-//       const csprojFileList = csprojFiles.trim().split('\n');  
-//       return csprojFileList;
-//     } catch {
-//       return [];
-//     }
-//   }
+      // Split the list of `csproj` files into an array of strings
+      const csprojFileList = csprojFiles.trim().split('\n');  
+      return csprojFileList;
+    } catch {
+      return [];
+    }
+  }
 
-//   (async () => {
-//   console.log(findALLCSPROJmodules());
-// })();
+  (async () => {
+  console.log(findALLCSPROJmodules());
+})();
 
 // ===========================================================
 
@@ -294,18 +294,18 @@ import { getDotnetSources, getNugetPackageListFromCsprojDoc, getSubmodulesList }
 
 
 // ===========================================================
-let ListOfSources: string[] = [];
+// let ListOfSources: string[] = [];
 
 
-(async () => {
-    ListOfSources = await getDotnetSources();
-    if(ListOfSources.length < 1) {
-        console.log("ListOfsources is empty")
-    }
-    else {
-            console.log(`List of Sources: ${ListOfSources}`)
-        }
-})();
+// (async () => {
+//     ListOfSources = await getDotnetSources();
+//     if(ListOfSources.length < 1) {
+//         console.log("ListOfsources is empty")
+//     }
+//     else {
+//             console.log(`List of Sources: ${ListOfSources}`)
+//         }
+// })();
 
 
 // ======================================================================
