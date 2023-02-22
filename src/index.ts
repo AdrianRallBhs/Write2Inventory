@@ -521,10 +521,8 @@ let ListOfSources: string[] = [];
         console.log("ListOfsources is empty")
     }
     else {
-        ListOfSources.forEach((element: any) => {
-            console.log(`List of Sources: ${element}`)
-        });
-    }
+            console.log(`List of Sources: ${ListOfSources}`)
+        }
 })();
 
 
@@ -536,11 +534,10 @@ let ListOfSubmodules: string[] = [];
         console.log("ListOfSubmodules is empty")
     }
     else {
-        ListOfSubmodules.forEach((element: any) => {
-            console.log(`Submodule: ${element}`)
-        });
+            console.log(`Submodule: ${ListOfSubmodules}`)
+        }
     }
-})();
+)();
 //========================works fine=======================================
 
 
