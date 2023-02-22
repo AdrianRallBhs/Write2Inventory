@@ -293,7 +293,7 @@ import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules
 // })();
 
 
-// ========================funktioniert (zumindest für eine Quelle)===================================
+// ========================funktioniert===================================
 let ListOfSources: string[] = [];
 
 
@@ -328,21 +328,21 @@ let ListOfSubmodules: string[] = [];
 )();
 
 // =======================================================================
-let ListOfDotnetProjects: string[] = [];
-(async () => {
-    ListOfDotnetProjects = await findALLCSPROJmodules();
-    if(ListOfDotnetProjects.length < 1) {
-        console.log("ListOfSubmodules is empty")
-    }
-    else {
-        // ListOfDotnetProjects.forEach(project => {
-        //     console.log(`${project}`)
-        // })
-        console.log(`${ListOfDotnetProjects}`)
+// let ListOfDotnetProjects: string[] = [];
+// (async () => {
+//     ListOfDotnetProjects = await findALLCSPROJmodules();
+//     if(ListOfDotnetProjects.length < 1) {
+//         console.log("ListOfSubmodules is empty")
+//     }
+//     else {
+//         // ListOfDotnetProjects.forEach(project => {
+//         //     console.log(`${project}`)
+//         // })
+//         console.log(`${ListOfDotnetProjects}`)
            
-        }
-    }
-)();
+//         }
+//     }
+// )();
 
 
 //========================works fine=======================================
