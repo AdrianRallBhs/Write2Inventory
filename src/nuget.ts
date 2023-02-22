@@ -169,22 +169,24 @@ export async function getNugetPackagesForSource(directoryPath: string, source?: 
 
 export async function getDotnetSubmodules(): Promise<string[]> {
     return new Promise<string[]>((resolve, reject) => {
-        exec('git submodule', (error, stdout, stderr) => {
-            if (error) {
-                reject(error);
-                return;
-            }
-            if (stderr) {
-                reject(stderr);
-                return;
-            }
-
-            // Parse the output and extract the source URLs
-            const submodule = stdout.split('\n')
-                .map(submodule => submodule.trim());
-
-
-            resolve(submodule);
-        });
+      exec('git submodule', (error, stdout, stderr) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+        if (stderr) {
+          reject(stderr);
+          return;
+        }
+  
+        const submodules = stdout
+          .split('\n')
+          .map(submodule => submodule.trim())
+          .filter(submodule => submodule !== '');
+  
+        const submoduleStrings = submodules.join(',').split(',');
+  
+        resolve(submoduleStrings);
+      });
     });
-}
+  }
