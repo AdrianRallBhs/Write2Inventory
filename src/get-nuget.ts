@@ -204,10 +204,6 @@ export async function getNugetPackagesInfo(): Promise<Project[]> {
 
 
 
-
-
-
-
 // async function main() {
 //   const packages = await getNugetPackagesInfo();
 //   console.log(JSON.stringify(packages, null, 2));
