@@ -335,9 +335,10 @@ let ListOfDotnetProjects: string[] = [];
         console.log("ListOfSubmodules is empty")
     }
     else {
-        ListOfDotnetProjects.forEach(project => {
-            console.log(`${project}`)
-        })
+        // ListOfDotnetProjects.forEach(project => {
+        //     console.log(`${project}`)
+        // })
+        console.log(`${ListOfDotnetProjects}`)
            
         }
     }
