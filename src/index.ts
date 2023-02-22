@@ -541,7 +541,7 @@ sources.forEach(element => {
 //   console.log(JSON.stringify(packages, null, 2));
 packages.forEach(element => {
     let packJson = JSON.stringify(element, null, 2)
-    // core.info(packJson)
+    core.info(packJson)
 });
 })();
 
