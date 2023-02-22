@@ -503,6 +503,7 @@ run();
         console.log("ListOfModules is empty")
     }
     ListOfModules.forEach((element: any) => {
+        console.log("PackageList:")
          console.log(getNugetPackageListFromCsprojDoc(element));
     });
 })();
