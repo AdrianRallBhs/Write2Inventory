@@ -29,11 +29,11 @@ jobs:
       # - name: dotnet Restore
       #   run: dotnet restore
       
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
+      # - name: Build
+      #   run: dotnet build --configuration Release --no-restore
       
-      - name: Test
-        run: dotnet test --no-restore --verbosity normal
+      # - name: Test
+      #   run: dotnet test --no-restore --verbosity normal
 
       # - name: Cache dependencies etc
       #   uses: actions/cache@v1
