@@ -528,7 +528,6 @@ let ListOfSources: string[] = [];
 // ======================================================================
 let ListOfSubmodules: string[] = [];
 (async () => {
-    ListOfSources = await getDotnetSources();
     ListOfSubmodules = await getSubmodulesList();
     if(ListOfSubmodules.length < 1) {
         console.log("ListOfSubmodules is empty")
