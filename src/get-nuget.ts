@@ -146,7 +146,7 @@ export function getNuGetSources(): Promise<string[]> {
                     .map(line => line.trim())
                     .filter(line => line.startsWith('    '))
                     .map(line => line.substring(4));
-                resolve(sources);
+            //     resolve(sources);
             }
         });
     });
@@ -155,7 +155,9 @@ export function getNuGetSources(): Promise<string[]> {
 
 export async function getNugetPackagesInfo(): Promise<Project[]> {
     const csprojData = await FindCSProjects('.');
-    const nugetSources = await getNuGetSources();
+    let nugetSources = await getNuGetSources();
+
+   
     const result: Project[] = [];
 
     for (const data of csprojData) {
@@ -170,7 +172,7 @@ export async function getNugetPackagesInfo(): Promise<Project[]> {
                     ProjectPath: '',
                     RepoOwner: data.repoOwner,
                     RepoName: data.repoName,
-                    NugetSources: nugetSources.filter(s => s == 'nuget.org'),
+                    NugetSources: nugetSources.filter(s => s == 'nuget.org'),  
                     NugetPackages: [],
                 };
                 result.push(project);
