@@ -184,6 +184,7 @@ export async function getNugetPackagesInfo(): Promise<Project[]> {
             // add the NuGet package to the Project object
             //const nugetSource = nugetSources.includes(packageInfo.nugetSource) ? packageInfo.nugetSource : '';
             const nugetSource = nugetSources[0]
+            console.log(nugetSource)
             project.NugetPackages.push({
                 Name: packageInfo.nugetName,
                 Version: packageInfo.nugetVersion,
