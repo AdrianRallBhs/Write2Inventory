@@ -493,7 +493,7 @@ run();
     }
   }
 
-  findALLCSPROJmodules();
+  console.log(findALLCSPROJmodules());
 // ===========================================================
 
 let ListOfSources: string[] = [];
