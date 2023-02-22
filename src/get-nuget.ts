@@ -146,6 +146,7 @@ export function getNuGetSources(): Promise<string[]> {
                     .map(line => line.trim())
                     .filter(line => line.startsWith('    '))
                     .map(line => line.substring(4));
+                    console.log(sources);
                 resolve(sources);
             }
         });
