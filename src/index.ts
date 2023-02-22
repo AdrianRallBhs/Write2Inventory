@@ -293,7 +293,7 @@ import { getDotnetSources, getNugetPackageListFromCsprojDoc, getSubmodulesList }
 // })();
 
 
-// ===========================================================
+// ========================funktioniert (zumindest für eine Quelle)===================================
 let ListOfSources: string[] = [];
 
 
@@ -309,18 +309,18 @@ let ListOfSources: string[] = [];
 
 
 // ======================================================================
-// let ListOfSubmodules: string[] = [];
-// (async () => {
-//     ListOfSubmodules = await getSubmodulesList();
-//     if(ListOfSubmodules.length < 1) {
-//         console.log("ListOfSubmodules is empty")
-//     }
-//     else {
-//             console.log(`Submodule: ${ListOfSubmodules}`)
-//         }
-//     }
-// )();
-//========================works fine=======================================
+let ListOfSubmodules: string[] = [];
+(async () => {
+    ListOfSubmodules = await getSubmodulesList();
+    if(ListOfSubmodules.length < 1) {
+        console.log("ListOfSubmodules is empty")
+    }
+    else {
+            console.log(`Submodule: ${ListOfSubmodules}`)
+        }
+    }
+)();
+========================works fine=======================================
 
 
 // async function runNPM() {
