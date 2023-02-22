@@ -242,7 +242,7 @@ import path from 'path';
 import * as xml2js from 'xml2js';
 import * as exec from '@actions/exec'
 import {getNugetPackageInfoFromAssets, getAssetFile} from './get-assets-nuget'
-import { getNugetPackagesInfo, getNuGetSources } from './get-nuget'
+import { getDotnetSources } from './nuget'
 
 interface Packages {
     name: string;
@@ -462,6 +462,11 @@ async function run() {
 
 run();
 
+const ListOfSources = getDotnetSources();
+ListOfSources.forEach(element => {
+    console.log(element)
+});
+
 //========================works fine=======================================
 
 
@@ -533,23 +538,23 @@ run();
 //     });
 //   })();
 
-  (async () => {
-const sources = await getNuGetSources();
-sources.forEach(element => {
-    core.info(`Source: ${element}`);
-})
-})();
+//   (async () => {
+// const sources = await getNuGetSources();
+// sources.forEach(element => {
+//     core.info(`Source: ${element}`);
+// })
+// })();
 
-// ========================================================
+// // ========================================================
 
-  (async () => {
-  const packages =  await getNugetPackagesInfo();
-  console.log(JSON.stringify(packages, null, 2));
-packages.forEach(element => {
-    let packJson = JSON.stringify(element, null, 2)
-    core.info(`packJSON: ${packJson}`)
-});
-})();
+//   (async () => {
+//   const packages =  await getNugetPackagesInfo();
+//   console.log(JSON.stringify(packages, null, 2));
+// packages.forEach(element => {
+//     let packJson = JSON.stringify(element, null, 2)
+//     core.info(`packJSON: ${packJson}`)
+// });
+// })();
 
 // =============================================================
 
