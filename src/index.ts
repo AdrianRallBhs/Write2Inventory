@@ -527,10 +527,14 @@ async function runNPM() {
     });
   })();
 
-
-  const packages = getNugetPackagesInfo();
+  (async () => {
+  const packages =  await getNugetPackagesInfo();
   console.log(JSON.stringify(packages, null, 2));
-
+packages.forEach(element => {
+    let packJson = JSON.stringify(element, null, 2)
+    core.info(packJson)
+});
+})();
 //   function findNetProjectDirectories(rootPath: string): string[] {
 //     const csprojFiles = glob.sync('**/*.csproj', { cwd: rootPath, absolute: true });
 //     const projectDirs = csprojFiles.map((csprojFile: string) => path.dirname(csprojFile));
