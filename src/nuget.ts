@@ -14,20 +14,28 @@ interface Source {
   value: string;
 }
 
+import { exec } from 'child_process';
+
 export async function getDotnetSources(): Promise<string[]> {
-    const dotnetConfigPath = path.join('.config', 'dotnet-tools.json');
-    if (!fs.existsSync(dotnetConfigPath)) {
-      return [];
-    }
-  
-    const dotnetConfigContent = fs.readFileSync(dotnetConfigPath, 'utf-8');
-    const dotnetConfig = JSON.parse(dotnetConfigContent);
-  
-    if (!dotnetConfig || !dotnetConfig['nuget-source']) {
-      return [];
-    }
-  
-    const nugetSources: string[] = dotnetConfig['nuget-source'];
-  
-    return nugetSources;
-  }
+  return new Promise<string[]>((resolve, reject) => {
+    exec('dotnet nuget list source --format short', (error, stdout, stderr) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+      if (stderr) {
+        reject(stderr);
+        return;
+      }
+
+      // Parse the output and extract the source URLs
+      const sources = stdout
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line !== '')
+        .map(line => line.split(' ')[0]);
+
+      resolve(sources);
+    });
+  });
+}
