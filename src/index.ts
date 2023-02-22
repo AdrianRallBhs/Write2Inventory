@@ -292,11 +292,12 @@ import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules
 //     }
 // })();
 
-// =======================================================================
+// ============================works kind of===========================================
+const submods: string[] = [];
 (async () => {
 const submods: string[] = await findALLCSPROJmodules();
 submods.forEach(element => {
-    console.log(element)
+    console.log(`element`)
 })
 })();
 // ========================funktioniert===================================
