@@ -242,7 +242,7 @@ import path from 'path';
 import * as xml2js from 'xml2js';
 import * as exec from '@actions/exec'
 import {getNugetPackageInfoFromAssets, getAssetFile} from './get-assets-nuget'
-import { getDotnetSources } from './nuget'
+import { getDotnetSources, getNugetPackageListFromCsprojDoc } from './nuget'
 
 interface Packages {
     name: string;
@@ -496,6 +496,18 @@ run();
   console.log(findALLCSPROJmodules());
 // ===========================================================
 
+
+(async () => {
+    const ListOfModules = await findALLCSPROJmodules()
+    if(ListOfModules.length < 1) {
+        console.log("ListOfModules is empty")
+    }
+    ListOfModules.forEach((element: any) => {
+         console.log(getNugetPackageListFromCsprojDoc(element));
+    });
+})();
+
+// ===========================================================
 let ListOfSources: string[] = [];
 
 
