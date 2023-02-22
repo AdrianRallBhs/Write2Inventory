@@ -463,8 +463,44 @@ async function run() {
 run();
 
 
+// ========================================================
+
+  export async function findALLCSPROJmodules(): Promise<string[]> {
+    try {
+      // Checkout the repository including submodules
+      await exec.exec('git', ['submodule', 'update', '--init', '--recursive']);
+  
+      // Use the `find` command to locate all `csproj` files
+      let csprojFiles = '';
+      const options = {
+        listeners: {
+          stdout: (data: Buffer) => {
+            csprojFiles += data.toString();
+          }
+        }
+      };
+      await exec.exec('find', ['.', '-name', '*.csproj'], options);
+  
+      // Split the list of `csproj` files into an array of strings
+      const csprojFileList = csprojFiles.trim().split('\n');
+  
+      // Output the list of `csproj` files found
+      //core.info(`List of csproj files found: ${csprojFileList}`);
+  
+      return csprojFileList;
+    } catch {
+      return [];
+    }
+  }
+
+  findALLCSPROJmodules();
+// ===========================================================
+
+let ListOfSources: string[] = [];
+
+
 (async () => {
-    const ListOfSources = await getDotnetSources();
+    ListOfSources = await getDotnetSources();
     if(ListOfSources.length < 1) {
         console.log("ListOfsources is empty")
     }
@@ -472,6 +508,10 @@ run();
         console.log(element)
     });
 })();
+
+ListOfSources.forEach(source => {
+    
+});
 
 
 //========================works fine=======================================
