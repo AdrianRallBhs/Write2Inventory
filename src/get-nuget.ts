@@ -1,9 +1,11 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import glob from 'glob';
-import * as exec from "@actions/exec";
+import * as execute from "@actions/exec";
 import * as xml2js from "xml2js";
 import { promisify } from "util";
+import { exec } from 'child_process';
+
 
 interface PackageReference {
   Include: string;
@@ -26,7 +28,7 @@ interface Project {
 export async function getAssetFile(): Promise<string[]> {
     try {
         // Checkout the repository including submodules
-        await exec.exec('git', ['submodule', 'update', '--init', '--recursive']);
+        await execute.exec('git', ['submodule', 'update', '--init', '--recursive']);
 
         // Use the `find` command to locate all `csproj` files
         let assertsFiles = '';
@@ -37,7 +39,7 @@ export async function getAssetFile(): Promise<string[]> {
                 }
             }
         };
-        await exec.exec('find', ['.', '-name', '*.assets.json'], options);
+        await execute.exec('find', ['.', '-name', '*.assets.json'], options);
 
         // Split the list of `asserts.json` files into an array of strings
         const assertFilesList = assertsFiles.trim().split('\n');
@@ -129,6 +131,22 @@ export async function getNugetPackagesInfo(): Promise<NugetPackageData[]> {
 
   return result;
 }
+
+export function getNuGetSources(): Promise<string[]> {
+    return new Promise((resolve, reject) => {
+      exec('nuget sources list -format short', (err, stdout, stderr) => {
+        if (err) {
+          reject(err);
+        } else {
+          const sources = stdout.split('\n')
+            .map(line => line.trim())
+            .filter(line => line.startsWith('    '))
+            .map(line => line.substring(4));
+          resolve(sources);
+        }
+      });
+    });
+  }
 
 // async function main() {
 //   const packages = await getNugetPackagesInfo();

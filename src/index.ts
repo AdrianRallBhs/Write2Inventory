@@ -242,7 +242,7 @@ import path from 'path';
 import * as xml2js from 'xml2js';
 import * as exec from '@actions/exec'
 import {getNugetPackageInfoFromAssets, getAssetFile} from './get-assets-nuget'
-import { getNugetPackagesInfo } from './get-nuget'
+import { getNugetPackagesInfo, getNuGetSources } from './get-nuget'
 
 interface Packages {
     name: string;
@@ -528,6 +528,7 @@ async function runNPM() {
   })();
 
   (async () => {
+    getNuGetSources();
   const packages =  await getNugetPackagesInfo();
   console.log(JSON.stringify(packages, null, 2));
 packages.forEach(element => {
