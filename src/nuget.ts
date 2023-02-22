@@ -29,11 +29,10 @@ export async function getDotnetSources(): Promise<string[]> {
       }
 
       // Parse the output and extract the source URLs
-      const sources = stdout
-        .split('\n')
-        .map(line => line.trim())
-        .filter(line => line !== '')
-        .map(line => line.split(' ')[0]);
+      const sources = stdout.split('\r\n')
+  .map(source => source.trim())
+  .filter(source => source && !source.startsWith('---') && !source.startsWith('Source'));
+
 
       resolve(sources);
     });
