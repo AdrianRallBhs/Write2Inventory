@@ -1,3 +1,6 @@
 [submodule "Dependency"]
 	path = Dependency
 	url = https://github.com/AdrianRallBhs/Dependency.git
+[submodule "submarine"]
+	path = submarine
+	url = https://github.com/AdrianRallBhs/submarine.git
