@@ -462,70 +462,76 @@ async function run() {
 
 run();
 
-async function runNPM() {
-    try {
-      const token = core.getInput('github-token');
-      const octokit = github.getOctokit(token);
-  
-      const { data: contents } = await octokit.rest.repos.getContent({
-        owner: github.context.repo.owner,
-        repo: github.context.repo.repo,
-        path: 'package.json',
-      });
-  
-      const packages = packageJson.dependencies;
-  
-      const packageList = Object.keys(packages).map((name) => ({
-        name,
-        version: packages[name],
-        repoName: github.context.repo.repo,
-        owner: github.context.repo.owner,
-      }));
-  
-      console.log(JSON.stringify(packageList, null, 2));
-    } catch (error) {
-      core.setFailed("Fehler in runNPM");
-    }
-  }
-  
-  runNPM();
+//========================works fine=======================================
 
-//   export async function findALLCSPROJmodules(): Promise<string[]> {
+
+// async function runNPM() {
 //     try {
-//       // Checkout the repository including submodules
-//       await exec.exec('git', ['submodule', 'update', '--init', '--recursive']);
+//       const token = core.getInput('github-token');
+//       const octokit = github.getOctokit(token);
   
-//       // Use the `find` command to locate all `csproj` files
-//       let csprojFiles = '';
-//       const options = {
-//         listeners: {
-//           stdout: (data: Buffer) => {
-//             csprojFiles += data.toString();
-//           }
-//         }
-//       };
-//       await exec.exec('find', ['.', '-name', '*.csproj'], options);
+//       const { data: contents } = await octokit.rest.repos.getContent({
+//         owner: github.context.repo.owner,
+//         repo: github.context.repo.repo,
+//         path: 'package.json',
+//       });
   
-//       // Split the list of `csproj` files into an array of strings
-//       const csprojFileList = csprojFiles.trim().split('\n');
+//       const packages = packageJson.dependencies;
   
-//       // Output the list of `csproj` files found
-//       //core.info(`List of csproj files found: ${csprojFileList}`);
+//       const packageList = Object.keys(packages).map((name) => ({
+//         name,
+//         version: packages[name],
+//         repoName: github.context.repo.repo,
+//         owner: github.context.repo.owner,
+//       }));
   
-//       return csprojFileList;
-//     } catch {
-//       return [];
+//       console.log(JSON.stringify(packageList, null, 2));
+//     } catch (error) {
+//       core.setFailed("Fehler in runNPM");
 //     }
 //   }
+  
+//   runNPM();
 
-//   findALLCSPROJmodules();
 
-  (async () => {
-    const assertPaths = await getAssetFile();
-    assertPaths.forEach(element => {
-      getNugetPackageInfoFromAssets(element);
-    });
-  })();
+// ====================================================================
+
+  export async function findALLCSPROJmodules(): Promise<string[]> {
+    try {
+      // Checkout the repository including submodules
+      await exec.exec('git', ['submodule', 'update', '--init', '--recursive']);
+  
+      // Use the `find` command to locate all `csproj` files
+      let csprojFiles = '';
+      const options = {
+        listeners: {
+          stdout: (data: Buffer) => {
+            csprojFiles += data.toString();
+          }
+        }
+      };
+      await exec.exec('find', ['.', '-name', '*.csproj'], options);
+  
+      // Split the list of `csproj` files into an array of strings
+      const csprojFileList = csprojFiles.trim().split('\n');
+  
+      // Output the list of `csproj` files found
+      //core.info(`List of csproj files found: ${csprojFileList}`);
+  
+      return csprojFileList;
+    } catch {
+      return [];
+    }
+  }
+
+  findALLCSPROJmodules();
+
+//   (async () => {
+//     const assertPaths = await getAssetFile();
+//     assertPaths.forEach(element => {
+//       getNugetPackageInfoFromAssets(element);
+//     });
+//   })();
 
   (async () => {
 const sources = await getNuGetSources();
