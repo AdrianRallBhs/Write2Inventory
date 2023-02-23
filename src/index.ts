@@ -340,12 +340,12 @@ let potNetProjectsPlain: string[] = [];
 potNetProjectsPlain.push("./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj");
 
 (async () => {
-    const NugetPackageInfos: NugetPackageInfo[][]  = await getAllNugetPackages(potNetProjectsPlain, ListOfSourcesPlain);
+    const NugetPackageInfos  = await getAllNugetPackages(potNetProjectsPlain, ListOfSourcesPlain);
     if (NugetPackageInfos.length < 1) {
         console.log("NugetPackageInfos is empty")
     }
     else {
-        const outdatedPackages: any[] = [];
+        const outdatedPackages: { project: string; source: string; packageName: string; currentVersion: string; latestVersion: string; }[] = [];
 
         NugetPackageInfos.forEach(projectResults => {
             projectResults.forEach(packageInfo => {
