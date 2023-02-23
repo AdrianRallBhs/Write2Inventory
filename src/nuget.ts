@@ -199,7 +199,7 @@ export async function getAllNugetPackages(projectList: string[], sourceList: str
           }
         }
         if (packageName && currentVersion && latestVersion) {
-          outdatedPackages.push({ project, source, packageName, currentVersion, latestVersion, resolvedVersion });
+          outdatedPackages.push({ project, source, packageName, currentVersion, resolvedVersion, latestVersion });
         }
       }
     }

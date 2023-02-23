@@ -355,11 +355,9 @@ const results = await getAllNugetPackages(projectList, sourceList);
 
 
 const output = child_process.execSync(`dotnet list ${projectList[0]} package --highest-minor --outdated --source ${sourceList[0]}`);
-console.log('output:', output.toString());
 
-const results2 = await getOutdatedPackages(projectList, sourceList);
-console.log(JSON.stringify(results2, null, 2));
-console.log(results2);
+const nugetPackages = await getOutdatedPackages(projectList, sourceList);
+console.log(JSON.stringify(nugetPackages, null, 2));
 
         // NugetPackageInfos.forEach(packageInfo => {
         //     console.log(`Results for project: ${packageInfo[0].project}`);
