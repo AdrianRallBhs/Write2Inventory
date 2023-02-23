@@ -344,9 +344,11 @@ potNetProjectsPlain.push("./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj");
         console.log("NugetPackageInfos is empty")
     }
     else {
-        NugetPackageInfos.forEach(packageInfo => {
-            console.log(`${packageInfo}`)
-        })
+        let packageInfoList = JSON.stringify(NugetPackageInfos);
+        console.log(packageInfoList)
+        // NugetPackageInfos.forEach(packageInfo => {
+        //     console.log(`${packageInfo}`)
+        // })
     }
 })();
 
