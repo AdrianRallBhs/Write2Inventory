@@ -252,56 +252,24 @@ interface Repository {
     sha: string;
 }
 
+interface NPMPackage {
+    name: string;
+    version: string;
+    repoName: string;
+    owner: string;
+  }
+  
+  
+  
+  
 
 interface Output {
     repository: Repository;
+    npmPackages: NPMPackage[];
+    nugetPackages: string[];
+    submodules: string[];
 }
 
-
-export async function runRepoInfo() {
-    const token = core.getInput('github-token');
-    const octokit = github.getOctokit(token);
-
-    const context = github.context;
-    const repo = context.payload.repository?.full_name || '';
-
-    const branch = core.getInput('branch-name');
-    const { data: commit } = await octokit.rest.repos.getCommit({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        ref: branch,
-    });
-
-    const output: Output = {
-        repository: {
-            name: repo,
-            currentReleaseTag: '',
-            license: '',
-            sha: commit.sha,
-        }
-    };
-    // Get repository info
-    const { data: repository } = await octokit.rest.repos.get({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-    });
-
-
-
-    output.repository.currentReleaseTag = repository.default_branch;
-    output.repository.license = repository.license?.name || '';
-
-     // Write output to file
-     const outputPath = core.getInput('output-path');
-     try {
-         fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
-         core.info(JSON.stringify(output, null, 2))
-     } catch (error) {
-         core.setFailed("WriteFileSync ist falsch")
-     }
-}
-
-runRepoInfo()
 
 // ============================works for submodules too===========================================
 // const dotNetProjects: string[] = [];
@@ -387,32 +355,83 @@ runRepoInfo()
 // //========================works fine=======================================
 
 
-// export async function runNPM() {
-//     try {
-//       const token = core.getInput('github-token');
-//       const octokit = github.getOctokit(token);
+export async function runNPM(): Promise<NPMPackage[]> {
+    try {
+      const token = core.getInput('github-token');
+      const octokit = github.getOctokit(token);
   
-//       const { data: contents } = await octokit.rest.repos.getContent({
-//         owner: github.context.repo.owner,
-//         repo: github.context.repo.repo,
-//         path: 'package.json',
-//       });
+      const { data: contents } = await octokit.rest.repos.getContent({
+        owner: github.context.repo.owner,
+        repo: github.context.repo.repo,
+        path: 'package.json',
+      });
   
-//       const packages = packageJson.dependencies;
+      const packages = packageJson.dependencies;
   
-//       const packageList = Object.keys(packages).map((name) => ({
-//         name,
-//         version: packages[name],
-//         repoName: github.context.repo.repo,
-//         owner: github.context.repo.owner,
-//       }));
+      const packageList = Object.keys(packages).map((name) => ({
+        name,
+        version: packages[name],
+        repoName: github.context.repo.repo,
+        owner: github.context.repo.owner,
+      }));
   
-//       console.log(JSON.stringify(packageList, null, 2));
-//     } catch (error) {
-//       core.setFailed("Fehler in runNPM");
-//     }
-//   }
+      return packageList;
+    } catch (error) {
+      core.setFailed("Fehler in runNPM");
+      return [];
+    }
+  }
+  
   
 //   runNPM();
 
+// ======================================================
+export async function runRepoInfo() {
+    const token = core.getInput('github-token');
+    const octokit = github.getOctokit(token);
 
+    const context = github.context;
+    const repo = context.payload.repository?.full_name || '';
+
+    const branch = core.getInput('branch-name');
+    const { data: commit } = await octokit.rest.repos.getCommit({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        ref: branch,
+    });
+
+    const output: Output = {
+        repository: {
+            name: repo,
+            currentReleaseTag: '',
+            license: '',
+            sha: commit.sha,
+        },
+        npmPackages: [],
+        nugetPackages: [],
+        submodules: []
+    };
+    // Get repository info
+    const { data: repository } = await octokit.rest.repos.get({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+    });
+
+
+
+    output.repository.currentReleaseTag = repository.default_branch;
+    output.repository.license = repository.license?.name || '';
+
+    output.npmPackages = await runNPM();
+
+     // Write output to file
+     const outputPath = core.getInput('output-path');
+     try {
+         fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
+         core.info(JSON.stringify(output, null, 2))
+     } catch (error) {
+         core.setFailed("WriteFileSync ist falsch")
+     }
+}
+
+runRepoInfo();
