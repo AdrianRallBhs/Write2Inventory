@@ -347,7 +347,7 @@ potNetProjectsPlain.push("./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj");
 // const allPackages = await getAllNugetPackages(projectList, sourceList);
 // const outdatedPackages: NugetPackageInfo[] = [];
 
-const projectList = ['./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj'];
+const projectList = ['./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj', './submarine/BlazorSubmarine/BlazorSubmarine/BlazorSubmarine.csproj'];
 const sourceList = ['https://api.nuget.org/v3/index.json'];
 
 const results = await getAllNugetPackages(projectList, sourceList);
@@ -358,6 +358,7 @@ console.log('output:', output.toString());
 
 const results2 = await getOutdatedPackages(projectList, sourceList);
 console.log(JSON.stringify(results2, null, 2));
+console.log(results2);
 
         // NugetPackageInfos.forEach(packageInfo => {
         //     console.log(`Results for project: ${packageInfo[0].project}`);
