@@ -337,7 +337,7 @@ const sourceList = ['https://api.nuget.org/v3/index.json'];
 //const results = await getAllNugetPackages(projectList, sourceList);
 
 
-const NugetPackageInfos = await getOutdatedPackages(dotNetProjects, sourceList);
+const NugetPackageInfos = await getOutdatedPackages(dotNetProjects, ListOfSources);
 // const NugetPackageInfos = await getAllNugetPackages(projectList, sourceList);
 console.log(ListOfSources)
 console.log(JSON.stringify(NugetPackageInfos, null, 2));

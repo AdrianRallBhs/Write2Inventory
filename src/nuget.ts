@@ -45,26 +45,26 @@ const FilterSources = core.getMultilineInput("nuget-sourcee").filter(s => s.trim
 
 export async function getDotnetSources(): Promise<string[]> {
     return new Promise<string[]>((resolve, reject) => {
-        exec('dotnet nuget list source --format short', (error, stdout, stderr) => {
-            if (error) {
-                reject(error);
-                return;
-            }
-            if (stderr) {
-                reject(stderr);
-                return;
-            }
-
-            // Parse the output and extract the source URLs
-            const sources = stdout.split('\r\n')
-                .map(source => source.trim())
-                .filter(source => source && !source.startsWith('---') && !source.startsWith('Source'));
-
-
-            resolve(sources);
-        });
+      exec('dotnet nuget list source --format short', (error, stdout, stderr) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+        if (stderr) {
+          reject(stderr);
+          return;
+        }
+  
+        // Parse the output and extract the enabled source URLs
+        const sources = stdout.split('\r\n')
+          .map(source => source.trim())
+          .filter(source => source && !source.startsWith('---') && !source.startsWith('Source') && source.startsWith('E '))
+          .map(source => source.substring(2));
+  
+        resolve(sources);
+      });
     });
-}
+  }
 
 // =====================================================
 
