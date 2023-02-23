@@ -455,8 +455,11 @@ export async function runRepoInfo() {
      // Write output to file
      const outputPath = core.getInput('output-path');
      try {
-         fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
-         core.info(JSON.stringify(output, null, 2))
+        core.info(JSON.stringify(output, null, 2))
+        const ouputstring: string = JSON.stringify(output, null, 2);
+         fs.writeFileSync(outputPath, ouputstring);
+         console.log(ouputstring)
+         
      } catch (error) {
          core.setFailed("WriteFileSync ist falsch")
      }
