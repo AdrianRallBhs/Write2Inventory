@@ -353,6 +353,17 @@ getOutdatedPackages(projectList, sourceList).then((outdatedPackages) => {
   console.log(`outdated package: ${JSON.stringify(outdatedPackages, null, 2)}`);
 });
 
+const results = await getAllNugetPackages(projectList, sourceList);
+const outdatedPackages = await getOutdatedPackages(projectList, sourceList);
+results.forEach(projectResults => {
+  projectResults.forEach(packageInfo => {
+    if (packageInfo.currentVersion.includes(">")) {
+     outdatedPackages.push(packageInfo);
+    }
+  });
+});
+console.log(JSON.stringify(outdatedPackages, null, 2));
+
         // NugetPackageInfos.forEach(packageInfo => {
         //     console.log(`Results for project: ${packageInfo[0].project}`);
         //     packageInfo.forEach(DetailedpackageInfo => {
