@@ -6,6 +6,8 @@ import { exec, spawn } from 'child_process';
 import * as execute from '@actions/exec'
 import * as core from '@actions/core';
 import * as child_process from 'child_process';
+import * as semver from 'semver';
+import latestVersion from 'latest-version';
 
 interface NugetPackage {
     Name: string;
@@ -111,7 +113,7 @@ export async function getAllNugetPackages(projectList: string[], sourceList: str
       const projectPackageInfoList: NugetPackageInfo[] = [];
       for (const source of sourceList) {
         try {
-          const output = child_process.execSync(`dotnet list ${project} package --highest-minor --outdated --source ${source}`);
+          const output = child_process.execSync(`dotnet list ${project} package --outdated --source ${source}`);
           const packageInfoRegex = /(?<packageName>\S+)\s+(?<currentVersion>\S+)\s+(?<latestVersion>\S+)/g;
           let packageInfoMatch: RegExpExecArray | null;
           while ((packageInfoMatch = packageInfoRegex.exec(output.toString())) !== null) {
@@ -121,7 +123,7 @@ export async function getAllNugetPackages(projectList: string[], sourceList: str
               source,
               packageName,
               currentVersion,
-              latestVersion
+              latestVersion,
             });
           }
         } catch (error) {
@@ -133,10 +135,44 @@ export async function getAllNugetPackages(projectList: string[], sourceList: str
     return packageInfoList;
   }
 
+
+ export async function getLatestNugetVersion(packageName: string, source: string): Promise<string> {
+    try {
+      const latestVersionString: string = await latestVersion(`${packageName}@${source}`);
+      return latestVersionString;
+    } catch (error) {
+      console.error(`Error getting latest version of package ${packageName} from source ${source}: ${error}`);
+      throw error;
+    }
+  }
+
+ export async function getOutdatedPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[]> {
+    const allPackages = await getAllNugetPackages(projectList, sourceList);
+    const outdatedPackages: NugetPackageInfo[] = [];
+  
+    for (const projectPackages of allPackages) {
+      for (const packageInfo of projectPackages) {
+        if (packageInfo.currentVersion.includes(">")) {
+          const packageName = packageInfo.packageName;
+          const source = packageInfo.source;
+          const latestVersion = await getLatestNugetVersion(packageName, source);
+  
+          if (semver.lt(packageInfo.currentVersion, latestVersion)) {
+            outdatedPackages.push({
+              ...packageInfo,
+              latestVersion,
+            });
+          }
+        }
+      }
+    }
+  
+    return outdatedPackages;
+  }
   
   
   
-  
+
   
 
 // =====================================================

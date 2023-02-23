@@ -242,7 +242,8 @@ import path from 'path';
 import * as xml2js from 'xml2js';
 import * as exec from '@actions/exec'
 import {getNugetPackageInfoFromAssets, getAssetFile} from './get-assets-nuget'
-import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules, findALLCSPROJmodules, getAllNugetPackages } from './nuget'
+import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules, findALLCSPROJmodules, getAllNugetPackages, getLatestNugetVersion, getOutdatedPackages } from './nuget'
+import semver from 'semver/classes/semver';
 
 
 
@@ -340,29 +341,28 @@ let potNetProjectsPlain: string[] = [];
 potNetProjectsPlain.push("./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj");
 
 (async () => {
-    const NugetPackageInfos  = await getAllNugetPackages(potNetProjectsPlain, ListOfSourcesPlain);
-    if (NugetPackageInfos.length < 1) {
-        console.log("NugetPackageInfos is empty")
-    }
-    else {
-        const outdatedPackages: { project: string; source: string; packageName: string; currentVersion: string; latestVersion: string; }[] = [];
+//     const projectList = ['./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj'];
+// const sourceList = ['https://api.nuget.org/v3/index.json'];
 
-        NugetPackageInfos.forEach(projectResults => {
-            projectResults.forEach(packageInfo => {
-                if (packageInfo.currentVersion.includes(">")) {
-                    outdatedPackages.push(packageInfo);
-                }
-            });
-        });
-        console.log(JSON.stringify(outdatedPackages, null, 2));
+// const allPackages = await getAllNugetPackages(projectList, sourceList);
+// const outdatedPackages: NugetPackageInfo[] = [];
+
+const projectList = ['./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj'];
+const sourceList = ['https://api.nuget.org/v3/index.json'];
+getOutdatedPackages(projectList, sourceList).then((outdatedPackages) => {
+  console.log(JSON.stringify(outdatedPackages, null, 2));
+});
+
         // NugetPackageInfos.forEach(packageInfo => {
         //     console.log(`Results for project: ${packageInfo[0].project}`);
         //     packageInfo.forEach(DetailedpackageInfo => {
         //         console.log(`Package: ${DetailedpackageInfo.packageName}, Current Version: ${DetailedpackageInfo.currentVersion}`);
         //       });
         // })
-    }
 })();
+
+
+
 
 // // ========================does work==============================================
 let ListOfSubmodules: string[] = [];

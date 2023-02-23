@@ -20,6 +20,7 @@
   "devDependencies": {
     "@types/glob": "^8.0.1",
     "@types/node": "^18.14.0",
+    "@types/semver": "^7.3.13",
     "@types/xml2js": "^0.4.11",
     "cheerio": "^1.0.0-rc.12",
     "typescript": "^4.9.5"
@@ -33,6 +34,7 @@
     "@octokit/types": "^9.0.0",
     "fs": "0.0.1-security",
     "glob": "^8.1.0",
+    "latest-version": "^7.0.0",
     "xml2js": "^0.4.23"
   }
 }
