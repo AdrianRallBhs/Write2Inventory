@@ -344,8 +344,15 @@ potNetProjectsPlain.push("./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj");
         console.log("NugetPackageInfos is empty")
     }
     else {
-        let packageInfoList = JSON.stringify(NugetPackageInfos, null, 2);
-        console.log(packageInfoList)
+        const outdatedPackages: any[] = [];
+        NugetPackageInfos.forEach(projectResults => {
+          projectResults.forEach(packageInfo => {
+            if (packageInfo.currentVersion.includes(">")) {
+              outdatedPackages.push(packageInfo);
+            }
+          });
+        });
+        console.log(JSON.stringify(outdatedPackages, null, 2));
         // NugetPackageInfos.forEach(packageInfo => {
         //     console.log(`Results for project: ${packageInfo[0].project}`);
         //     packageInfo.forEach(DetailedpackageInfo => {
