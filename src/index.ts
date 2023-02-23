@@ -273,7 +273,7 @@ interface NPMPackage {
 interface Output {
     repository: Repository;
     npmPackages: NPMPackage[];
-    nugetPackages: string[];
+    nugetPackages: NugetPackageInfo[];
     submodules: string[];
 }
 
@@ -424,14 +424,14 @@ export async function runRepoInfo() {
         repo: context.repo.repo,
     });
 
-    // const dotNetProjects: string[] =  await findALLCSPROJmodules();
-    // const ListOfSources: string[] = await getDotnetSources();
+    const dotNetProjects: string[] =  await findALLCSPROJmodules();
+    const ListOfSources: string[] = await getDotnetSources();
 
     output.repository.currentReleaseTag = repository.default_branch;
     output.repository.license = repository.license?.name || '';
 
     output.npmPackages = await runNPM();
-    // output.nugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
+    output.nugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
     output.submodules = await await getDotnetSubmodules();
 
      // Write output to file
