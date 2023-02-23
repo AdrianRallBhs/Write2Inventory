@@ -350,15 +350,15 @@ potNetProjectsPlain.push("./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj");
 const projectList = ['./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj'];
 const sourceList = ['https://api.nuget.org/v3/index.json'];
 getOutdatedPackages(projectList, sourceList).then((outdatedPackages) => {
-  console.log(JSON.stringify(outdatedPackages, null, 2));
+  console.log(`outdated package: ${JSON.stringify(outdatedPackages, null, 2)}`);
 });
 
-        NugetPackageInfos.forEach(packageInfo => {
-            console.log(`Results for project: ${packageInfo[0].project}`);
-            packageInfo.forEach(DetailedpackageInfo => {
-                console.log(`Package: ${DetailedpackageInfo.packageName}, Current Version: ${DetailedpackageInfo.currentVersion}`);
-              });
-        })
+        // NugetPackageInfos.forEach(packageInfo => {
+        //     console.log(`Results for project: ${packageInfo[0].project}`);
+        //     packageInfo.forEach(DetailedpackageInfo => {
+        //         console.log(`Package: ${DetailedpackageInfo.packageName}, Current Version: ${DetailedpackageInfo.currentVersion}`);
+        //       });
+        // })
 })();
 
 
