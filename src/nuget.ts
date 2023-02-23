@@ -173,7 +173,7 @@ export async function getAllNugetPackages(projectList: string[], sourceList: str
   
   
   
-export  async function getOutdatedPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[]> {
+  export async function getOutdatedPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[]> {
     const outdatedPackages: NugetPackageInfo[] = [];
   
     for (const project of projectList) {
@@ -193,15 +193,13 @@ export  async function getOutdatedPackages(projectList: string[], sourceList: st
           }
         }
         if (packageName && currentVersion && latestVersion) {
-          outdatedPackages.push({ project, source, packageName, currentVersion, latestVersion });
+          outdatedPackages.push({ project, source, packageName: currentVersion, currentVersion: latestVersion, latestVersion });
         }
       }
     }
   
     return outdatedPackages;
   }
-
-
 
   
 
@@ -314,4 +312,3 @@ export async function getDotnetSubmodules(): Promise<string[]> {
      function fetch(apiUrl: string) {
          throw new Error('Function not implemented.');
      }
-  //'list', this.projectfile, 'package', versionFlag, '--outdated', '--source', sources[0]
