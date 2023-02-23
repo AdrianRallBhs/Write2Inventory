@@ -320,23 +320,23 @@ interface Output {
 //     latestVersion: string;
 //   }
 
-const NugetPackageInfos: NugetPackageInfo[][] = [];
-let ListOfSourcesPlain: string[] = [];
-ListOfSourcesPlain.push("https://api.nuget.org/v3/index.json");
-let potNetProjectsPlain: string[] = [];
-potNetProjectsPlain.push("./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj");
+// const NugetPackageInfos: NugetPackageInfo[][] = [];
+// let ListOfSourcesPlain: string[] = [];
+// ListOfSourcesPlain.push("https://api.nuget.org/v3/index.json");
+// let potNetProjectsPlain: string[] = [];
+// potNetProjectsPlain.push("./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj");
 
-(async () => {
+// (async () => {
 
-const projectList = ['./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj', './submarine/BlazorSubmarine/BlazorSubmarine/BlazorSubmarine.csproj'];
-const sourceList = ['https://api.nuget.org/v3/index.json'];
+// const projectList = ['./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj', './submarine/BlazorSubmarine/BlazorSubmarine/BlazorSubmarine.csproj'];
+// const sourceList = ['https://api.nuget.org/v3/index.json'];
 
-const results = await getAllNugetPackages(projectList, sourceList);
+// const results = await getAllNugetPackages(projectList, sourceList);
 
 
-const NugetPackageInfos = await getOutdatedPackages(projectList, sourceList);
-console.log(JSON.stringify(NugetPackageInfos, null, 2));
-})();
+// const NugetPackageInfos = await getOutdatedPackages(projectList, sourceList);
+// console.log(JSON.stringify(NugetPackageInfos, null, 2));
+// })();
 
 
 
