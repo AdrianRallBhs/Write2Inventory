@@ -273,7 +273,7 @@ interface NPMPackage {
 interface Output {
     repository: Repository;
     npmPackages: NPMPackage[];
-    nugetPackages: NugetPackageInfo[];
+    nugetPackages: string[];
     submodules: string[];
 }
 
