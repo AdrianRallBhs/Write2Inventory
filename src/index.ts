@@ -458,7 +458,6 @@ export async function runRepoInfo() {
         core.info(JSON.stringify(output, null, 2))
         const ouputstring: string = JSON.stringify(output, null, 2);
          fs.writeFileSync(outputPath, ouputstring);
-         console.log(ouputstring)
          fs.closeSync(fs.openSync(outputPath, 'r'));
          console.log(outputPath)
 

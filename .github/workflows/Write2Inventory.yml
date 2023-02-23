@@ -58,3 +58,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           branch-name: ${{ github.ref }}
           output-path: ./report.json
+
+      - name: Write report to file
+        run: echo '${{ steps.report.outputs.output }}' > ${{ steps.report.outputs.output-path }}
