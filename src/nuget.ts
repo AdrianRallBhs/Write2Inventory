@@ -7,7 +7,6 @@ import * as execute from '@actions/exec'
 import * as core from '@actions/core';
 import * as child_process from 'child_process';
 import * as semver from 'semver';
-import latestVersion from 'latest-version';
 
 interface NugetPackage {
     Name: string;
