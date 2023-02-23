@@ -260,7 +260,7 @@ interface NPMPackage {
   }
   
   
-  type NugetPackageInfo = {
+  interface NugetPackageInfo {
     project: string;
     source: string;
     packageName: string;
@@ -431,8 +431,8 @@ export async function runRepoInfo() {
     output.repository.license = repository.license?.name || '';
 
     output.npmPackages = await runNPM();
-    //output.nugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
-    output.submodules = await await getDotnetSubmodules();
+    output.nugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
+    output.submodules = await getDotnetSubmodules();
 
      // Write output to file
      const outputPath = core.getInput('output-path');

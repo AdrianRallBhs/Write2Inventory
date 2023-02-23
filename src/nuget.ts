@@ -14,7 +14,7 @@ interface NugetPackage {
     Source: string;
 }
 
-type NugetPackageInfo = {
+interface NugetPackageInfo {
     project: string;
     source: string;
     packageName: string;
