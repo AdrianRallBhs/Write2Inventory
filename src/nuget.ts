@@ -19,6 +19,7 @@ type NugetPackageInfo = {
     source: string;
     packageName: string;
     currentVersion: string;
+    resolvedVersion: string;
     latestVersion: string;
   };
 
@@ -145,6 +146,7 @@ export async function getAllNugetPackages(projectList: string[], sourceList: str
           const lines = output.toString().split("\n");
           let packageName = "";
           let currentVersion = "";
+          let resolvedVersion = "";
           let latestVersion = "";
           for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
@@ -152,12 +154,14 @@ export async function getAllNugetPackages(projectList: string[], sourceList: str
               const fields = line.trim().split(/\s+/);
               packageName = fields[1];
               currentVersion = fields[2];
-              latestVersion = fields[3];
+              resolvedVersion = fields[3];
+              latestVersion = fields[4];
               projectPackageInfoList.push({
                 project,
                 source,
                 packageName,
                 currentVersion,
+                resolvedVersion,
                 latestVersion,
               });
             }
@@ -182,23 +186,26 @@ export async function getAllNugetPackages(projectList: string[], sourceList: str
         let packageName: string = '';
         let currentVersion: string = '';
         let latestVersion: string = '';
+        let resolvedVersion: string = '';
         for (const line of lines) {
           if (line.includes('Project') && line.includes('has the following updates')) {
             packageName = line.split('`')[1];
           } else if (line.includes('>')) {
             const parts = line.split(/ +/);
             currentVersion = parts[2];
-            latestVersion = parts[4]; // get the latest version instead of the resolved version
+            resolvedVersion = parts[3];
+            latestVersion = parts[4];
           }
         }
-        if (packageName && currentVersion && latestVersion) {
-          outdatedPackages.push({ project, source, packageName, currentVersion, latestVersion });
+        if (packageName && currentVersion && latestVersion && resolvedVersion) {
+          outdatedPackages.push({ project, source, packageName, currentVersion, latestVersion, resolvedVersion });
         }
       }
     }
   
     return outdatedPackages;
   }
+
   
 
 // =====================================================

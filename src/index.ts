@@ -331,6 +331,7 @@ type NugetPackageInfo = {
     source: string;
     packageName: string;
     currentVersion: string;
+    resolvedVersion: string;
     latestVersion: string;
   }
 
