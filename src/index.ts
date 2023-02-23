@@ -334,7 +334,7 @@ type NugetPackageInfo = {
 
 const NugetPackageInfos: NugetPackageInfo[][] = [];
 let ListOfSourcesPlain: string[] = [];
-ListOfSourcesPlain.push("E https://api.nuget.org/v3/index.json");
+ListOfSourcesPlain.push("https://api.nuget.org/v3/index.json");
 let potNetProjectsPlain: string[] = [];
 potNetProjectsPlain.push("./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj");
 
