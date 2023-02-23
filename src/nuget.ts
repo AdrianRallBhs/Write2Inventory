@@ -189,7 +189,7 @@ export async function getAllNugetPackages(projectList: string[], sourceList: str
           } else if (line.includes('>')) {
             const parts = line.split(/ +/);
             currentVersion = parts[2];
-            latestVersion = parts[3];
+            latestVersion = parts[4];
           }
         }
         if (packageName && currentVersion && latestVersion) {
