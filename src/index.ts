@@ -293,6 +293,59 @@ import * as child_process from 'child_process';
 //     }
 // })();
 
+// ==================================================================================================
+
+
+interface Repository {
+    name: string;
+    currentReleaseTag: string;
+    license: string;
+    sha: string;
+}
+
+
+interface Output {
+    repository: Repository;
+}
+
+
+export async function runRepoInfo() {
+    const token = core.getInput('github-token');
+    const octokit = github.getOctokit(token);
+
+    const context = github.context;
+    const repo = context.payload.repository?.full_name || '';
+    const pathOfPackageLock: string = './package.json';
+
+    const branch = core.getInput('branch-name');
+    const { data: commit } = await octokit.rest.repos.getCommit({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        ref: branch,
+    });
+
+    const output: Output = {
+        repository: {
+            name: repo,
+            currentReleaseTag: '',
+            license: '',
+            sha: commit.sha,
+        }
+    };
+    // Get repository info
+    const { data: repository } = await octokit.rest.repos.get({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+    });
+
+
+
+    output.repository.currentReleaseTag = repository.default_branch;
+    output.repository.license = repository.license?.name || '';
+}
+
+runRepoInfo()
+
 // ============================works for submodules too===========================================
 const dotNetProjects: string[] = [];
 (async () => {
@@ -391,32 +444,32 @@ let ListOfSubmodules: string[] = [];
 //========================works fine=======================================
 
 
-// async function runNPM() {
-//     try {
-//       const token = core.getInput('github-token');
-//       const octokit = github.getOctokit(token);
+export async function runNPM() {
+    try {
+      const token = core.getInput('github-token');
+      const octokit = github.getOctokit(token);
   
-//       const { data: contents } = await octokit.rest.repos.getContent({
-//         owner: github.context.repo.owner,
-//         repo: github.context.repo.repo,
-//         path: 'package.json',
-//       });
+      const { data: contents } = await octokit.rest.repos.getContent({
+        owner: github.context.repo.owner,
+        repo: github.context.repo.repo,
+        path: 'package.json',
+      });
   
-//       const packages = packageJson.dependencies;
+      const packages = packageJson.dependencies;
   
-//       const packageList = Object.keys(packages).map((name) => ({
-//         name,
-//         version: packages[name],
-//         repoName: github.context.repo.repo,
-//         owner: github.context.repo.owner,
-//       }));
+      const packageList = Object.keys(packages).map((name) => ({
+        name,
+        version: packages[name],
+        repoName: github.context.repo.repo,
+        owner: github.context.repo.owner,
+      }));
   
-//       console.log(JSON.stringify(packageList, null, 2));
-//     } catch (error) {
-//       core.setFailed("Fehler in runNPM");
-//     }
-//   }
+      console.log(JSON.stringify(packageList, null, 2));
+    } catch (error) {
+      core.setFailed("Fehler in runNPM");
+    }
+  }
   
-//   runNPM();
+  runNPM();
 
 
