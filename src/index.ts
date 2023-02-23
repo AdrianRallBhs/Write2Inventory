@@ -333,8 +333,13 @@ type NugetPackageInfo = {
   }
 
 const NugetPackageInfos: NugetPackageInfo[][] = [];
+let ListOfSourcesPlain: string[] = [];
+ListOfSourcesPlain.push("E https://api.nuget.org/v3/index.json");
+let potNetProjectsPlain: string[] = [];
+potNetProjectsPlain.push("./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj");
+
 (async () => {
-    const NugetPackageInfos: NugetPackageInfo[][]  = await getAllNugetPackages(dotNetProjects, ListOfSources);
+    const NugetPackageInfos: NugetPackageInfo[][]  = await getAllNugetPackages(potNetProjectsPlain, ListOfSourcesPlain);
     if (NugetPackageInfos.length < 1) {
         console.log("NugetPackageInfos is empty")
     }
@@ -346,20 +351,20 @@ const NugetPackageInfos: NugetPackageInfo[][] = [];
 })();
 
 // // ========================does work==============================================
-// let ListOfSubmodules: string[] = [];
-// (async () => {
-//     ListOfSubmodules = await getDotnetSubmodules();
-//     if(ListOfSubmodules.length < 1) {
-//         console.log("ListOfSubmodules is empty")
-//     }
-//     else {
-//         ListOfSubmodules.forEach(submodule => {
-//             console.log(`${submodule}`)
-//         })
+let ListOfSubmodules: string[] = [];
+(async () => {
+    ListOfSubmodules = await getDotnetSubmodules();
+    if(ListOfSubmodules.length < 1) {
+        console.log("ListOfSubmodules is empty")
+    }
+    else {
+        ListOfSubmodules.forEach(submodule => {
+            console.log(`${submodule}`)
+        })
            
-//         }
-//     }
-// )();
+        }
+    }
+)();
 
 
 
