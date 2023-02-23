@@ -320,28 +320,28 @@ interface NugetPackageInfo {
     latestVersion: string;
   }
 
-const NugetPackageInfos: NugetPackageInfo[][] = [];
-// let ListOfSourcesPlain: string[] = [];
-// ListOfSourcesPlain.push("https://api.nuget.org/v3/index.json");
-// let potNetProjectsPlain: string[] = [];
-// potNetProjectsPlain.push("./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj");
+// const NugetPackageInfos: NugetPackageInfo[][] = [];
+// // let ListOfSourcesPlain: string[] = [];
+// // ListOfSourcesPlain.push("https://api.nuget.org/v3/index.json");
+// // let potNetProjectsPlain: string[] = [];
+// // potNetProjectsPlain.push("./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj");
 
-(async () => {
+// (async () => {
 
-    const dotNetProjects: string[] =  await findALLCSPROJmodules();
-    const ListOfSources: string[] = await getDotnetSources();
+//     const dotNetProjects: string[] =  await findALLCSPROJmodules();
+//     const ListOfSources: string[] = await getDotnetSources();
 
-const projectList = ['./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj', './submarine/BlazorSubmarine/BlazorSubmarine/BlazorSubmarine.csproj'];
-const sourceList = ['https://api.nuget.org/v3/index.json'];
+// const projectList = ['./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj', './submarine/BlazorSubmarine/BlazorSubmarine/BlazorSubmarine.csproj'];
+// const sourceList = ['https://api.nuget.org/v3/index.json'];
 
-//const results = await getAllNugetPackages(projectList, sourceList);
+// //const results = await getAllNugetPackages(projectList, sourceList);
 
 
-const NugetPackageInfos = await getOutdatedPackages(dotNetProjects, ListOfSources);
-// const NugetPackageInfos = await getAllNugetPackages(projectList, sourceList);
-console.log(ListOfSources)
-console.log(JSON.stringify(NugetPackageInfos, null, 2));
-})();
+// const NugetPackageInfos = await getOutdatedPackages(dotNetProjects, ListOfSources);
+// // const NugetPackageInfos = await getAllNugetPackages(projectList, sourceList);
+// console.log(ListOfSources)
+// console.log(JSON.stringify(NugetPackageInfos, null, 2));
+// })();
 
 
 
@@ -398,55 +398,55 @@ export async function runNPM(): Promise<NPMPackage[]> {
 //   runNPM();
 
 // ======================================================
-// export async function runRepoInfo() {
-//     const token = core.getInput('github-token');
-//     const octokit = github.getOctokit(token);
+export async function runRepoInfo() {
+    const token = core.getInput('github-token');
+    const octokit = github.getOctokit(token);
 
-//     const context = github.context;
-//     const repo = context.payload.repository?.full_name || '';
+    const context = github.context;
+    const repo = context.payload.repository?.full_name || '';
 
-//     const branch = core.getInput('branch-name');
-//     const { data: commit } = await octokit.rest.repos.getCommit({
-//         owner: context.repo.owner,
-//         repo: context.repo.repo,
-//         ref: branch,
-//     });
+    const branch = core.getInput('branch-name');
+    const { data: commit } = await octokit.rest.repos.getCommit({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        ref: branch,
+    });
 
-//     const output: Output = {
-//         repository: {
-//             name: repo,
-//             currentReleaseTag: '',
-//             license: '',
-//             sha: commit.sha,
-//         },
-//         npmPackages: [],
-//         nugetPackages: [],
-//         submodules: []
-//     };
-//     // Get repository info
-//     const { data: repository } = await octokit.rest.repos.get({
-//         owner: context.repo.owner,
-//         repo: context.repo.repo,
-//     });
+    const output: Output = {
+        repository: {
+            name: repo,
+            currentReleaseTag: '',
+            license: '',
+            sha: commit.sha,
+        },
+        npmPackages: [],
+        nugetPackages: [],
+        submodules: []
+    };
+    // Get repository info
+    const { data: repository } = await octokit.rest.repos.get({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+    });
 
-//     const dotNetProjects: string[] =  await findALLCSPROJmodules();
-//     const ListOfSources: string[] = await getDotnetSources();
+    const dotNetProjects: string[] =  await findALLCSPROJmodules();
+    const ListOfSources: string[] = await getDotnetSources();
 
-//     output.repository.currentReleaseTag = repository.default_branch;
-//     output.repository.license = repository.license?.name || '';
+    output.repository.currentReleaseTag = repository.default_branch;
+    output.repository.license = repository.license?.name || '';
 
-//     output.npmPackages = await runNPM();
-//     output.nugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
-//     output.submodules = await getDotnetSubmodules();
+    output.npmPackages = await runNPM();
+    output.nugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
+    output.submodules = await getDotnetSubmodules();
 
-//      // Write output to file
-//      const outputPath = core.getInput('output-path');
-//      try {
-//          fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
-//          core.info(JSON.stringify(output, null, 2))
-//      } catch (error) {
-//          core.setFailed("WriteFileSync ist falsch")
-//      }
-// }
+     // Write output to file
+     const outputPath = core.getInput('output-path');
+     try {
+         fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
+         core.info(JSON.stringify(output, null, 2))
+     } catch (error) {
+         core.setFailed("WriteFileSync ist falsch")
+     }
+}
 
-// runRepoInfo();
+runRepoInfo();
