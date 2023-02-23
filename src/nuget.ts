@@ -2,7 +2,7 @@ import { Sources } from './dotnet-command-manager';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as xml2js from 'xml2js';
-import { exec } from 'child_process';
+import { exec, spawn } from 'child_process';
 import * as execute from '@actions/exec'
 import * as core from '@actions/core';
 
@@ -59,32 +59,44 @@ export async function getDotnetSources(): Promise<string[]> {
 
 
 export async function findALLCSPROJmodules(): Promise<string[]> {
-    try {
+    return new Promise<string[]>((resolve, reject) => {
       // Checkout the repository including submodules
-      await execute.exec('git', ['submodule', 'update', '--init', '--recursive']);
-  
-      // Use the `find` command to locate all `csproj` files
-      let csprojFiles = '';
-      const options = {
-        listeners: {
-          stdout: (data: Buffer) => {
-            csprojFiles += data.toString();
-          }
+      const submoduleUpdate = spawn('git', ['submodule', 'update', '--init', '--recursive']);
+      submoduleUpdate.on('close', (code) => {
+        if (code !== 0) {
+          reject(`git submodule update exited with code ${code}`);
+          return;
         }
-      };
-      await execute.exec('find', ['.', '-name', '*.csproj'], options);
   
-      // Split the list of `csproj` files into an array of strings
-      const csprojFileList = csprojFiles.trim().split('\n');
+        // Find all csproj files
+        const find = spawn('find', ['.', '-name', '*.csproj']);
+        let csprojFiles = '';
+        find.stdout.on('data', (data) => {
+          csprojFiles += data;
+        });
+        find.on('close', (code) => {
+          if (code !== 0) {
+            reject(`find exited with code ${code}`);
+            return;
+          }
   
-      // Output the list of `csproj` files found
-      //core.info(`List of csproj files found: ${csprojFileList}`);
+          // Split the list of `csproj` files into an array of strings
+          const csprojFileList = csprojFiles.trim().split('\n');
   
-      return csprojFileList;
-    } catch {
-      return [];
-    }
+          // Output the list of `csproj` files found
+          //core.info(`List of csproj files found: ${csprojFileList}`);
+  
+          resolve(csprojFileList);
+        });
+      });
+    });
   }
+
+  
+  
+  
+  
+  
 
 // =====================================================
 
