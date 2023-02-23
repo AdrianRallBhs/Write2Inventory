@@ -431,7 +431,7 @@ export async function runRepoInfo() {
     output.repository.license = repository.license?.name || '';
 
     output.npmPackages = await runNPM();
-    output.nugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
+    //output.nugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
     output.submodules = await await getDotnetSubmodules();
 
      // Write output to file
