@@ -320,7 +320,7 @@ interface Output {
 //     latestVersion: string;
 //   }
 
-const NugetPackageInfos: NugetPackageInfo[] = [];
+const NugetPackageInfos: NugetPackageInfo[][] = [];
 // let ListOfSourcesPlain: string[] = [];
 // ListOfSourcesPlain.push("https://api.nuget.org/v3/index.json");
 // let potNetProjectsPlain: string[] = [];
