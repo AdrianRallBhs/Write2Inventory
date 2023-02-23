@@ -330,6 +330,7 @@ type NugetPackageInfo = {
     source: string;
     packageName: string;
     currentVersion: string;
+    latestVersion: string;
   }
 
 const NugetPackageInfos: NugetPackageInfo[][] = [];
@@ -346,11 +347,13 @@ potNetProjectsPlain.push("./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj");
     else {
         const outdatedPackages: any[] = [];
         NugetPackageInfos.forEach(projectResults => {
-          projectResults.forEach(packageInfo => {
-            if (packageInfo.currentVersion.includes(">")) {
-              outdatedPackages.push(packageInfo);
-            }
-          });
+            projectResults.forEach(packageInfo => {
+                const currentVersion = packageInfo.currentVersion;
+                const latestVersion = packageInfo.latestVersion;
+                if (currentVersion !== "latest" && currentVersion > latestVersion) {
+                    outdatedPackages.push(packageInfo);
+                }
+            });
         });
         console.log(JSON.stringify(outdatedPackages, null, 2));
         // NugetPackageInfos.forEach(packageInfo => {

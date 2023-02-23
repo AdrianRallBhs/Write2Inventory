@@ -18,6 +18,7 @@ type NugetPackageInfo = {
     source: string;
     packageName: string;
     currentVersion: string;
+    latestVersion: string;
   };
 
 interface PackageInfo {
@@ -114,12 +115,13 @@ export async function getAllNugetPackages(projectList: string[], sourceList: str
           const packageInfoRegex = /(?<packageName>\S+)\s+(?<currentVersion>\S+)/g;
           let packageInfoMatch: RegExpExecArray | null;
           while ((packageInfoMatch = packageInfoRegex.exec(output.toString())) !== null) {
-            const { packageName, currentVersion } = packageInfoMatch.groups!;
+            const { packageName, currentVersion, latestVersion } = packageInfoMatch.groups!;
             projectPackageInfoList.push({
               project,
               source,
               packageName,
-              currentVersion
+              currentVersion,
+              latestVersion
             });
           }
         } catch (error) {
