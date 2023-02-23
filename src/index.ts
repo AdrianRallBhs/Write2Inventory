@@ -260,13 +260,20 @@ interface NPMPackage {
   }
   
   
-  
+  type NugetPackageInfo = {
+    project: string;
+    source: string;
+    packageName: string;
+    currentVersion: string;
+    resolvedVersion: string;
+    latestVersion: string;
+  }
   
 
 interface Output {
     repository: Repository;
     npmPackages: NPMPackage[];
-    nugetPackages: string[];
+    nugetPackages: NugetPackageInfo[];
     submodules: string[];
 }
 
@@ -313,23 +320,23 @@ interface Output {
 //     latestVersion: string;
 //   }
 
-// const NugetPackageInfos: NugetPackageInfo[][] = [];
-// let ListOfSourcesPlain: string[] = [];
-// ListOfSourcesPlain.push("https://api.nuget.org/v3/index.json");
-// let potNetProjectsPlain: string[] = [];
-// potNetProjectsPlain.push("./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj");
+const NugetPackageInfos: NugetPackageInfo[][] = [];
+let ListOfSourcesPlain: string[] = [];
+ListOfSourcesPlain.push("https://api.nuget.org/v3/index.json");
+let potNetProjectsPlain: string[] = [];
+potNetProjectsPlain.push("./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj");
 
-// (async () => {
+(async () => {
 
-// const projectList = ['./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj', './submarine/BlazorSubmarine/BlazorSubmarine/BlazorSubmarine.csproj'];
-// const sourceList = ['https://api.nuget.org/v3/index.json'];
+const projectList = ['./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj', './submarine/BlazorSubmarine/BlazorSubmarine/BlazorSubmarine.csproj'];
+const sourceList = ['https://api.nuget.org/v3/index.json'];
 
-// const results = await getAllNugetPackages(projectList, sourceList);
+const results = await getAllNugetPackages(projectList, sourceList);
 
 
-// const NugetPackageInfos = await getOutdatedPackages(projectList, sourceList);
-// console.log(JSON.stringify(NugetPackageInfos, null, 2));
-// })();
+const NugetPackageInfos = await getOutdatedPackages(projectList, sourceList);
+console.log(JSON.stringify(NugetPackageInfos, null, 2));
+})();
 
 
 
@@ -417,12 +424,14 @@ export async function runRepoInfo() {
         repo: context.repo.repo,
     });
 
-
+    const dotNetProjects: string[] =  await findALLCSPROJmodules();
+    const ListOfSources: string[] = await getDotnetSources();
 
     output.repository.currentReleaseTag = repository.default_branch;
     output.repository.license = repository.license?.name || '';
 
     output.npmPackages = await runNPM();
+    output.nugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
     output.submodules = await await getDotnetSubmodules();
 
      // Write output to file
