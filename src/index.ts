@@ -325,7 +325,7 @@ let ListOfSources: string[] = [];
         }
 })();
 
-// =======================================================================
+// ===========================works ===========================================
 type NugetPackageInfo = {
     project: string;
     source: string;
@@ -356,8 +356,8 @@ const results = await getAllNugetPackages(projectList, sourceList);
 
 const output = child_process.execSync(`dotnet list ${projectList[0]} package --highest-minor --outdated --source ${sourceList[0]}`);
 
-const nugetPackages = await getOutdatedPackages(projectList, sourceList);
-console.log(JSON.stringify(nugetPackages, null, 2));
+const NugetPackageInfos = await getOutdatedPackages(projectList, sourceList);
+console.log(JSON.stringify(NugetPackageInfos, null, 2));
 
         // NugetPackageInfos.forEach(packageInfo => {
         //     console.log(`Results for project: ${packageInfo[0].project}`);
