@@ -172,7 +172,6 @@ export async function getAllNugetPackages(projectList: string[], sourceList: str
   }
   
   
-  
   export async function getOutdatedPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[]> {
     const outdatedPackages: NugetPackageInfo[] = [];
   
@@ -189,19 +188,17 @@ export async function getAllNugetPackages(projectList: string[], sourceList: str
           } else if (line.includes('>')) {
             const parts = line.split(/ +/);
             currentVersion = parts[2];
-            latestVersion = parts[4];
+            latestVersion = parts[4]; // get the latest version instead of the resolved version
           }
         }
         if (packageName && currentVersion && latestVersion) {
-          outdatedPackages.push({ project, source, packageName, currentVersion: latestVersion, latestVersion });
+          outdatedPackages.push({ project, source, packageName, currentVersion, latestVersion });
         }
       }
     }
   
     return outdatedPackages;
   }
-  
-
   
 
 // =====================================================
