@@ -112,7 +112,7 @@ export async function getAllNugetPackages(projectList: string[], sourceList: str
       for (const source of sourceList) {
         try {
           const output = child_process.execSync(`dotnet list ${project} package --highest-minor --outdated --source ${source}`);
-          const packageInfoRegex = /(?<packageName>\S+)\s+(?<currentVersion>\S+)/g;
+          const packageInfoRegex = /(?<packageName>\S+)\s+(?<currentVersion>\S+)\s+(?<latestVersion>\S+)/g;
           let packageInfoMatch: RegExpExecArray | null;
           while ((packageInfoMatch = packageInfoRegex.exec(output.toString())) !== null) {
             const { packageName, currentVersion, latestVersion } = packageInfoMatch.groups!;
