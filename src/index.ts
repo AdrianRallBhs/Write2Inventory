@@ -260,14 +260,14 @@ interface NPMPackage {
   }
   
   
-  interface NugetPackageInfo {
-    project: string;
-    source: string;
-    packageName: string;
-    currentVersion: string;
-    resolvedVersion: string;
-    latestVersion: string;
-  }
+//   interface NugetPackageInfo {
+//     project: string;
+//     source: string;
+//     packageName: string;
+//     currentVersion: string;
+//     resolvedVersion: string;
+//     latestVersion: string;
+//   }
   
 
 interface Output {
@@ -311,14 +311,14 @@ interface Output {
 // })();
 
 // // ===========================works ===========================================
-// type NugetPackageInfo = {
-//     project: string;
-//     source: string;
-//     packageName: string;
-//     currentVersion: string;
-//     resolvedVersion: string;
-//     latestVersion: string;
-//   }
+type NugetPackageInfo = {
+    project: string;
+    source: string;
+    packageName: string;
+    currentVersion: string;
+    resolvedVersion: string;
+    latestVersion: string;
+  }
 
 const NugetPackageInfos: NugetPackageInfo[][] = [];
 // let ListOfSourcesPlain: string[] = [];
