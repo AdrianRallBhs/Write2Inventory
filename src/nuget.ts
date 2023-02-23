@@ -107,24 +107,61 @@ export async function findALLCSPROJmodules(): Promise<string[]> {
 
 
   
+// export async function getAllNugetPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[][]> {
+//     const packageInfoList: NugetPackageInfo[][] = [];
+//     for (const project of projectList) {
+//       const projectPackageInfoList: NugetPackageInfo[] = [];
+//       for (const source of sourceList) {
+//         try {
+//           const output = child_process.execSync(`dotnet list ${project} package --outdated --source ${source}`);
+//           const packageInfoRegex = /(?<packageName>\S+)\s+(?<currentVersion>\S+)\s+(?<latestVersion>\S+)/g;
+//           let packageInfoMatch: RegExpExecArray | null;
+//           while ((packageInfoMatch = packageInfoRegex.exec(output.toString())) !== null) {
+//             const { packageName, currentVersion, latestVersion } = packageInfoMatch.groups!;
+//             projectPackageInfoList.push({
+//               project,
+//               source,
+//               packageName,
+//               currentVersion,
+//               latestVersion,
+//             });
+//           }
+//         } catch (error) {
+//           console.log(`Error listing packages for project "${project}" and source "${source}": ${error}`);
+//         }
+//       }
+//       packageInfoList.push(projectPackageInfoList);
+//     }
+//     return packageInfoList;
+//   }
+
+
 export async function getAllNugetPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[][]> {
     const packageInfoList: NugetPackageInfo[][] = [];
     for (const project of projectList) {
       const projectPackageInfoList: NugetPackageInfo[] = [];
       for (const source of sourceList) {
         try {
-          const output = child_process.execSync(`dotnet list ${project} package --outdated --source ${source}`);
-          const packageInfoRegex = /(?<packageName>\S+)\s+(?<currentVersion>\S+)\s+(?<latestVersion>\S+)/g;
-          let packageInfoMatch: RegExpExecArray | null;
-          while ((packageInfoMatch = packageInfoRegex.exec(output.toString())) !== null) {
-            const { packageName, currentVersion, latestVersion } = packageInfoMatch.groups!;
-            projectPackageInfoList.push({
-              project,
-              source,
-              packageName,
-              currentVersion,
-              latestVersion,
-            });
+          const output = child_process.execSync(`dotnet list ${project} package --highest-minor --outdated --source ${source}`);
+          const lines = output.toString().split("\n");
+          let packageName = "";
+          let currentVersion = "";
+          let latestVersion = "";
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            if (line.startsWith(">")) {
+              const fields = line.trim().split(/\s+/);
+              packageName = fields[1];
+              currentVersion = fields[2];
+              latestVersion = fields[3];
+              projectPackageInfoList.push({
+                project,
+                source,
+                packageName,
+                currentVersion,
+                latestVersion,
+              });
+            }
           }
         } catch (error) {
           console.log(`Error listing packages for project "${project}" and source "${source}": ${error}`);
@@ -134,41 +171,7 @@ export async function getAllNugetPackages(projectList: string[], sourceList: str
     }
     return packageInfoList;
   }
-
-
- export async function getLatestNugetVersion(packageName: string, source: string): Promise<string> {
-    try {
-      const latestVersionString: string = await latestVersion(`${packageName}@${source}`);
-      return latestVersionString;
-    } catch (error) {
-      console.error(`Error getting latest version of package ${packageName} from source ${source}: ${error}`);
-      throw error;
-    }
-  }
-
- export async function getOutdatedPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[]> {
-    const allPackages = await getAllNugetPackages(projectList, sourceList);
-    const outdatedPackages: NugetPackageInfo[] = [];
   
-    for (const projectPackages of allPackages) {
-      for (const packageInfo of projectPackages) {
-        if (packageInfo.currentVersion.includes(">")) {
-          const packageName = packageInfo.packageName;
-          const source = packageInfo.source;
-          const latestVersion = await getLatestNugetVersion(packageName, source);
-  
-          if (semver.lt(packageInfo.currentVersion, latestVersion)) {
-            outdatedPackages.push({
-              ...packageInfo,
-              latestVersion,
-            });
-          }
-        }
-      }
-    }
-  
-    return outdatedPackages;
-  }
   
   
   
@@ -280,4 +283,8 @@ export async function getDotnetSubmodules(): Promise<string[]> {
     });
   }
 
+
+     function fetch(apiUrl: string) {
+         throw new Error('Function not implemented.');
+     }
   //'list', this.projectfile, 'package', versionFlag, '--outdated', '--source', sources[0]

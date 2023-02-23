@@ -242,7 +242,7 @@ import path from 'path';
 import * as xml2js from 'xml2js';
 import * as exec from '@actions/exec'
 import {getNugetPackageInfoFromAssets, getAssetFile} from './get-assets-nuget'
-import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules, findALLCSPROJmodules, getAllNugetPackages, getLatestNugetVersion, getOutdatedPackages } from './nuget'
+import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules, findALLCSPROJmodules, getAllNugetPackages} from './nuget'
 import semver from 'semver/classes/semver';
 
 
@@ -349,20 +349,10 @@ potNetProjectsPlain.push("./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj");
 
 const projectList = ['./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj'];
 const sourceList = ['https://api.nuget.org/v3/index.json'];
-getOutdatedPackages(projectList, sourceList).then((outdatedPackages) => {
-  console.log(`outdated package: ${JSON.stringify(outdatedPackages, null, 2)}`);
-});
 
 const results = await getAllNugetPackages(projectList, sourceList);
-const outdatedPackages = await getOutdatedPackages(projectList, sourceList);
-results.forEach(projectResults => {
-  projectResults.forEach(packageInfo => {
-    if (packageInfo.currentVersion.includes(">")) {
-     outdatedPackages.push(packageInfo);
-    }
-  });
-});
-console.log(JSON.stringify(outdatedPackages, null, 2));
+
+console.log(JSON.stringify(results, null, 2));
 
         // NugetPackageInfos.forEach(packageInfo => {
         //     console.log(`Results for project: ${packageInfo[0].project}`);
