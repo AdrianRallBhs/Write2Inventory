@@ -353,12 +353,12 @@ getOutdatedPackages(projectList, sourceList).then((outdatedPackages) => {
   console.log(JSON.stringify(outdatedPackages, null, 2));
 });
 
-        // NugetPackageInfos.forEach(packageInfo => {
-        //     console.log(`Results for project: ${packageInfo[0].project}`);
-        //     packageInfo.forEach(DetailedpackageInfo => {
-        //         console.log(`Package: ${DetailedpackageInfo.packageName}, Current Version: ${DetailedpackageInfo.currentVersion}`);
-        //       });
-        // })
+        NugetPackageInfos.forEach(packageInfo => {
+            console.log(`Results for project: ${packageInfo[0].project}`);
+            packageInfo.forEach(DetailedpackageInfo => {
+                console.log(`Package: ${DetailedpackageInfo.packageName}, Current Version: ${DetailedpackageInfo.currentVersion}`);
+              });
+        })
 })();
 
 
