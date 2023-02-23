@@ -329,7 +329,7 @@ const NugetPackageInfos: NugetPackageInfo[][] = [];
 (async () => {
 
     const dotNetProjects: string[] =  await findALLCSPROJmodules();
-    // const ListOfSources: string[] = await getDotnetSources();
+    const ListOfSources: string[] = await getDotnetSources();
 
 const projectList = ['./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj', './submarine/BlazorSubmarine/BlazorSubmarine/BlazorSubmarine.csproj'];
 const sourceList = ['https://api.nuget.org/v3/index.json'];
@@ -339,6 +339,7 @@ const sourceList = ['https://api.nuget.org/v3/index.json'];
 
 const NugetPackageInfos = await getOutdatedPackages(dotNetProjects, sourceList);
 // const NugetPackageInfos = await getAllNugetPackages(projectList, sourceList);
+console.log(ListOfSources)
 console.log(JSON.stringify(NugetPackageInfos, null, 2));
 })();
 
