@@ -242,7 +242,7 @@ import path from 'path';
 import * as xml2js from 'xml2js';
 import * as exec from '@actions/exec'
 import {getNugetPackageInfoFromAssets, getAssetFile} from './get-assets-nuget'
-import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules, findALLCSPROJmodules } from './nuget'
+import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules, findALLCSPROJmodules, getAllNugetPackages } from './nuget'
 
 
 
@@ -292,7 +292,7 @@ import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules
 //     }
 // })();
 
-// ============================works kind of===========================================
+// ============================works for submodules too===========================================
 const dotNetProjects: string[] = [];
 (async () => {
     const dotNetProjects: string[] = await findALLCSPROJmodules();
@@ -305,23 +305,45 @@ const dotNetProjects: string[] = [];
         })
     }
 })();
+
 // ========================funktioniert===================================
-// let ListOfSources: string[] = [];
+
+let ListOfSources: string[] = [];
 
 
-// (async () => {
-//     ListOfSources = await getDotnetSources();
-//     if(ListOfSources.length < 1) {
-//         console.log("ListOfsources is empty")
-//     }
-//     else {
-//         ListOfSources.forEach(source => {
-//             console.log(`${ListOfSources}`)
-//         })
+(async () => {
+    ListOfSources = await getDotnetSources();
+    if(ListOfSources.length < 1) {
+        console.log("ListOfsources is empty")
+    }
+    else {
+        ListOfSources.forEach(source => {
+            console.log(`${ListOfSources}`)
+        })
             
-//         }
-// })();
+        }
+})();
 
+// =======================================================================
+type NugetPackageInfo = {
+    project: string;
+    source: string;
+    packageName: string;
+    currentVersion: string;
+  }
+
+const NugetPackageInfos: NugetPackageInfo[][] = [];
+(async () => {
+    const NugetPackageInfos: NugetPackageInfo[][]  = await getAllNugetPackages(dotNetProjects, ListOfSources);
+    if (NugetPackageInfos.length < 1) {
+        console.log("NugetPackageInfos is empty")
+    }
+    else {
+        NugetPackageInfos.forEach(packageInfo => {
+            console.log(`${packageInfo}`)
+        })
+    }
+})();
 
 // // ========================does work==============================================
 // let ListOfSubmodules: string[] = [];

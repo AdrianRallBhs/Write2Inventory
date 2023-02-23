@@ -5,12 +5,20 @@ import * as xml2js from 'xml2js';
 import { exec, spawn } from 'child_process';
 import * as execute from '@actions/exec'
 import * as core from '@actions/core';
+import * as child_process from 'child_process';
 
 interface NugetPackage {
     Name: string;
     Version: string;
     Source: string;
 }
+
+type NugetPackageInfo = {
+    project: string;
+    source: string;
+    packageName: string;
+    currentVersion: string;
+  };
 
 interface PackageInfo {
     nugetName: string;
@@ -90,6 +98,37 @@ export async function findALLCSPROJmodules(): Promise<string[]> {
         });
       });
     });
+  }
+
+// ===================================================================
+
+
+  
+export async function getAllNugetPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[][]> {
+    const packageInfoList: NugetPackageInfo[][] = [];
+    for (const project of projectList) {
+      const projectPackageInfoList: NugetPackageInfo[] = [];
+      for (const source of sourceList) {
+        try {
+          const output = child_process.execSync(`dotnet list ${project} package --highest-minor --outdated --source ${source}`);
+          const packageInfoRegex = /(?<packageName>\S+)\s+(?<currentVersion>\S+)/g;
+          let packageInfoMatch: RegExpExecArray | null;
+          while ((packageInfoMatch = packageInfoRegex.exec(output.toString())) !== null) {
+            const { packageName, currentVersion } = packageInfoMatch.groups!;
+            projectPackageInfoList.push({
+              project,
+              source,
+              packageName,
+              currentVersion
+            });
+          }
+        } catch (error) {
+          console.log(`Error listing packages for project "${project}" and source "${source}": ${error}`);
+        }
+      }
+      packageInfoList.push(projectPackageInfoList);
+    }
+    return packageInfoList;
   }
 
   
