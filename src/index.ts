@@ -311,7 +311,7 @@ interface Output {
 // })();
 
 // // ===========================works ===========================================
-type NugetPackageInfo = {
+interface NugetPackageInfo {
     project: string;
     source: string;
     packageName: string;
