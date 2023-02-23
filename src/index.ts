@@ -244,6 +244,8 @@ import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules
 
 // ==================================================================================================
 
+const updateStrategy = core.getInput('updateStrategy', { required: false }) || 'MINOR';
+
 
 interface Repository {
     name: string;
@@ -282,7 +284,9 @@ interface Output {
     npmPackages: NPMPackage[];
     nugetPackages: NugetPackageInfo[];
     submodules: Submodule[];
+    updateStrategy: string;
 }
+
 
 
 // ============================works for submodules too===========================================
@@ -428,7 +432,8 @@ export async function runRepoInfo() {
         },
         npmPackages: [],
         nugetPackages: [],
-        submodules: []
+        submodules: [],
+        updateStrategy: updateStrategy,
     };
     // Get repository info
     const { data: repository } = await octokit.rest.repos.get({
@@ -445,6 +450,7 @@ export async function runRepoInfo() {
     output.npmPackages = await runNPM();
     output.nugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
     output.submodules = await getDotnetSubmodules();
+    output.updateStrategy = updateStrategy;
 
      // Write output to file
      const outputPath = core.getInput('output-path');

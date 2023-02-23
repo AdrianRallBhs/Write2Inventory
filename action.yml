@@ -17,10 +17,10 @@ inputs:
     description: 'Path to output JSON file'
     required: false
     default: ./report.json
-  versionBumpInput:
-    description: 'MAJOR, MINOR or PATCH for the version bumping'
+  updateStrategy:
+    description: 'The update strategy to use: "MAJOR", "MINOR", or "PATCH". Defaults to "MINOR".'
     required: false
-    default: MINOR
+    default: 'MINOR'
 
 
 runs:
