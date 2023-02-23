@@ -192,9 +192,10 @@ export async function getAllNugetPackages(projectList: string[], sourceList: str
             packageName = line.split('`')[1];
           } else if (line.includes('>')) {
             const parts = line.split(/ +/);
+            packageName = parts[1];
             currentVersion = parts[2];
-            latestVersion = parts[4];
             resolvedVersion = parts[3];
+            latestVersion = parts[4];
           }
         }
         if (packageName && currentVersion && latestVersion) {
@@ -205,6 +206,7 @@ export async function getAllNugetPackages(projectList: string[], sourceList: str
   
     return outdatedPackages;
   }
+  
 
   
 
