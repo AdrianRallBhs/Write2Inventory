@@ -188,14 +188,12 @@ export async function getAllNugetPackages(projectList: string[], sourceList: str
         let latestVersion: string = '';
         let resolvedVersion: string = '';
         for (const line of lines) {
-          if (line.includes('Project') && line.includes('has the following updates')) {
-            packageName = line.split('`')[1];
-          } else if (line.includes('>')) {
-            const parts = line.split(/ +/);
-            packageName = parts[1];
-            currentVersion = parts[2];
-            resolvedVersion = parts[3];
-            latestVersion = parts[4];
+          if (line.includes('>') && line.includes('Microsoft.')) {
+            const parts = line.trim().split(/ +/);
+            packageName = parts[0].substring(1);
+            currentVersion = parts[1];
+            resolvedVersion = parts[2];
+            latestVersion = parts[3];
           }
         }
         if (packageName && currentVersion && latestVersion) {
