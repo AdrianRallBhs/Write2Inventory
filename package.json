@@ -32,6 +32,7 @@
     "@actions/glob": "^0.4.0",
     "@octokit/rest": "^19.0.7",
     "@octokit/types": "^9.0.0",
+    "child_process": "^1.0.2",
     "fs": "0.0.1-security",
     "glob": "^8.1.0",
     "xml2js": "^0.4.23"

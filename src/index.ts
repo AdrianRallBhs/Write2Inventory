@@ -244,7 +244,7 @@ import * as exec from '@actions/exec'
 import {getNugetPackageInfoFromAssets, getAssetFile} from './get-assets-nuget'
 import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules, findALLCSPROJmodules, getAllNugetPackages} from './nuget'
 import semver from 'semver/classes/semver';
-
+import * as child_process from 'child_process';
 
 
 // ======================geht nicht wie gewünscht==================================
@@ -354,6 +354,9 @@ const results = await getAllNugetPackages(projectList, sourceList);
 
 console.log(JSON.stringify(results, null, 2));
 
+const output = child_process.execSync(`dotnet list ${projectList[0]} package --highest-minor --outdated --source ${sourceList[0]}`);
+console.log('output:', output.toString());
+
         // NugetPackageInfos.forEach(packageInfo => {
         //     console.log(`Results for project: ${packageInfo[0].project}`);
         //     packageInfo.forEach(DetailedpackageInfo => {
@@ -361,7 +364,6 @@ console.log(JSON.stringify(results, null, 2));
         //       });
         // })
 })();
-
 
 
 
