@@ -424,8 +424,8 @@ export async function runRepoInfo() {
         repo: context.repo.repo,
     });
 
-    const dotNetProjects: string[] =  await findALLCSPROJmodules();
-    const ListOfSources: string[] = await getDotnetSources();
+    // const dotNetProjects: string[] =  await findALLCSPROJmodules();
+    // const ListOfSources: string[] = await getDotnetSources();
 
     output.repository.currentReleaseTag = repository.default_branch;
     output.repository.license = repository.license?.name || '';
