@@ -233,6 +233,7 @@
 
 import * as core from '@actions/core';
 import * as github from '@actions/github';
+import * as fs from 'fs';
 const packageJson = require('../package.json');
 import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules, findALLCSPROJmodules, getAllNugetPackages, getOutdatedPackages} from './nuget'
 
@@ -289,6 +290,15 @@ export async function runRepoInfo() {
 
     output.repository.currentReleaseTag = repository.default_branch;
     output.repository.license = repository.license?.name || '';
+
+     // Write output to file
+     const outputPath = core.getInput('output-path');
+     try {
+         fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
+         core.info(JSON.stringify(output, null, 2))
+     } catch (error) {
+         core.setFailed("WriteFileSync ist falsch")
+     }
 }
 
 runRepoInfo()
