@@ -423,6 +423,7 @@ export async function runRepoInfo() {
     output.repository.license = repository.license?.name || '';
 
     output.npmPackages = await runNPM();
+    output.submodules = await await getDotnetSubmodules();
 
      // Write output to file
      const outputPath = core.getInput('output-path');
