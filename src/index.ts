@@ -252,6 +252,13 @@ interface Repository {
     sha: string;
 }
 
+interface Submodule {
+    sha: string;
+    submoduleName: string;
+    referenceBranch: string;
+
+}
+
 interface NPMPackage {
     name: string;
     version: string;
@@ -274,7 +281,7 @@ interface Output {
     repository: Repository;
     npmPackages: NPMPackage[];
     nugetPackages: NugetPackageInfo[];
-    submodules: string[];
+    submodules: Submodule[];
 }
 
 

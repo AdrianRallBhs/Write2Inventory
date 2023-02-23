@@ -291,8 +291,33 @@ export async function getNugetPackagesForSource(directoryPath: string, source?: 
 //   }
 
 
-export async function getDotnetSubmodules(): Promise<string[]> {
-    return new Promise<string[]>((resolve, reject) => {
+// export async function getDotnetSubmodules(): Promise<string[]> {
+//     return new Promise<string[]>((resolve, reject) => {
+//       exec('git submodule', (error, stdout, stderr) => {
+//         if (error) {
+//           reject(error);
+//           return;
+//         }
+//         if (stderr) {
+//           reject(stderr);
+//           return;
+//         }
+  
+//         const submodules = stdout
+//           .split('\n')
+//           .map(submodule => submodule.trim())
+//           .filter(submodule => submodule !== '');
+  
+//         const submoduleStrings = submodules.join(',').split(',');
+  
+//         resolve(submoduleStrings);
+//       });
+//     });
+//   }
+
+
+export async function getDotnetSubmodules(): Promise<Submodule[]> {
+    return new Promise<Submodule[]>((resolve, reject) => {
       exec('git submodule', (error, stdout, stderr) => {
         if (error) {
           reject(error);
@@ -308,13 +333,15 @@ export async function getDotnetSubmodules(): Promise<string[]> {
           .map(submodule => submodule.trim())
           .filter(submodule => submodule !== '');
   
-        const submoduleStrings = submodules.join(',').split(',');
+        const submoduleObjects: Submodule[] = submodules.map(submodule => {
+          const [sha, submoduleName, referenceBranch] = submodule.split(' ');
+          return { sha, submoduleName, referenceBranch: referenceBranch.slice(1, -1) };
+        });
   
-        resolve(submoduleStrings);
+        resolve(submoduleObjects);
       });
     });
   }
-
 
      function fetch(apiUrl: string) {
          throw new Error('Function not implemented.');
