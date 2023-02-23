@@ -173,7 +173,33 @@ export async function getAllNugetPackages(projectList: string[], sourceList: str
   
   
   
+export  async function getOutdatedPackages(projectList: string[], sourceList: string[]): Promise<NugetPackageInfo[]> {
+    const outdatedPackages: NugetPackageInfo[] = [];
   
+    for (const project of projectList) {
+      for (const source of sourceList) {
+        const output = child_process.execSync(`dotnet list ${project} package --highest-minor --outdated --source ${source}`);
+        const lines = output.toString().split('\n');
+        let packageName: string = '';
+        let currentVersion: string = '';
+        let latestVersion: string = '';
+        for (const line of lines) {
+          if (line.includes('Project') && line.includes('has the following updates')) {
+            packageName = line.split('`')[1];
+          } else if (line.includes('>')) {
+            const parts = line.split(/ +/);
+            currentVersion = parts[2];
+            latestVersion = parts[3];
+          }
+        }
+        if (packageName && currentVersion && latestVersion) {
+          outdatedPackages.push({ project, source, packageName, currentVersion, latestVersion });
+        }
+      }
+    }
+  
+    return outdatedPackages;
+  }
 
 
 

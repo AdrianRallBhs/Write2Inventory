@@ -242,7 +242,7 @@ import path from 'path';
 import * as xml2js from 'xml2js';
 import * as exec from '@actions/exec'
 import {getNugetPackageInfoFromAssets, getAssetFile} from './get-assets-nuget'
-import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules, findALLCSPROJmodules, getAllNugetPackages} from './nuget'
+import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules, findALLCSPROJmodules, getAllNugetPackages, getOutdatedPackages} from './nuget'
 import semver from 'semver/classes/semver';
 import * as child_process from 'child_process';
 
@@ -356,6 +356,9 @@ console.log(JSON.stringify(results, null, 2));
 
 const output = child_process.execSync(`dotnet list ${projectList[0]} package --highest-minor --outdated --source ${sourceList[0]}`);
 console.log('output:', output.toString());
+
+console.log(`\n pure output ${getOutdatedPackages(projectList,sourceList)}`);
+console.log(`\n stringified output ${JSON.stringify(getOutdatedPackages(projectList,sourceList))}`);
 
         // NugetPackageInfos.forEach(packageInfo => {
         //     console.log(`Results for project: ${packageInfo[0].project}`);
