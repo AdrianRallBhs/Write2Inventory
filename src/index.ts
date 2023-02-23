@@ -233,65 +233,13 @@
 
 import * as core from '@actions/core';
 import * as github from '@actions/github';
-import * as fs from 'fs';
-import { promises as fsprom } from 'fs';
 const packageJson = require('../package.json');
-import { OctokitResponse } from '@octokit/types';
-import glob from 'glob';
-import path from 'path';
-import * as xml2js from 'xml2js';
-import * as exec from '@actions/exec'
-import {getNugetPackageInfoFromAssets, getAssetFile} from './get-assets-nuget'
 import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules, findALLCSPROJmodules, getAllNugetPackages, getOutdatedPackages} from './nuget'
-import semver from 'semver/classes/semver';
-import * as child_process from 'child_process';
+
 
 
 // ======================geht nicht wie gewünscht==================================
 
-//   export async function findALLCSPROJmodules(): Promise<string[]> {
-//     try {
-//       // Checkout the repository including submodules
-//       await exec.exec('git', ['submodule', 'update', '--init', '--recursive']);
-  
-//       // Use the `find` command to locate all `csproj` files
-//       let csprojFiles = '';
-//       const options = {
-//         listeners: {
-//           stdout: (data: Buffer) => {
-//             csprojFiles += data.toString();
-//           }
-//         }
-//       };
-//       await exec.exec('find', ['.', '-name', '*.csproj'], options);
-  
-//       // Split the list of `csproj` files into an array of strings
-//       const csprojFileList = csprojFiles.trim().split('\n');  
-//       return csprojFileList;
-//     } catch {
-//       return [];
-//     }
-//   }
-
-//   (async () => {
-//   console.log(findALLCSPROJmodules());
-// })();
-
-// ===========================================================
-
-
-// (async () => {
-//     const ListOfModules = await findALLCSPROJmodules();
-//     if (ListOfModules.length < 1) {
-//         console.log("ListOfModules is empty");
-//     }
-//     else {
-//         for (const element of ListOfModules) {
-//             const packageList = await getNugetPackageListFromCsprojDoc(element.substring(2));
-//             console.log(`PackageList: ${packageList}`);
-//         }
-//     }
-// })();
 
 // ==================================================================================================
 
@@ -315,7 +263,6 @@ export async function runRepoInfo() {
 
     const context = github.context;
     const repo = context.payload.repository?.full_name || '';
-    const pathOfPackageLock: string = './package.json';
 
     const branch = core.getInput('branch-name');
     const { data: commit } = await octokit.rest.repos.getCommit({
@@ -347,129 +294,115 @@ export async function runRepoInfo() {
 runRepoInfo()
 
 // ============================works for submodules too===========================================
-const dotNetProjects: string[] = [];
-(async () => {
-    const dotNetProjects: string[] = await findALLCSPROJmodules();
-    if (dotNetProjects.length < 1) {
-        console.log("dotNetProjects is empty")
-    }
-    else {
-        dotNetProjects.forEach(project => {
-            console.log(`${project}`)
-        })
-    }
-})();
+// const dotNetProjects: string[] = [];
+// (async () => {
+//     const dotNetProjects: string[] = await findALLCSPROJmodules();
+//     if (dotNetProjects.length < 1) {
+//         console.log("dotNetProjects is empty")
+//     }
+//     else {
+//         dotNetProjects.forEach(project => {
+//             console.log(`${project}`)
+//         })
+//     }
+// })();
 
-// ========================funktioniert===================================
+// // ========================funktioniert===================================
 
-let ListOfSources: string[] = [];
+// let ListOfSources: string[] = [];
 
 
-(async () => {
-    ListOfSources = await getDotnetSources();
-    if(ListOfSources.length < 1) {
-        console.log("ListOfsources is empty")
-    }
-    else {
-        ListOfSources.forEach(source => {
-            console.log(`${ListOfSources}`)
-        })
+// (async () => {
+//     ListOfSources = await getDotnetSources();
+//     if(ListOfSources.length < 1) {
+//         console.log("ListOfsources is empty")
+//     }
+//     else {
+//         ListOfSources.forEach(source => {
+//             console.log(`${ListOfSources}`)
+//         })
             
-        }
-})();
+//         }
+// })();
 
-// ===========================works ===========================================
-type NugetPackageInfo = {
-    project: string;
-    source: string;
-    packageName: string;
-    currentVersion: string;
-    resolvedVersion: string;
-    latestVersion: string;
-  }
+// // ===========================works ===========================================
+// type NugetPackageInfo = {
+//     project: string;
+//     source: string;
+//     packageName: string;
+//     currentVersion: string;
+//     resolvedVersion: string;
+//     latestVersion: string;
+//   }
 
-const NugetPackageInfos: NugetPackageInfo[][] = [];
-let ListOfSourcesPlain: string[] = [];
-ListOfSourcesPlain.push("https://api.nuget.org/v3/index.json");
-let potNetProjectsPlain: string[] = [];
-potNetProjectsPlain.push("./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj");
+// const NugetPackageInfos: NugetPackageInfo[][] = [];
+// let ListOfSourcesPlain: string[] = [];
+// ListOfSourcesPlain.push("https://api.nuget.org/v3/index.json");
+// let potNetProjectsPlain: string[] = [];
+// potNetProjectsPlain.push("./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj");
 
-(async () => {
-//     const projectList = ['./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj'];
+// (async () => {
+
+// const projectList = ['./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj', './submarine/BlazorSubmarine/BlazorSubmarine/BlazorSubmarine.csproj'];
 // const sourceList = ['https://api.nuget.org/v3/index.json'];
 
-// const allPackages = await getAllNugetPackages(projectList, sourceList);
-// const outdatedPackages: NugetPackageInfo[] = [];
-
-const projectList = ['./Blazor4/BlazorApp4/BlazorApp4/BlazorApp4.csproj', './submarine/BlazorSubmarine/BlazorSubmarine/BlazorSubmarine.csproj'];
-const sourceList = ['https://api.nuget.org/v3/index.json'];
-
-const results = await getAllNugetPackages(projectList, sourceList);
+// const results = await getAllNugetPackages(projectList, sourceList);
 
 
-const output = child_process.execSync(`dotnet list ${projectList[0]} package --highest-minor --outdated --source ${sourceList[0]}`);
-
-const NugetPackageInfos = await getOutdatedPackages(projectList, sourceList);
-console.log(JSON.stringify(NugetPackageInfos, null, 2));
-
-        // NugetPackageInfos.forEach(packageInfo => {
-        //     console.log(`Results for project: ${packageInfo[0].project}`);
-        //     packageInfo.forEach(DetailedpackageInfo => {
-        //         console.log(`Package: ${DetailedpackageInfo.packageName}, Current Version: ${DetailedpackageInfo.currentVersion}`);
-        //       });
-        // })
-})();
+// const NugetPackageInfos = await getOutdatedPackages(projectList, sourceList);
+// console.log(JSON.stringify(NugetPackageInfos, null, 2));
+// })();
 
 
 
-// // ========================does work==============================================
-let ListOfSubmodules: string[] = [];
-(async () => {
-    ListOfSubmodules = await getDotnetSubmodules();
-    if(ListOfSubmodules.length < 1) {
-        console.log("ListOfSubmodules is empty")
-    }
-    else {
-        ListOfSubmodules.forEach(submodule => {
-            console.log(`${submodule}`)
-        })
+// // // ========================does work==============================================
+// let ListOfSubmodules: string[] = [];
+// (async () => {
+//     ListOfSubmodules = await getDotnetSubmodules();
+//     if(ListOfSubmodules.length < 1) {
+//         console.log("ListOfSubmodules is empty")
+//     }
+//     else {
+//         ListOfSubmodules.forEach(submodule => {
+//             console.log(`${submodule}`)
+//         })
            
-        }
-    }
-)();
+//         }
+//     }
+// )();
 
 
 
 
-//========================works fine=======================================
+// //========================works fine=======================================
 
 
-export async function runNPM() {
-    try {
-      const token = core.getInput('github-token');
-      const octokit = github.getOctokit(token);
+// export async function runNPM() {
+//     try {
+//       const token = core.getInput('github-token');
+//       const octokit = github.getOctokit(token);
   
-      const { data: contents } = await octokit.rest.repos.getContent({
-        owner: github.context.repo.owner,
-        repo: github.context.repo.repo,
-        path: 'package.json',
-      });
+//       const { data: contents } = await octokit.rest.repos.getContent({
+//         owner: github.context.repo.owner,
+//         repo: github.context.repo.repo,
+//         path: 'package.json',
+//       });
   
-      const packages = packageJson.dependencies;
+//       const packages = packageJson.dependencies;
   
-      const packageList = Object.keys(packages).map((name) => ({
-        name,
-        version: packages[name],
-        repoName: github.context.repo.repo,
-        owner: github.context.repo.owner,
-      }));
+//       const packageList = Object.keys(packages).map((name) => ({
+//         name,
+//         version: packages[name],
+//         repoName: github.context.repo.repo,
+//         owner: github.context.repo.owner,
+//       }));
   
-      console.log(JSON.stringify(packageList, null, 2));
-    } catch (error) {
-      core.setFailed("Fehler in runNPM");
-    }
-  }
+//       console.log(JSON.stringify(packageList, null, 2));
+//     } catch (error) {
+//       core.setFailed("Fehler in runNPM");
+//     }
+//   }
   
-  runNPM();
+//   runNPM();
 
 
