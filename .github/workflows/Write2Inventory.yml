@@ -60,4 +60,5 @@ jobs:
           output-path: ./report.json
 
       - name: Write report to file
-        run: echo '${{ steps.report.outputs.output }}' > ${{ steps.report.outputs.output-path }}
+        run: |
+          echo '${{ steps.report.outputs.output }}' > ${{ steps.report.outputs.output-path }}
