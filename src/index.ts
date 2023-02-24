@@ -235,7 +235,7 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 import * as fs from 'fs';
 const packageJson = require('../package.json');
-import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules, findALLCSPROJmodules, getAllNugetPackages, getOutdatedPackages} from './nuget'
+import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules, findALLCSPROJmodules, getAllNugetPackages, getOutdatedPackages } from './nuget'
 
 
 
@@ -248,27 +248,27 @@ const updateStrategy = core.getInput('updateStrategy', { required: false }) || '
 
 
 interface Repository {
-    name: string;
-    currentReleaseTag: string;
-    license: string;
-    sha: string;
+  name: string;
+  currentReleaseTag: string;
+  license: string;
+  sha: string;
 }
 
 interface Submodule {
-    sha: string;
-    submoduleName: string;
-    referenceBranch: string;
+  sha: string;
+  submoduleName: string;
+  referenceBranch: string;
 
 }
 
 interface NPMPackage {
-    name: string;
-    version: string;
-    repoName: string;
-    owner: string;
-  }
-  
-  
+  name: string;
+  version: string;
+  repoName: string;
+  owner: string;
+}
+
+
 //   interface NugetPackageInfo {
 //     project: string;
 //     source: string;
@@ -277,14 +277,14 @@ interface NPMPackage {
 //     resolvedVersion: string;
 //     latestVersion: string;
 //   }
-  
+
 
 interface Output {
-    repository: Repository;
-    npmPackages: NPMPackage[];
-    nugetPackages: NugetPackageInfo[];
-    submodules: Submodule[];
-    updateStrategy: string;
+  repository: Repository;
+  npmPackages: NPMPackage[];
+  nugetPackages: NugetPackageInfo[];
+  submodules: Submodule[];
+  updateStrategy: string;
 }
 
 
@@ -317,19 +317,19 @@ interface Output {
 //         ListOfSources.forEach(source => {
 //             console.log(`${ListOfSources}`)
 //         })
-            
+
 //         }
 // })();
 
 // // ===========================works ===========================================
 interface NugetPackageInfo {
-    project: string;
-    source: string;
-    packageName: string;
-    currentVersion: string;
-    resolvedVersion: string;
-    latestVersion: string;
-  }
+  project: string;
+  source: string;
+  packageName: string;
+  currentVersion: string;
+  resolvedVersion: string;
+  latestVersion: string;
+}
 
 // const NugetPackageInfos: NugetPackageInfo[][] = [];
 // // let ListOfSourcesPlain: string[] = [];
@@ -367,7 +367,7 @@ interface NugetPackageInfo {
 //         ListOfSubmodules.forEach(submodule => {
 //             console.log(`${submodule}`)
 //         })
-           
+
 //         }
 //     }
 // )();
@@ -379,91 +379,90 @@ interface NugetPackageInfo {
 
 
 export async function runNPM(): Promise<NPMPackage[]> {
-    try {
-      const token = core.getInput('github-token');
-      const octokit = github.getOctokit(token);
-  
-      const { data: contents } = await octokit.rest.repos.getContent({
-        owner: github.context.repo.owner,
-        repo: github.context.repo.repo,
-        path: 'package.json',
-      });
-  
-      const packages = packageJson.dependencies;
-  
-      const packageList = Object.keys(packages).map((name) => ({
-        name,
-        version: packages[name],
-        repoName: github.context.repo.repo,
-        owner: github.context.repo.owner,
-      }));
-  
-      return packageList;
-    } catch (error) {
-      core.setFailed("Fehler in runNPM");
-      return [];
-    }
+  try {
+    const token = core.getInput('github-token');
+    const octokit = github.getOctokit(token);
+
+    const { data: contents } = await octokit.rest.repos.getContent({
+      owner: github.context.repo.owner,
+      repo: github.context.repo.repo,
+      path: 'package.json',
+    });
+
+    const packages = packageJson.dependencies;
+
+    const packageList = Object.keys(packages).map((name) => ({
+      name,
+      version: packages[name],
+      repoName: github.context.repo.repo,
+      owner: github.context.repo.owner,
+    }));
+
+    return packageList;
+  } catch (error) {
+    core.setFailed("Fehler in runNPM");
+    return [];
   }
-  
-  
+}
+
+
 //   runNPM();
 
 // ======================================================
 export async function runRepoInfo() {
-    const token = core.getInput('github-token');
-    const octokit = github.getOctokit(token);
+  const token = core.getInput('github-token');
+  const octokit = github.getOctokit(token);
 
-    const context = github.context;
-    const repo = context.payload.repository?.full_name || '';
+  const context = github.context;
+  const repo = context.payload.repository?.full_name || '';
 
-    const branch = core.getInput('branch-name');
-    const { data: commit } = await octokit.rest.repos.getCommit({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        ref: branch,
-    });
+  const branch = core.getInput('branch-name');
+  const { data: commit } = await octokit.rest.repos.getCommit({
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    ref: branch,
+  });
 
-    const output: Output = {
-        repository: {
-            name: repo,
-            currentReleaseTag: '',
-            license: '',
-            sha: commit.sha,
-        },
-        npmPackages: [],
-        nugetPackages: [],
-        submodules: [],
-        updateStrategy: updateStrategy,
-    };
-    // Get repository info
-    const { data: repository } = await octokit.rest.repos.get({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-    });
+  const output: Output = {
+    repository: {
+      name: repo,
+      currentReleaseTag: '',
+      license: '',
+      sha: commit.sha,
+    },
+    npmPackages: [],
+    nugetPackages: [],
+    submodules: [],
+    updateStrategy: updateStrategy,
+  };
+  // Get repository info
+  const { data: repository } = await octokit.rest.repos.get({
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+  });
 
-    const dotNetProjects: string[] =  await findALLCSPROJmodules();
-    const ListOfSources: string[] = await getDotnetSources();
+  const dotNetProjects: string[] = await findALLCSPROJmodules();
+  const ListOfSources: string[] = await getDotnetSources();
 
-    output.repository.currentReleaseTag = repository.default_branch;
-    output.repository.license = repository.license?.name || '';
+  output.repository.currentReleaseTag = repository.default_branch;
+  output.repository.license = repository.license?.name || '';
 
-    output.npmPackages = await runNPM();
-    output.nugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
-    output.submodules = await getDotnetSubmodules();
-    output.updateStrategy = updateStrategy;
+  output.npmPackages = await runNPM();
+  output.nugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
+  output.submodules = await getDotnetSubmodules();
+  output.updateStrategy = updateStrategy;
 
-     // Write output to file
-     const outputPath = core.getInput('output-path');
-     try {
-        core.info(JSON.stringify(output, null, 2))
-        const ouputstring: string = JSON.stringify(output, null, 2);
-         fs.writeFileSync(outputPath, ouputstring);
-         fs.closeSync(fs.openSync(outputPath, 'r'));
-         console.log(outputPath)
+  // Write output to file
+  const outputPath = core.getInput('output-path');
+  try {
+    core.info(JSON.stringify(output, null, 2))
+    const ouputstring: string = JSON.stringify(output, null, 2);
+    fs.writeFileSync(outputPath, ouputstring);
+    fs.closeSync(fs.openSync(outputPath, 'r'));
 
-     } catch (error) {
-         core.setFailed("WriteFileSync ist falsch")
-     }
+  } catch (error) {
+    core.setFailed("WriteFileSync ist falsch")
+  }
 }
 
 runRepoInfo();
