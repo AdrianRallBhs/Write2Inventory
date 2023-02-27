@@ -237,7 +237,7 @@ import * as github from '@actions/github';
 import { exec } from 'child_process';
 import * as fs from 'fs';
 import { Readable } from 'stream';
-//import packageJson from '../package.json';
+import packageJson from '../package.json';
 import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules, findALLCSPROJmodules, getAllNugetPackages, getOutdatedPackages } from './nuget'
 
 
@@ -271,7 +271,7 @@ interface Submodule {
 //   owner: string;
 // }
 
-interface NPMPackage {
+interface NPMPackageInfo {
   owner: string;
   project: string;
   source: string;
@@ -299,7 +299,7 @@ interface NPMPackage {
 
 interface Output {
   repository: Repository;
-  npmPackages: NPMPackage[];
+  npmPackages: NPMPackageInfo[][];
   nugetPackages: NugetPackageInfo[];
   submodules: Submodule[];
   updateStrategy: string;
@@ -433,39 +433,49 @@ function streamToString(stream: Readable): Promise<string> {
 }
 
 
-export async function runNPM(): Promise<NPMPackage[]> {
+export async function getAllNpmPackages(sourceList: string[]): Promise<NPMPackageInfo[][]> {
+  const packageInfoList: NPMPackageInfo[][] = [];
   try {
     const token = core.getInput('github-token');
     const octokit = github.getOctokit(token);
-
     const { data: contents } = await octokit.rest.repos.getContent({
       owner: github.context.repo.owner,
       repo: github.context.repo.repo,
       path: 'package.json',
     });
+   
+    const packages = packageJson.dependencies;
 
-    // Run npm outdated to get the latest versions of the packages
-    const { stdout: outdatedPackages } = await exec('npm outdated --json', { cwd: process.cwd() });
-    if (outdatedPackages != null) {
-      const packages = JSON.parse(await streamToString(outdatedPackages));
-      const packageList = Object.keys(packages).map((name) => ({
-        owner: github.context.repo.owner,
-        project: github.context.repo.repo,
-        source: 'npm',
-        packageName: name,
-        currentVersion: packages[name].current,
-        wantedVersion: packages[name].wanted,
-        latestVersion: packages[name].latest,
-      }));
-      return packageList;
-    } else {
-      return [];
+    for (const source of sourceList) {
+      const sourcePackageInfoList: NPMPackageInfo[] = [];
+      try {
+        const { stdout: outdatedPackages } = await exec(`npm outdated --json --registry ${source}`, { cwd: process.cwd() });
+        if (outdatedPackages != null) {
+          const packages = JSON.parse(outdatedPackages.toString());
+          for (const name of Object.keys(packages)) {
+            const pkg = packages[name];
+            sourcePackageInfoList.push({
+              owner: github.context.repo.owner,
+              project: github.context.repo.repo,
+              source,
+              packageName: name,
+              currentVersion: pkg.current,
+              wantedVersion: pkg.wanted,
+              latestVersion: pkg.latest,
+            });
+          }
+        }
+      } catch (error) {
+        console.log(`Error listing packages from source "${source}": ${error}`);
+      }
+      packageInfoList.push(sourcePackageInfoList);
     }
   } catch (error) {
-    core.setFailed('Fehler in runNPM');
-    return [];
+    console.log(`Error getting package.json: ${error}`);
   }
+  return packageInfoList;
 }
+
 
 
 
@@ -512,7 +522,10 @@ export async function runRepoInfo() {
   output.repository.currentReleaseTag = repository.default_branch;
   output.repository.license = repository.license?.name || '';
 
-  output.npmPackages = await runNPM();
+  //testweise
+  let sourceList: string[] = ["npm"];
+
+  output.npmPackages = await getAllNpmPackages(sourceList);
   output.nugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
   output.submodules = await getDotnetSubmodules();
   output.updateStrategy = updateStrategy;
