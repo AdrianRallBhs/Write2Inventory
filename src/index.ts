@@ -236,6 +236,7 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 import { exec } from 'child_process';
 import * as fs from 'fs';
+import { Readable } from 'stream';
 //import packageJson from '../package.json';
 import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules, findALLCSPROJmodules, getAllNugetPackages, getOutdatedPackages } from './nuget'
 
@@ -279,6 +280,10 @@ interface NPMPackage {
   wantedVersion: string;
   latestVersion: string;
 }
+
+
+
+
 
 
 
@@ -418,6 +423,16 @@ interface NugetPackageInfo {
 //   }
 // }
 
+function streamToString(stream: Readable): Promise<string> {
+  const chunks: any[] = [];
+  return new Promise((resolve, reject) => {
+    stream.on('data', (chunk) => chunks.push(chunk));
+    stream.on('error', reject);
+    stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+  });
+}
+
+
 export async function runNPM(): Promise<NPMPackage[]> {
   try {
     const token = core.getInput('github-token');
@@ -430,18 +445,9 @@ export async function runNPM(): Promise<NPMPackage[]> {
     });
 
     // Run npm outdated to get the latest versions of the packages
-    let outdatedPackages;
-    try {
-      const { stdout } = await exec('npm outdated --json', { cwd: process.cwd() });
-      outdatedPackages = stdout;
-    } catch (error) {
-      core.setFailed(`Error running 'npm outdated --json': ${error}`);
-      return [];
-    }
-
+    const { stdout: outdatedPackages } = await exec('npm outdated --json', { cwd: process.cwd() });
     if (outdatedPackages != null) {
-      let OutdatedPackageString = outdatedPackages.toString();
-      const packages = JSON.parse(OutdatedPackageString);
+      const packages = JSON.parse(await streamToString(outdatedPackages));
       const packageList = Object.keys(packages).map((name) => ({
         owner: github.context.repo.owner,
         project: github.context.repo.repo,
@@ -451,16 +457,16 @@ export async function runNPM(): Promise<NPMPackage[]> {
         wantedVersion: packages[name].wanted,
         latestVersion: packages[name].latest,
       }));
-
       return packageList;
     } else {
       return [];
     }
   } catch (error) {
-    core.setFailed(`Error in runNPM: ${error}`);
+    core.setFailed('Fehler in runNPM');
     return [];
   }
 }
+
 
 
 
