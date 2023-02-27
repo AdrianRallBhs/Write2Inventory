@@ -233,8 +233,9 @@
 
 import * as core from '@actions/core';
 import * as github from '@actions/github';
+import { exec } from 'child_process';
 import * as fs from 'fs';
-const packageJson = require('../package.json');
+//import packageJson from '../package.json';
 import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules, findALLCSPROJmodules, getAllNugetPackages, getOutdatedPackages } from './nuget'
 
 
@@ -261,12 +262,23 @@ interface Submodule {
 
 }
 
+// interface NPMPackage {
+//   name: string;
+//   version: string;
+//   repoName: string;
+//   owner: string;
+// }
+
 interface NPMPackage {
-  name: string;
-  version: string;
-  repoName: string;
   owner: string;
+  project: string;
+  source: string;
+  packageName: string;
+  currentVersion: string;
+  wantedVersion: string;
+  latestVersion: string;
 }
+
 
 
 //   interface NugetPackageInfo {
@@ -378,6 +390,33 @@ interface NugetPackageInfo {
 // //========================works fine=======================================
 
 
+// export async function runNPM(): Promise<NPMPackage[]> {
+//   try {
+//     const token = core.getInput('github-token');
+//     const octokit = github.getOctokit(token);
+
+//     const { data: contents } = await octokit.rest.repos.getContent({
+//       owner: github.context.repo.owner,
+//       repo: github.context.repo.repo,
+//       path: 'package.json',
+//     });
+
+//     const packages = packageJson.dependencies;
+
+//     const packageList = Object.keys(packages).map((name) => ({
+//       name,
+//       version: packages[name],
+//       repoName: github.context.repo.repo,
+//       owner: github.context.repo.owner,
+//     }));
+
+//     return packageList;
+//   } catch (error) {
+//     core.setFailed("Fehler in runNPM");
+//     return [];
+//   }
+// }
+
 export async function runNPM(): Promise<NPMPackage[]> {
   try {
     const token = core.getInput('github-token');
@@ -389,21 +428,31 @@ export async function runNPM(): Promise<NPMPackage[]> {
       path: 'package.json',
     });
 
-    const packages = packageJson.dependencies;
+    // Run npm outdated to get the latest versions of the packages
+    const { stdout: outdatedPackages } = await exec('npm outdated --json', { cwd: process.cwd() });
 
-    const packageList = Object.keys(packages).map((name) => ({
-      name,
-      version: packages[name],
-      repoName: github.context.repo.repo,
-      owner: github.context.repo.owner,
-    }));
-
-    return packageList;
+    if (outdatedPackages != null) {
+      let outdatedPackagesString: string = outdatedPackages.toString();
+      const packages = JSON.parse(outdatedPackagesString);
+      const packageList = Object.keys(packages).map((name) => ({
+        owner: github.context.repo.owner,
+        project: github.context.repo.repo,
+        source: "npm",
+        packageName: name,
+        currentVersion: packages[name].current,
+        wantedVersion: packages[name].wanted,
+        latestVersion: packages[name].latest,
+      }));
+      return packageList;
+    } else {
+      return [];
+    }
   } catch (error) {
     core.setFailed("Fehler in runNPM");
     return [];
   }
 }
+
 
 
 //   runNPM();
