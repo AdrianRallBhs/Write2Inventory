@@ -1,3 +1,4 @@
+import { OutdatedPackage } from './../Dependency/src/dotnet-command-manager';
 // import * as core from '@actions/core';
 // import * as github from '@actions/github';
 // import * as fs from 'fs';
@@ -429,29 +430,38 @@ export async function runNPM(): Promise<NPMPackage[]> {
     });
 
     // Run npm outdated to get the latest versions of the packages
-    const { stdout: outdatedPackages } = await exec('npm outdated --json', { cwd: process.cwd() });
+    let outdatedPackages;
+    try {
+      const { stdout } = await exec('npm outdated --json', { cwd: process.cwd() });
+      outdatedPackages = stdout;
+    } catch (error) {
+      core.setFailed(`Error running 'npm outdated --json': ${error}`);
+      return [];
+    }
 
     if (outdatedPackages != null) {
-      let outdatedPackagesString: string = outdatedPackages.toString();
-      const packages = JSON.parse(outdatedPackagesString);
+      let OutdatedPackageString = outdatedPackages.toString();
+      const packages = JSON.parse(OutdatedPackageString);
       const packageList = Object.keys(packages).map((name) => ({
         owner: github.context.repo.owner,
         project: github.context.repo.repo,
-        source: "npm",
+        source: 'npm',
         packageName: name,
         currentVersion: packages[name].current,
         wantedVersion: packages[name].wanted,
         latestVersion: packages[name].latest,
       }));
+
       return packageList;
     } else {
       return [];
     }
   } catch (error) {
-    core.setFailed("Fehler in runNPM");
+    core.setFailed(`Error in runNPM: ${error}`);
     return [];
   }
 }
+
 
 
 
