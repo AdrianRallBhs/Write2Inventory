@@ -1,4 +1,4 @@
-import { OutdatedPackage } from './../Dependency/src/dotnet-command-manager';
+
 // import * as core from '@actions/core';
 // import * as github from '@actions/github';
 // import * as fs from 'fs';
@@ -443,7 +443,7 @@ export async function getAllNpmPackages(sourceList: string[]): Promise<NPMPackag
       repo: github.context.repo.repo,
       path: 'package.json',
     });
-   
+
     const packages = packageJson.dependencies;
 
     for (const source of sourceList) {
