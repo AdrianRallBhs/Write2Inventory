@@ -1,3 +1,4 @@
+
 // import * as core from '@actions/core';
 // import * as github from '@actions/github';
 // import * as fs from 'fs';
@@ -233,9 +234,13 @@
 
 import * as core from '@actions/core';
 import * as github from '@actions/github';
+import { exec } from 'child_process';
 import * as fs from 'fs';
-const packageJson = require('../package.json');
+import { Readable } from 'stream';
+import packageJson from '../package.json';
 import { getDotnetSources, getNugetPackageListFromCsprojDoc, getDotnetSubmodules, findALLCSPROJmodules, getAllNugetPackages, getOutdatedPackages } from './nuget'
+import * as child_process from 'child_process';
+import * as path from 'path';
 
 
 
@@ -261,12 +266,31 @@ interface Submodule {
 
 }
 
-interface NPMPackage {
-  name: string;
-  version: string;
-  repoName: string;
-  owner: string;
+// interface NPMPackage {
+//   name: string;
+//   version: string;
+//   repoName: string;
+//   owner: string;
+// }
+
+// interface NPMPackageInfo {
+//   owner: string;
+//   project: string;
+//   source: string;
+//   packageName: string;
+//   currentVersion: string;
+//   wantedVersion: string;
+//   latestVersion: string;
+// }
+
+
+interface NpmPackageInfo {
+  packageName: string;
+  currentVersion: string;
+  latestVersion: string;
 }
+
+
 
 
 //   interface NugetPackageInfo {
@@ -281,7 +305,7 @@ interface NPMPackage {
 
 interface Output {
   repository: Repository;
-  npmPackages: NPMPackage[];
+  npmPackages: NpmPackageInfo[];
   nugetPackages: NugetPackageInfo[];
   submodules: Submodule[];
   updateStrategy: string;
@@ -378,32 +402,79 @@ interface NugetPackageInfo {
 // //========================works fine=======================================
 
 
-export async function runNPM(): Promise<NPMPackage[]> {
-  try {
-    const token = core.getInput('github-token');
-    const octokit = github.getOctokit(token);
+// export async function runNPM(): Promise<NPMPackage[]> {
+//   try {
+//     const token = core.getInput('github-token');
+//     const octokit = github.getOctokit(token);
 
-    const { data: contents } = await octokit.rest.repos.getContent({
-      owner: github.context.repo.owner,
-      repo: github.context.repo.repo,
-      path: 'package.json',
-    });
+//     const { data: contents } = await octokit.rest.repos.getContent({
+//       owner: github.context.repo.owner,
+//       repo: github.context.repo.repo,
+//       path: 'package.json',
+//     });
 
-    const packages = packageJson.dependencies;
+//     const packages = packageJson.dependencies;
 
-    const packageList = Object.keys(packages).map((name) => ({
-      name,
-      version: packages[name],
-      repoName: github.context.repo.repo,
-      owner: github.context.repo.owner,
-    }));
+//     const packageList = Object.keys(packages).map((name) => ({
+//       name,
+//       version: packages[name],
+//       repoName: github.context.repo.repo,
+//       owner: github.context.repo.owner,
+//     }));
 
-    return packageList;
-  } catch (error) {
-    core.setFailed("Fehler in runNPM");
-    return [];
-  }
+//     return packageList;
+//   } catch (error) {
+//     core.setFailed("Fehler in runNPM");
+//     return [];
+//   }
+// }
+
+function streamToString(stream: Readable): Promise<string> {
+  const chunks: any[] = [];
+  return new Promise((resolve, reject) => {
+    stream.on('data', (chunk) => chunks.push(chunk));
+    stream.on('error', reject);
+    stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+  });
 }
+
+
+interface NpmPackageInfo {
+  packageName: string;
+  currentVersion: string;
+  latestVersion: string;
+}
+
+export async function getAllNpmPackages(): Promise<NpmPackageInfo[]> {
+  const packageJsonPath = path.join(process.cwd(), 'package.json');
+  const packageJsonContents = fs.readFileSync(packageJsonPath, 'utf-8');
+  const packageJson = JSON.parse(packageJsonContents);
+
+  const dependencies = packageJson.dependencies;
+  const devDependencies = packageJson.devDependencies;
+  const packageList = { ...dependencies, ...devDependencies };
+
+  const packageInfoList: NpmPackageInfo[] = [];
+
+  for (const packageName of Object.keys(packageList)) {
+    const output = child_process.execSync(`npm view ${packageName} version`);
+    const latestVersion = output.toString().trim();
+    const currentVersion = packageList[packageName];
+    if (currentVersion !== latestVersion) {
+      packageInfoList.push({
+        packageName,
+        currentVersion,
+        latestVersion
+      });
+    }
+  }
+
+  return packageInfoList;
+}
+
+
+
+
 
 
 //   runNPM();
@@ -447,7 +518,10 @@ export async function runRepoInfo() {
   output.repository.currentReleaseTag = repository.default_branch;
   output.repository.license = repository.license?.name || '';
 
-  output.npmPackages = await runNPM();
+  //testweise
+  let sourceList: string[] = ["npm"];
+
+  output.npmPackages = await getAllNpmPackages();
   output.nugetPackages = await getOutdatedPackages(dotNetProjects, ListOfSources);
   output.submodules = await getDotnetSubmodules();
   output.updateStrategy = updateStrategy;
