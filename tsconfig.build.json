@@ -10,7 +10,8 @@
     "include": [
         "src/**/*.ts",
         "*.json",
-        "src/**/*.json"
+        "src/**/*.json",
+        "src/*.ts"
     ],
     "exclude": [
         "src/**/*.spec.ts"
