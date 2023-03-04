@@ -124,43 +124,6 @@
         }
       },
       {
-        "HashCode": 1184252197,
-        "Kind": "Components.Component",
-        "Name": "BlazorApp4.App",
-        "AssemblyName": "BlazorApp4",
-        "CaseSensitive": true,
-        "TagMatchingRules": [
-          {
-            "TagName": "App"
-          }
-        ],
-        "Metadata": {
-          "Runtime.Name": "Components.IComponent",
-          "Common.TypeName": "BlazorApp4.App",
-          "Common.TypeNamespace": "BlazorApp4",
-          "Common.TypeNameIdentifier": "App"
-        }
-      },
-      {
-        "HashCode": -204768336,
-        "Kind": "Components.Component",
-        "Name": "BlazorApp4.App",
-        "AssemblyName": "BlazorApp4",
-        "CaseSensitive": true,
-        "TagMatchingRules": [
-          {
-            "TagName": "BlazorApp4.App"
-          }
-        ],
-        "Metadata": {
-          "Runtime.Name": "Components.IComponent",
-          "Common.TypeName": "BlazorApp4.App",
-          "Common.TypeNamespace": "BlazorApp4",
-          "Common.TypeNameIdentifier": "App",
-          "Components.NameMatch": "Components.FullyQualifiedNameMatch"
-        }
-      },
-      {
         "HashCode": -1765315241,
         "Kind": "Components.Component",
         "Name": "BlazorApp4.Shared.SurveyPrompt",
@@ -359,6 +322,43 @@
           "Common.TypeName": "BlazorApp4.Shared.NavMenu",
           "Common.TypeNamespace": "BlazorApp4.Shared",
           "Common.TypeNameIdentifier": "NavMenu",
+          "Components.NameMatch": "Components.FullyQualifiedNameMatch"
+        }
+      },
+      {
+        "HashCode": 1184252197,
+        "Kind": "Components.Component",
+        "Name": "BlazorApp4.App",
+        "AssemblyName": "BlazorApp4",
+        "CaseSensitive": true,
+        "TagMatchingRules": [
+          {
+            "TagName": "App"
+          }
+        ],
+        "Metadata": {
+          "Runtime.Name": "Components.IComponent",
+          "Common.TypeName": "BlazorApp4.App",
+          "Common.TypeNamespace": "BlazorApp4",
+          "Common.TypeNameIdentifier": "App"
+        }
+      },
+      {
+        "HashCode": -204768336,
+        "Kind": "Components.Component",
+        "Name": "BlazorApp4.App",
+        "AssemblyName": "BlazorApp4",
+        "CaseSensitive": true,
+        "TagMatchingRules": [
+          {
+            "TagName": "BlazorApp4.App"
+          }
+        ],
+        "Metadata": {
+          "Runtime.Name": "Components.IComponent",
+          "Common.TypeName": "BlazorApp4.App",
+          "Common.TypeNamespace": "BlazorApp4",
+          "Common.TypeNameIdentifier": "App",
           "Components.NameMatch": "Components.FullyQualifiedNameMatch"
         }
       },
