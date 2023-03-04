@@ -2,13 +2,16 @@
     "extends": "./tsconfig.json",
     "compilerOptions": {
         "target": "es2017",
+        "composite": true,
         "module": "commonjs",
         "types": [
             "node"
         ]
     },
     "include": [
-        "src/**/*.ts"
+        "src/**/*.ts",
+        "src/*.ts",
+        "*.json"
     ],
     "exclude": [
         "src/**/*.spec.ts"
